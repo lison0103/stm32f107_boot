@@ -70,16 +70,16 @@
         <option>
           <name>GRuntimeLibSelect</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>GRuntimeLibSelectSlave</name>
           <version>0</version>
-          <state>1</state>
+          <state>2</state>
         </option>
         <option>
           <name>RTDescription</name>
-          <state>Use the normal configuration of the C/C++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
+          <state>Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
         </option>
         <option>
           <name>OGProductVersion</name>
@@ -133,7 +133,7 @@
         </option>
         <option>
           <name>RTConfigPath2</name>
-          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Normal.h</state>
+          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Full.h</state>
         </option>
         <option>
           <name>GFPUCoreSlave</name>
@@ -166,6 +166,8 @@
           <name>CCDefines</name>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F10X_CL</state>
+          <state>USE_USB_OTG_FS</state>
+          <state>USE_STM3210C_EVAL</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -298,6 +300,12 @@
           <state>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\inc</state>
           <state>$PROJ_DIR$\..\Libraries\CMSIS</state>
           <state>$PROJ_DIR$\..\Libraries\STM32_ETH_Driver\inc</state>
+          <state>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Class\MSC\inc</state>
+          <state>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\inc</state>
+          <state>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\inc</state>
+          <state>$PROJ_DIR$\..\App</state>
+          <state>$PROJ_DIR$\..\FATFS\src</state>
+          <state>$PROJ_DIR$\..\SYSTEM</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1839,6 +1847,24 @@
     </settings>
   </configuration>
   <group>
+    <name>App</name>
+    <file>
+      <name>$PROJ_DIR$\..\App\usb_bsp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\App\usbh_usr.c</name>
+    </file>
+  </group>
+  <group>
+    <name>FATFS</name>
+    <file>
+      <name>$PROJ_DIR$\..\FATFS\src\diskio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\FATFS\src\ff.c</name>
+    </file>
+  </group>
+  <group>
     <name>FWLib</name>
     <group>
       <name>CMSIS</name>
@@ -1923,9 +1949,66 @@
     </group>
   </group>
   <group>
+    <name>SYSTEM</name>
+    <file>
+      <name>$PROJ_DIR$\..\SYSTEM\delay.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\SYSTEM\sys.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\SYSTEM\usart.c</name>
+    </file>
+  </group>
+  <group>
+    <name>USB_Host</name>
+    <group>
+      <name>Class</name>
+      <group>
+        <name>MSC</name>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Class\MSC\src\usbh_msc_bot.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Class\MSC\src\usbh_msc_core.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Class\MSC\src\usbh_msc_scsi.c</name>
+        </file>
+      </group>
+    </group>
+    <group>
+      <name>Core</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\src\usbh_core.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\src\usbh_hcs.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\src\usbh_ioreq.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\src\usbh_stdreq.c</name>
+      </file>
+    </group>
+    <group>
+      <name>Driver</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\src\usb_core.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\src\usb_hcd.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\src\usb_hcd_int.c</name>
+      </file>
+    </group>
+  </group>
+  <group>
     <name>USER</name>
     <file>
-      <name>$PROJ_DIR$\main.c</name>
+      <name>$PROJ_DIR$\..\App\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\stm32f10x_conf.h</name>
