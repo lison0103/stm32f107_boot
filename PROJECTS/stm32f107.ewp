@@ -307,6 +307,10 @@
           <state>$PROJ_DIR$\..\FATFS\exfuns</state>
           <state>$PROJ_DIR$\..\SYSTEM</state>
           <state>$PROJ_DIR$\..\HARDWARE\LED</state>
+          <state>$PROJ_DIR$\..\HARDWARE\MB85RCXX</state>
+          <state>$PROJ_DIR$\..\HARDWARE\24CXX</state>
+          <state>$PROJ_DIR$\..\HARDWARE\IIC</state>
+          <state>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
         <option>
@@ -1956,7 +1960,19 @@
   <group>
     <name>HAREWARE</name>
     <file>
+      <name>$PROJ_DIR$\..\HARDWARE\24CXX\24cxx.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED\digital_led.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\HARDWARE\LED\led.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\MB85RCXX\mb85rcxx.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\IIC\myiic.c</name>
     </file>
   </group>
   <group>

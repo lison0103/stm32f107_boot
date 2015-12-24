@@ -6,12 +6,16 @@
 #include "ff.h"  
 #include "exfuns.h"     
 #include "usbh_usr.h" 
+#include "24cxx.h"
+#include "mb85rcxx.h"
+#include "digital_led.h"
 
 
 
 USBH_HOST  USB_Host;
 USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
+extern u8 dis_data[3];
 
 //用户测试主程序
 //返回值:0,正常
@@ -48,14 +52,43 @@ int main(void)
         delay_init();
 //	uart_init(115200);		//初始化串口波特率为115200
 	LED_Init();				//初始化与LED连接的硬件接口
-
 //	usmart_dev.init(84); 	//初始化USMART	 
 	mem_init();	//初始化内部内存池	
+               
+        digital_led_gpio_init();
+        for(u8 i = 0; i < 9; i++)
+        {
+              for(u8 j = 0; j < 3; j++)
+              {
+                  dis_data[j] = i;
+                  led_display();                 
+              }
+              
+              delay_ms(1000);
+          
+        }
+        
+        eep_init();
+        if(MB85RCXX_Check())
+        {
+            printf("MB85RCXX_Check失败\n");
+          
+        }        
+               
+        AT24CXX_Init();        
+        if(AT24CXX_Check())
+        {
+            printf("AT24CXX_Check失败\n");
+          
+        }
+        
  	if(exfuns_init())			//为fatfs相关变量申请内存 
         {
             printf("fatfs内存申请失败\n");
         
         }
+        
+        
   	f_mount(fs[0],"0:",1); 	//挂载U盘  
      	       
 	//初始化USB主机
