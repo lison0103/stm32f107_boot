@@ -167,7 +167,6 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F10X_CL</state>
           <state>USE_USB_OTG_FS</state>
-          <state>USE_STM3210C_EVAL</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -305,7 +304,10 @@
           <state>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\inc</state>
           <state>$PROJ_DIR$\..\App</state>
           <state>$PROJ_DIR$\..\FATFS\src</state>
+          <state>$PROJ_DIR$\..\FATFS\exfuns</state>
           <state>$PROJ_DIR$\..\SYSTEM</state>
+          <state>$PROJ_DIR$\..\HARDWARE\LED</state>
+          <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1861,6 +1863,9 @@
       <name>$PROJ_DIR$\..\FATFS\src\diskio.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\FATFS\exfuns\exfuns.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\FATFS\src\ff.c</name>
     </file>
   </group>
@@ -1949,6 +1954,18 @@
     </group>
   </group>
   <group>
+    <name>HAREWARE</name>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\LED\led.c</name>
+    </file>
+  </group>
+  <group>
+    <name>MALLOC</name>
+    <file>
+      <name>$PROJ_DIR$\..\MALLOC\malloc.c</name>
+    </file>
+  </group>
+  <group>
     <name>SYSTEM</name>
     <file>
       <name>$PROJ_DIR$\..\SYSTEM\delay.c</name>
@@ -1958,6 +1975,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\SYSTEM\usart.c</name>
+      <excluded>
+        <configuration>Debug</configuration>
+      </excluded>
     </file>
   </group>
   <group>

@@ -1,5 +1,5 @@
 #include "usbh_usr.h" 
-//#include "led.h"
+#include "led.h"
 #include "ff.h" 
 //#include "usart.h" 
 	   
@@ -49,13 +49,13 @@ void USBH_USR_Init(void)
 //检测到U盘插入
 void USBH_USR_DeviceAttached(void)//U盘插入
 {
-//	LED1=1;
+	LED1=1;
 	printf("检测到USB设备插入!\r\n");
 }
 //检测到U盘拔出
 void USBH_USR_DeviceDisconnected (void)//U盘移除
 {
-//	LED1=0;
+	LED1=0;
 	printf("USB设备拔出!\r\n");
 }  
 //复位从机

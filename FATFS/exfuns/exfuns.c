@@ -3,18 +3,7 @@
 #include "fattester.h"	
 #include "malloc.h"
 #include "usart.h"
-//////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//FATFS 扩展代码	   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//创建日期:2014/5/15
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2014-2024
-//All rights reserved									  
-////////////////////////////////////////////////////////////////////////////////// 	
+
 #define FILE_MAX_TYPE_NUM		7	//最多FILE_MAX_TYPE_NUM个大类
 #define FILE_MAX_SUBT_NUM		4	//最多FILE_MAX_SUBT_NUM个小类
 
@@ -30,30 +19,23 @@ u8*const FILE_TYPE_TBL[FILE_MAX_TYPE_NUM][FILE_MAX_SUBT_NUM]=
 {"AVI"},			//视频文件
 };
 ///////////////////////////////公共文件区,使用malloc的时候////////////////////////////////////////////
-FATFS *fs[_VOLUMES];//逻辑磁盘工作区.	 
-FIL *file;	  		//文件1
-FIL *ftemp;	  		//文件2.
+FATFS *fs[1];//逻辑磁盘工作区.	 
+//FIL *file;	  		//文件1
 UINT br,bw;			//读写变量
 FILINFO fileinfo;	//文件信息
 DIR dir;  			//目录
 
-u8 *fatbuf;			//SD卡数据缓存区
 ///////////////////////////////////////////////////////////////////////////////////////
 //为exfuns申请内存
 //返回值:0,成功
 //1,失败
 u8 exfuns_init(void)
 {
-	u8 i;
-	for(i=0;i<_VOLUMES;i++)
-	{
-		fs[i]=(FATFS*)mymalloc(SRAMIN,sizeof(FATFS));	//为磁盘i工作区申请内存	
-		if(!fs[i])break;
-	}
-	file=(FIL*)mymalloc(SRAMIN,sizeof(FIL));		//为file申请内存
-	ftemp=(FIL*)mymalloc(SRAMIN,sizeof(FIL));		//为ftemp申请内存
-	fatbuf=(u8*)mymalloc(SRAMIN,512);				//为fatbuf申请内存
-	if(i==_VOLUMES&&file&&ftemp&&fatbuf)return 0;  //申请有一个失败,即失败.
+
+	fs[0]=(FATFS*)mymalloc(sizeof(FATFS));	//为磁盘i工作区申请内存	
+//	file=(FIL*)mymalloc(sizeof(FIL));		//为file申请内存
+        
+	if(fs[0])return 0;  //申请有一个失败,即失败.
 	else return 1;	
 }
 

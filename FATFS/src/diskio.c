@@ -8,18 +8,13 @@
 /*-----------------------------------------------------------------------*/
 
 #include "diskio.h"		/* FatFs lower layer API */
-//#include "malloc.h"		
+#include "malloc.h"		
 #include "usbh_usr.h" 
 
 
 
 #define USB_DISK 0	//U盘,卷标为0
 
-#define FLASH_SECTOR_SIZE 	512			  
-//对于W25Q128
-//前12M字节给fatfs用,12M字节后,用于存放字库,字库占用3.09M.	剩余部分,给客户自己用	 			    
-u16	    FLASH_SECTOR_COUNT=2048*12;	//W25Q1218,前12M字节给FATFS占用
-#define FLASH_BLOCK_SIZE   	8     	//每个BLOCK有8个扇区
 
 //初始化磁盘
 DSTATUS disk_initialize (
@@ -155,12 +150,12 @@ DWORD get_fattime (void)
 //动态分配内存
 void *ff_memalloc (UINT size)			
 {
-//	return (void*)mymalloc(SRAMIN,size);
+	return (void*)mymalloc(size);
 }
 //释放内存
 void ff_memfree (void* mf)		 
 {
-//	myfree(SRAMIN,mf);
+	myfree(mf);
 }
 
 

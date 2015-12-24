@@ -1,23 +1,11 @@
 #include "fattester.h"	 
-#include "sdio_sdcard.h"
-#include "usmart.h"
+//#include "usmart.h"
 #include "usart.h"
 #include "exfuns.h"
 #include "malloc.h"		  
 #include "ff.h"
 #include "string.h"
-//////////////////////////////////////////////////////////////////////////////////	 
-//本程序只供学习使用，未经作者许可，不得用于其它任何用途
-//ALIENTEK STM32F407开发板
-//FATFS 测试代码	   
-//正点原子@ALIENTEK
-//技术论坛:www.openedv.com
-//创建日期:2014/5/15
-//版本：V1.0
-//版权所有，盗版必究。
-//Copyright(C) 广州市星翼电子科技有限公司 2014-2024
-//All rights reserved									  
-////////////////////////////////////////////////////////////////////////////////// 	
+
     
 //为磁盘注册工作区	 
 //path:磁盘路径，比如"0:"、"1:"
@@ -25,7 +13,7 @@
 //返回值:执行结果
 u8 mf_mount(u8* path,u8 mt)
 {		   
-	return f_mount(fs[2],(const TCHAR*)path,mt); 
+	return f_mount(fs[0],(const TCHAR*)path,mt); 
 }
 //打开路径下的文件
 //path:路径+文件名
@@ -122,12 +110,12 @@ u8 mf_readdir(void)
 	char *fn;			 
 #if _USE_LFN
  	fileinfo.lfsize = _MAX_LFN * 2 + 1;
-	fileinfo.lfname = mymalloc(SRAMIN,fileinfo.lfsize);
+	fileinfo.lfname = mymalloc(fileinfo.lfsize);
 #endif		  
 	res=f_readdir(&dir,&fileinfo);//读取一个文件的信息
 	if(res!=FR_OK||fileinfo.fname[0]==0)
 	{
-		myfree(SRAMIN,fileinfo.lfname);
+		myfree(fileinfo.lfname);
 		return res;//读完了.
 	}
 #if _USE_LFN
@@ -150,7 +138,7 @@ u8 mf_readdir(void)
 	printf("File time is:%d\r\n",fileinfo.ftime);
 	printf("File Attr is:%d\r\n",fileinfo.fattrib);
 	printf("\r\n");
-	myfree(SRAMIN,fileinfo.lfname);
+	myfree(fileinfo.lfname);
 	return 0;
 }			 
 
@@ -163,7 +151,7 @@ u8 mf_scan_files(u8 * path)
     char *fn;   /* This function is assuming non-Unicode cfg. */
 #if _USE_LFN
  	fileinfo.lfsize = _MAX_LFN * 2 + 1;
-	fileinfo.lfname = mymalloc(SRAMIN,fileinfo.lfsize);
+	fileinfo.lfname = mymalloc(fileinfo.lfsize);
 #endif		  
 
     res = f_opendir(&dir,(const TCHAR*)path); //打开一个目录
@@ -184,7 +172,7 @@ u8 mf_scan_files(u8 * path)
 			printf("%s\r\n",  fn);//打印文件名	  
 		} 
     }	  
-	myfree(SRAMIN,fileinfo.lfname);
+	myfree(fileinfo.lfname);
     return res;	  
 }
 //显示剩余容量
