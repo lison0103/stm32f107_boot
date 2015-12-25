@@ -1,6 +1,7 @@
 #include "digital_led.h"
 #include "sys.h"
 #include "delay.h"
+#include "ewdt.h"
 
 const u8 led_dm[3] = {0x04,0x3d,0x00}; //a,s,f 
 const u8 bcd[10] = {0x04,0x3d,0x41,0x11,0x38,0x12,0x02,0x35,0x00,0x10}; 
@@ -53,6 +54,10 @@ void led_display1(void)
   
   dis_cnt++;
   if(dis_cnt>2) dis_cnt=0;
+  
+  LED_NUM1 = 1;
+  LED_NUM2 = 1;
+  LED_NUM3 = 1;
 
   txbyte(bcd[dis_data[dis_cnt]]);
   
@@ -68,6 +73,30 @@ void led_display1(void)
   {
     LED_NUM3 = 0; 
   }    
+}
+
+void digital_led_check(void)
+{
+    u8 count = 0;
+  
+    for(u8 i = 0; i < 9; i++)
+    {
+        count = 20;
+        
+        for(u8 j = 0; j < 3; j++)
+        {
+          dis_data[j] = i;
+        }
+        
+        while(count)
+        {
+          led_display();
+          delay_ms(50);              
+          count--;
+        }  
+        
+        EWDT_TOOGLE();
+    }
 }
 
 /*******************************************************************************

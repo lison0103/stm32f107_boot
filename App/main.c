@@ -9,7 +9,7 @@
 #include "24cxx.h"
 #include "mb85rcxx.h"
 #include "digital_led.h"
-
+#include "ewdt.h"
 
 
 USBH_HOST  USB_Host;
@@ -37,6 +37,8 @@ u8 USH_User_App(void)
 	{	
 		LED1=!LED1;
 		delay_ms(200);
+                
+                EWDT_TOOGLE();
 	}
    
 	printf("设备连接中...\n");
@@ -48,33 +50,42 @@ u8 USH_User_App(void)
 int main(void)
 {        
 	u8 t;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//设置系统中断优先级分组2
-        delay_init();
-//	uart_init(115200);		//初始化串口波特率为115200
-	LED_Init();				//初始化与LED连接的硬件接口
-//	usmart_dev.init(84); 	//初始化USMART	 
-	mem_init();	//初始化内部内存池	
-               
-        digital_led_gpio_init();
-        for(u8 i = 0; i < 9; i++)
-        {
-              for(u8 j = 0; j < 3; j++)
-              {
-                  dis_data[j] = i;
-                  led_display();                 
-              }
-              
-              delay_ms(1000);
-          
-        }
         
+        //设置系统中断优先级分组2
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+        
+        delay_init();
+        
+        //外部看门狗初始化
+        EWDT_Drv_pin_config();
+//        power_on_bsp_check();
+        
+        //初始化串口波特率为115200
+//	uart_init(115200);		
+        
+        //初始化与LED连接的硬件接口
+	LED_Init();		
+        
+        //初始化USMART	
+//	usmart_dev.init(84); 	 
+               
+        //初始化内部内存池	
+	mem_init();	
+               
+        //数码管初始化
+        digital_led_gpio_init();               
+        digital_led_check();
+
+        
+        //MB85RCXX初始化
         eep_init();
         if(MB85RCXX_Check())
         {
             printf("MB85RCXX_Check失败\n");
           
         }        
-               
+        
+        //AT24CXX初始化
         AT24CXX_Init();        
         if(AT24CXX_Check())
         {
@@ -82,14 +93,15 @@ int main(void)
           
         }
         
- 	if(exfuns_init())			//为fatfs相关变量申请内存 
+        //为fatfs相关变量申请内存 
+ 	if(exfuns_init())			
         {
             printf("fatfs内存申请失败\n");
         
         }
         
-        
-  	f_mount(fs[0],"0:",1); 	//挂载U盘  
+        //挂载U盘  
+  	f_mount(fs[0],"0:",1); 	
      	       
 	//初始化USB主机
   	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks);  
@@ -102,6 +114,8 @@ int main(void)
 		{
 			LED0=!LED0;
 			t=0;
+                        
+                        EWDT_TOOGLE();
 		}
 	}	
 }

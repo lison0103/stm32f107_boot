@@ -311,6 +311,7 @@
           <state>$PROJ_DIR$\..\HARDWARE\24CXX</state>
           <state>$PROJ_DIR$\..\HARDWARE\IIC</state>
           <state>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED</state>
+          <state>$PROJ_DIR$\..\HARDWARE\EWDT</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
         <option>
@@ -1964,6 +1965,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED\digital_led.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\EWDT\ewdt.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\LED\led.c</name>

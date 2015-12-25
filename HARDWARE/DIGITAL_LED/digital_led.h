@@ -12,5 +12,6 @@
 
 void led_display(void);
 void digital_led_gpio_init(void);
+void digital_led_check(void);
 
 #endif
