@@ -10,6 +10,7 @@
 #include "mb85rcxx.h"
 #include "digital_led.h"
 #include "ewdt.h"
+#include "update.h"
 
 
 USBH_HOST  USB_Host;
@@ -32,6 +33,17 @@ u8 USH_User_App(void)
 		printf("U Disk Total Size:  %d   MB\n",total>>10);//显示U盘总容量 MB	 
 		printf("U Disk  Free Size:  %d   MB\n",free>>10); 	    	
 	} 
+        
+        if(isFileExist("0:123.txt"))
+        {
+            printf("文件不存在\n");
+        }
+        else
+        {
+//            UpdateApp("0:stm32f107_cb.bin");
+//            INTX_DISABLE();
+//            iap_load_app(FLASH_APP1_ADDR);
+        }
  
 	while(HCD_IsDeviceConnected(&USB_OTG_Core))//设备连接成功
 	{	

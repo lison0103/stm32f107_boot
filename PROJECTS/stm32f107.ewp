@@ -312,6 +312,8 @@
           <state>$PROJ_DIR$\..\HARDWARE\IIC</state>
           <state>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED</state>
           <state>$PROJ_DIR$\..\HARDWARE\EWDT</state>
+          <state>$PROJ_DIR$\..\HARDWARE\STMFLASH</state>
+          <state>$PROJ_DIR$\..\IAP</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
         <option>
@@ -1856,6 +1858,9 @@
   <group>
     <name>App</name>
     <file>
+      <name>$PROJ_DIR$\..\App\update.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\usb_bsp.c</name>
     </file>
     <file>
@@ -1864,6 +1869,9 @@
   </group>
   <group>
     <name>FATFS</name>
+    <file>
+      <name>$PROJ_DIR$\..\FATFS\src\option\ccsbcs.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\FATFS\src\diskio.c</name>
     </file>
@@ -1977,6 +1985,15 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\IIC\myiic.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\STMFLASH\stmflash.c</name>
+    </file>
+  </group>
+  <group>
+    <name>IAP</name>
+    <file>
+      <name>$PROJ_DIR$\..\IAP\iap.c</name>
     </file>
   </group>
   <group>
