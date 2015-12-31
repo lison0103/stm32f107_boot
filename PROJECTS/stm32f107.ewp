@@ -313,6 +313,7 @@
           <state>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED</state>
           <state>$PROJ_DIR$\..\HARDWARE\EWDT</state>
           <state>$PROJ_DIR$\..\HARDWARE\STMFLASH</state>
+          <state>$PROJ_DIR$\..\HARDWARE\CAN</state>
           <state>$PROJ_DIR$\..\IAP</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
@@ -1970,6 +1971,9 @@
     <name>HAREWARE</name>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\24CXX\24cxx.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\CAN\can.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED\digital_led.c</name>
