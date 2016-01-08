@@ -14,6 +14,7 @@ void IIC_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
         
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
  
 	IIC_SCL=1;

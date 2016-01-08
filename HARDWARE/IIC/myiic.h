@@ -9,7 +9,7 @@
 #define SDA_OUT() {GPIOC->CRH&=0XFFFFFF0F;GPIOC->CRH|=3<<4;}
 
 //IO²Ù×÷º¯Êý	 
-#define IIC_SCL    PAout(9) //SCL
+#define IIC_SCL    PAout(8) //SCL
 #define IIC_SDA    PCout(9) //SDA	 
 #define READ_SDA   PCin(9)  //ÊäÈëSDA 
 
