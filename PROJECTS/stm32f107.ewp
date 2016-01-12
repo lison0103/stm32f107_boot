@@ -1859,6 +1859,9 @@
   <group>
     <name>App</name>
     <file>
+      <name>$PROJ_DIR$\..\App\hw_test.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\update.c</name>
     </file>
     <file>
@@ -2016,9 +2019,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\SYSTEM\usart.c</name>
-      <excluded>
-        <configuration>Debug</configuration>
-      </excluded>
     </file>
   </group>
   <group>
