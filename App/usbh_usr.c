@@ -2,7 +2,7 @@
 #include "led.h"
 #include "ff.h" 
 //#include "usart.h" 
-	   
+#include "exfuns.h" 	   
 
 static u8 AppState;
 extern USB_OTG_CORE_HANDLE  USB_OTG_Core;
@@ -49,13 +49,13 @@ void USBH_USR_Init(void)
 //检测到U盘插入
 void USBH_USR_DeviceAttached(void)//U盘插入
 {
-	LED1=1;
+	LED1=0;
 	printf("检测到USB设备插入!\r\n");
 }
 //检测到U盘拔出
 void USBH_USR_DeviceDisconnected (void)//U盘移除
 {
-	LED1=0;
+	LED1=1;
 	printf("USB设备拔出!\r\n");
 }  
 //复位从机
@@ -160,6 +160,8 @@ int USBH_USR_MSC_Application(void)
     	case USH_USR_FS_INIT://初始化文件系统 
 			printf("开始执行用户程序!!!\r\n");
 			AppState=USH_USR_FS_TEST;
+                        //挂载U盘  
+                        f_mount(fs[0],"0:",1); 
       		break;
     	case USH_USR_FS_TEST:	//执行USB OTG 测试主程序
 			res=USH_User_App(); //用户主程序

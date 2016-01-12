@@ -25,7 +25,7 @@ DSTATUS disk_initialize (
 	switch(pdrv)
 	{
 		case USB_DISK://外部flash
-	  		if(USBH_UDISK_Status())return 0;	//U盘连接成功,则返回1.否则返回0		  
+	  		if(USBH_UDISK_Status())return 0;	//U盘连接成功,则返回0.否则返回1	  
 			else return 1;	 
 		default:
 			res=1; 
