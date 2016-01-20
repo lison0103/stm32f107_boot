@@ -1,5 +1,6 @@
 #include "sys.h"
-#include "usart.h"	  
+#include "usart.h"
+#include "delay.h"
 ////////////////////////////////////////////////////////////////////////////////// 	 
   
  
@@ -56,19 +57,35 @@ void uart_init(u32 bound){
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 	 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);	//GPIOB时钟
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);	//GPIOC AFIO时钟
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);          //使能USART3
+        
+        GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+        
+        
  	USART_DeInit(USART3);  //复位串口3
 	 //USART3_TX   PB.10
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //PB.10
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽输出
-    GPIO_Init(GPIOB, &GPIO_InitStructure); //初始化PB10
+    GPIO_Init(GPIOC, &GPIO_InitStructure); //初始化PB10
    
     //USART3_RX	  PB.11
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
-    GPIO_Init(GPIOB, &GPIO_InitStructure);  //初始化PB11
+    GPIO_Init(GPIOC, &GPIO_InitStructure);  //初始化PB11
+    
+#ifdef USART3_TRX_EN
+    RCC_APB2PeriphClockCmd(USART3_TRX_RCC, ENABLE); 
+    
+    GPIO_InitStructure.GPIO_Pin = USART3_TRX_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(USART3_TRX_GPIO , &GPIO_InitStructure);
+    
+    USART3_TRX_CONTROL = 0;
+#endif    
+    
 
    //Usart3 NVIC 配置
 
@@ -92,39 +109,45 @@ void uart_init(u32 bound){
     USART_Cmd(USART3, ENABLE);                    //使能串口 
 
 }
+
+void USART3_SEND(u8 * str,int len)
+{
+    USART3_TRX_CONTROL = 1;
+    delay_ms(1);
+    
+    for(int t = 0;t < len; t++)
+    {      
+      USART3->DR = (u8) str[t];
+      while((USART3->SR&0X40)==0);//循环发送,直到发送完毕   
+       
+    }
+    
+//    if(USART_GetITStatus(USART1, USART_IT_TC) == SET)
+//    {
+        USART3_TRX_CONTROL = 0;
+//    }
+}
+
+int a;
 #if EN_USART3_RX   //如果使能了接收
 void USART3_IRQHandler(void)                	//串口1中断服务程序
-	{
-	u8 Res;
-#ifdef OS_TICKS_PER_SEC	 	//如果时钟节拍数定义了,说明要使用ucosII了.
-	OSIntEnter();    
-#endif
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
-		{
-		Res =USART_ReceiveData(USART3);//(USART1->DR);	//读取接收到的数据
-		
-		if((USART_RX_STA&0x8000)==0)//接收未完成
-			{
-			if(USART_RX_STA&0x4000)//接收到了0x0d
-				{
-				if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
-				else USART_RX_STA|=0x8000;	//接收完成了 
-				}
-			else //还没收到0X0D
-				{	
-				if(Res==0x0d)USART_RX_STA|=0x4000;
-				else
-					{
-					USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
-					USART_RX_STA++;
-					if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
-					}		 
-				}
-			}   		 
-     } 
-#ifdef OS_TICKS_PER_SEC	 	//如果时钟节拍数定义了,说明要使用ucosII了.
-	OSIntExit();  											 
-#endif
+{
+  
+  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+  {
+      USART_RX_BUF[USART_RX_STA] = USART_ReceiveData(USART3);//(USART1->DR);	//读取接收到的数据
+      
+      USART_RX_STA++;
+      
+      if(USART_RX_STA > USART_REC_LEN - 1)
+        USART_RX_STA = 0;
+      
+//      USART3->SR &= ~0x00000040;
+  } 
+  
+//  		a = USART3->SR;
+//		a = USART3->DR;
+  
 } 
 #endif	
 

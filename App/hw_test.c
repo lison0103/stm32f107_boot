@@ -18,7 +18,7 @@ void HW_TEST_INIT(void)
       //input
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4;             
       GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
-      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;       
+      GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;       
       GPIO_Init(GPIOA , &GPIO_InitStruct);    
       
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2;                  
@@ -79,208 +79,200 @@ void HW_TEST(void)
     while(1)
     {
         sflag = 0;
+        inputnum = 0;
         
         if ( IN1 )
-        {
-            GRL1 = 1;
-            GRL2 = 0;
-            GRL3 = 0;
-            GRL4 = 0;
-            GRL5 = 0;
-            
+        {       
             inputnum = 1;
             sflag++;
         }
         if ( IN2 ) 
         {
-            GRL1 = 0;
-            GRL2 = 1;
-            GRL3 = 0;
-            GRL4 = 0;
-            GRL5 = 0;          
-
             inputnum = 2;
             sflag++;
         }
         if ( IN3 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 1;
-            GRL3 = 0;
-            GRL4 = 0;
-            GRL5 = 0;          
-            
+        {           
             inputnum = 3;
             sflag++;
 
         }
         if ( IN4 ) 
         {
-            GRL1 = 0;
-            GRL2 = 0;
-            GRL3 = 1;
-            GRL4 = 0;
-            GRL5 = 0;          
-
             inputnum = 4;
             sflag++;
         } 
         if ( IN5 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 0;
-            GRL3 = 1;
-            GRL4 = 0;
-            GRL5 = 0;     
-            
+        {         
             inputnum = 5;
             sflag++;
         }
         if ( IN6 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 1;
-            GRL3 = 1;
-            GRL4 = 0;
-            GRL5 = 0;        
-            
+        {        
             inputnum = 6;
             sflag++;
 
         }
         if ( IN7 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 1;
-            GRL3 = 1;
-            GRL4 = 0;
-            GRL5 = 0;          
-            
+        {      
             inputnum = 7;
             sflag++;
 
         }        
         if ( IN8 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 0;
-            GRL3 = 0;
-            GRL4 = 1;
-            GRL5 = 0;        
-            
+        {         
             inputnum = 8;
             sflag++;
 
         }
         if ( IN9 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 0;
-            GRL3 = 0;
-            GRL4 = 1;
-            GRL5 = 0;   
-            
+        {        
             inputnum = 9;
             sflag++;
 
         }
         if ( IN10 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 1;
-            GRL3 = 0;
-            GRL4 = 1;
-            GRL5 = 0;      
-            
+        {        
             inputnum = 10;
             sflag++;
 
         } 
         if ( IN11 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 1;
-            GRL3 = 0;
-            GRL4 = 1;
-            GRL5 = 0;     
-            
+        {         
             inputnum = 11;
             sflag++;
 
         }
         if ( IN12 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 0;
-            GRL3 = 1;
-            GRL4 = 1;
-            GRL5 = 0;        
-            
+        {         
             inputnum = 12;
             sflag++;
 
         }
         if ( IN13 ) 
-        {
-            GRL1 = 1;
-            GRL2 = 0;
-            GRL3 = 1;
-            GRL4 = 1;
-            GRL5 = 0;      
-            
+        {           
             inputnum = 13;
             sflag++;
 
         }         
         if ( IN14 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 1;
-            GRL3 = 1;
-            GRL4 = 1;
-            GRL5 = 0;       
-            
+        {           
             inputnum = 14;
             sflag++;
 
         }
         if ( IN15 ) 
         {
-            GRL1 = 1;
-            GRL2 = 1;
-            GRL3 = 1;
-            GRL4 = 1;
-            GRL5 = 0;       
-            
             inputnum = 15;
             sflag++;
 
         }
         if ( IN16 ) 
-        {
-            GRL1 = 0;
-            GRL2 = 0;
-            GRL3 = 0;
-            GRL4 = 0;
-            GRL5 = 1;      
-            
+        {               
             inputnum = 16;
             sflag++;
 
         }    
         
-        if(sflag > 1)
+        if(inputnum == 0)
         {
-            GRL6 = 1; 
+            GRL1 = 0;
+            GRL2 = 0;
+            GRL3 = 0;
+            GRL4 = 0;
+            GRL5 = 0;
+            GRL6 = 0;
+            GRL7 = 0;
+            GRL8 = 0;
+            GRL9 = 0;
+            
+            GSFR1 = 0;
+            GSFR2 = 0;
+            GSFR3 = 0;
+            GSFR4 = 0;
+            
+            TRANS_CTRL1 = 0;
+            TRANS_CTRL2 = 0;
+            
+            dis_data[0] = 0;
+            dis_data[1] = 0;
+            dis_data[2] = 0;        
+        
+        }
+        
+        else if(sflag > 1)
+        {
+            GRL1 = 0;
+            GRL2 = 0;
+            GRL3 = 0;
+            GRL4 = 0;
+            GRL5 = 0;
+            GRL6 = 0;
+            GRL7 = 0;
+            GRL8 = 0;
+            GRL9 = 0;
+            
+            GSFR1 = 0;
+            GSFR2 = 0;
+            GSFR3 = 0;
+            GSFR4 = 0;
+            
+            TRANS_CTRL1 = 0;
+            TRANS_CTRL2 = 0;
+            
             dis_data[0] = 0;
             dis_data[1] = 0;
             dis_data[2] = 0;
         }
         else
         {
-            dis_data[0] = 0;
-            dis_data[1] = inputnum/10;
-            dis_data[2] = inputnum%10;
+            switch(inputnum)
+            {
+                case 1:
+                  GRL1 = 1;break;
+                case 2:
+                  GRL2 = 1;break;
+                case 3:
+                  GRL3 = 1;break;
+                case 4:
+                  GRL4 = 1;break;
+                case 5:
+                  GRL5 = 1;break;
+                case 6:
+                  GRL6 = 1;break; 
+                case 7:
+                  GRL7 = 1;break;
+                case 8:
+                  GRL8 = 1;break;
+                case 9:
+                  GRL9 = 1;break;
+                case 10:
+                  GSFR1 = 1;break;
+                case 11:
+                  GSFR2 = 1;
+                  break;
+                case 12:
+                  GSFR3 = 1;   
+                  break;
+                case 13:
+                  GSFR4 = 1;
+                  break;
+                case 14:
+                  TRANS_CTRL1 = 1;
+                  break;
+                case 15:
+                  TRANS_CTRL2 = 1;
+                  break;
+                case 16:
+                  GRL1 = 1; 
+                  break;
+                default:
+                  break;
+            }
+            
+              dis_data[0] = 0;
+              dis_data[1] = inputnum/10;
+              dis_data[2] = inputnum%10;
         }
         
         led_display();

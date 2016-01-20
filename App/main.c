@@ -15,6 +15,7 @@
 #include "hw_test.h"
 
 void can_test(void);
+void can1_can2_test(void);
 
 USBH_HOST  USB_Host;
 USB_OTG_CORE_HANDLE  USB_OTG_Core;
@@ -126,7 +127,7 @@ int main(void)
           
         }
 //RCC_GetClocksFreq(&RCC_Clocks); 
-#if 1        
+#if 0        
         //为fatfs相关变量申请内存 
  	if(exfuns_init())			
         {
@@ -162,6 +163,18 @@ int main(void)
 #else        
         //can测试
         can_test();
+//        can1_can2_test();
+        
+        //485test
+        while(1){
+//        USART3_SEND("ABCDE",6);
+          if( (USART_GetITStatus(USART3, USART_IT_RXNE) == RESET) && (USART_RX_STA != 0))
+          {
+//                USART3->SR &= ~0x00000040;
+                USART3_SEND(USART_RX_BUF,USART_RX_STA);
+                USART_RX_STA = 0;
+          }
+        }
 #endif   
         
 #endif
@@ -171,7 +184,7 @@ int main(void)
 
 
 
-#define USE_CAN CAN1
+#define USE_CAN CAN2
 
 
 void can_test(void)
@@ -191,7 +204,7 @@ void can_test(void)
  	while(1)
 	{
 
-		if(mode==CAN_Mode_LoopBack)//KEY0按下,发送一次数据
+		if(mode==CAN_Mode_LoopBack)
 		{
 			for(i=0;i<8;i++)
 			{
@@ -202,7 +215,7 @@ void can_test(void)
 			res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
 			if(res)printf("Failed");		//提示发送失败
 			else printf("OK    ");	 		//提示发送成功								   
-		}else if(mode==CAN_Mode_Normal)//WK_UP按下，改变CAN的工作模式
+		}else if(mode==CAN_Mode_Normal)
 		{	   
 //			mode=!mode;
   			CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_Normal);//CAN普通模式初始化, 波特率500Kbps 
@@ -237,4 +250,59 @@ void can_test(void)
 	}
 }
 
+void can1_can2_test(void)
+ {	 
+	u8 i=0,t=0;
+	u8 cnt=0;
+	u8 canbuf_send[8],canbuf_recv[8];
+	u8 res;
+        u8 can_rcv;
+	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
 
+	 	
+   
+	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN初始化环回模式,波特率500Kbps    
+        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN初始化环回模式,波特率500Kbps    
+
+	
+ 	while(1)
+	{
+                //CAN1发送
+		if(mode==CAN_Mode_Normal)
+		{
+			for(i=0;i<8;i++)
+			{
+				canbuf_send[i]=cnt+i;//填充发送缓冲区
+
+				printf("%s",canbuf_send[i]);	//显示数据
+ 			}
+			res=Can_Send_Msg(CAN1,canbuf_send,8);//发送8个字节 
+			if(res)
+                          printf("Failed");		//提示发送失败
+			else 
+                          printf("OK    ");	 		//提示发送成功								   
+		}
+
+                //CAN2接收  
+		can_rcv=Can_Receive_Msg(CAN2,canbuf_recv);
+		if(can_rcv)//接收到有数据
+		{			
+			
+ 			for(i=0;i<can_rcv;i++)
+			{									    
+                              printf("%s",canbuf_recv[i]);	//显示数据
+ 			}
+		}
+                
+                
+		t++; 
+		delay_ms(10);
+		if(t==20)
+		{
+			LED1=!LED1;//提示系统正在运行	
+			t=0;
+			cnt++;
+			printf("%d",cnt);	//显示数据
+		}		   
+	}
+}
