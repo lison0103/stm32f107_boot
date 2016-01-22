@@ -13,4 +13,5 @@ u8 isFileExist(char *filename);
 u8 UpdateApp(char *filename);
 u8 DeleteFile(char *filename);
 u8 ReadDir(u8 * path, char filestr[]);
+u8 CreateFile(char *readfilename, char *createfilename);
 #endif

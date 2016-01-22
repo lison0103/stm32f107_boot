@@ -42,9 +42,11 @@ u8 USH_User_App(void)
 	res=exf_getfree("0:",&total,&free);
 	if(res==0)
 	{	   
+                total = total>>10;
+                free  = free>>10;
 		printf("FATFS OK!\n");	
-		printf("U Disk Total Size:  %d   MB\n",total>>10);//显示U盘总容量 MB	 
-		printf("U Disk  Free Size:  %d   MB\n",free>>10); 	    	
+		printf("U Disk Total Size:  %d   MB\n",total);//显示U盘总容量 MB	 
+		printf("U Disk  Free Size:  %d   MB\n",free); 	    	
 	} 
         
         if(isFileExist("0:123.txt"))
@@ -54,6 +56,11 @@ u8 USH_User_App(void)
         else
         {
               printf("文件存在\n");
+              
+              CreateFile("0:123.txt", "0:abc.txt");
+              
+//              DeleteFile("0:123.txt");
+              
 //            UpdateApp("0:stm32f107_cb.bin");
 //            INTX_DISABLE();
 //            iap_load_app(FLASH_APP1_ADDR);
@@ -127,7 +134,7 @@ int main(void)
           
         }
 //RCC_GetClocksFreq(&RCC_Clocks); 
-#if 0        
+#if 1        
         //为fatfs相关变量申请内存 
  	if(exfuns_init())			
         {

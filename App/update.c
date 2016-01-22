@@ -34,6 +34,61 @@ u8 isFileExist(char *filename)
 }
 
 /*******************************************************************************
+功能：
+参数：文件名字符串
+返回：
+*******************************************************************************/
+u8 CreateFile(char *readfilename, char *createfilename)
+{
+  FIL* fp1;
+  FIL* fp2;
+  FRESULT res = FR_NO_FILE;
+    u8 *tempbuf;
+    u16 bread;
+    u32 offx=0;
+  
+  fp1 = (FIL*)mymalloc(sizeof(FIL));	//分配内存
+  fp2 = (FIL*)mymalloc(sizeof(FIL));	//分配内存
+  tempbuf = mymalloc(1024);
+  
+  
+  if(fp1 != NULL && fp2 != NULL && tempbuf != NULL)
+  {
+    
+      res = f_open(fp1,readfilename,FA_READ);
+      
+      res = f_open(fp2,createfilename,FA_CREATE_NEW | FA_WRITE);  
+      printf("\r\n open res = %d \r\n",res);
+      
+        while(res==FR_OK)//死循环执行
+        {
+          res = f_read(fp1,tempbuf,1024,(UINT *)&bread);		//读取数据	
+          if(res!=FR_OK)break;					//执行错误
+
+          res = f_write(fp2,tempbuf,bread,&offx);
+//          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);//更新FLASH代码 	  
+          offx+=bread;
+          if(bread!=1024)break;					//读完了.
+        }       
+      
+      
+//      if(res==FR_OK)
+//      {         
+//	 f_close(fp);						
+//      }
+        
+       f_close(fp1); 
+       f_close(fp2); 
+        
+      myfree(fp1);    
+      myfree(fp2);
+  }  
+    
+  return res;
+  
+}
+
+/*******************************************************************************
 功能：更新APP
 返回：0 更新成功
 *******************************************************************************/
