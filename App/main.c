@@ -16,11 +16,14 @@
 
 void can_test(void);
 void can1_can2_test(void);
+void hw_can_test(void);
 
 USBH_HOST  USB_Host;
 USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
 extern u8 dis_data[3];
+
+u8 canbuf_send[8];
 
 //void EXTI1_IRQHandler(void)
 //{
@@ -57,7 +60,13 @@ u8 USH_User_App(void)
         {
               printf("文件存在\n");
               
-              CreateFile("0:123.txt", "0:abc.txt");
+              DeleteFile("0:abc.txt");
+              
+//              if(isFileExist("0:abc.txt"))
+//              {
+              
+                  CreateFile("0:123.txt", "0:abc.txt");
+//              }
               
 //              DeleteFile("0:123.txt");
               
@@ -134,7 +143,7 @@ int main(void)
           
         }
 //RCC_GetClocksFreq(&RCC_Clocks); 
-#if 1        
+#if 0        
         //为fatfs相关变量申请内存 
  	if(exfuns_init())			
         {
@@ -165,12 +174,33 @@ int main(void)
 
 #if 1
         HW_TEST_INIT();
-        HW_TEST();
+//        HW_TEST();
+        
+        GRL1 = 0;
+        GRL2 = 0;
+        GRL3 = 0;
+        GRL4 = 0;
+        GRL5 = 0;
+        GRL6 = 0;
+        GRL7 = 0;
+        GRL8 = 0;
+        GRL9 = 0;
+        
+        GSFR1 = 0;
+        GSFR2 = 0;
+        GSFR3 = 0;
+        GSFR4 = 0;
+        
+        TRANS_CTRL1 = 0;
+        TRANS_CTRL2 = 0;
+              
+        hw_can_test();
+               
 
 #else        
         //can测试
-        can_test();
-//        can1_can2_test();
+//        can_test();
+        can1_can2_test();
         
         //485test
         while(1){
@@ -191,7 +221,7 @@ int main(void)
 
 
 
-#define USE_CAN CAN2
+#define USE_CAN CAN1
 
 
 void can_test(void)
@@ -204,39 +234,26 @@ void can_test(void)
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
 
 	 	
-   
-	CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
+        CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,mode);
+	CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
 
 	
  	while(1)
 	{
 
-		if(mode==CAN_Mode_LoopBack)
-		{
-			for(i=0;i<8;i++)
-			{
-				canbuf_send[i]=cnt+i;//填充发送缓冲区
-
-				printf("%s",canbuf_send[i]);	//显示数据
- 			}
-			res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
-			if(res)printf("Failed");		//提示发送失败
-			else printf("OK    ");	 		//提示发送成功								   
-		}else if(mode==CAN_Mode_Normal)
-		{	   
-//			mode=!mode;
-  			CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_Normal);//CAN普通模式初始化, 波特率500Kbps 
-
-			if(mode==0)//普通模式，需要2个开发板
-			{
-				printf("Nnormal Mode ");	    
-			}else //回环模式,一个开发板就可以测试了.
-			{
- 				printf("LoopBack Mode");
-			}
-
-		}		 
-		can_rcv=Can_Receive_Msg(USE_CAN,canbuf_recv);
+	
+                for(i=0;i<8;i++)
+                {
+                  canbuf_send[i]=cnt+i;//填充发送缓冲区
+                  
+                  printf("%s",canbuf_send[i]);	//显示数据
+                }
+                
+                res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
+                if(res)printf("Failed");		//提示发送失败
+                else printf("OK    ");	 		//提示发送成功								   
+                
+                can_rcv=Can_Receive_Msg(USE_CAN,canbuf_recv);
 		if(can_rcv)//接收到有数据
 		{			
 			
@@ -268,8 +285,8 @@ void can1_can2_test(void)
 
 	 	
    
-	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN初始化环回模式,波特率500Kbps    
-        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,mode);//CAN初始化环回模式,波特率500Kbps    
+	CAN_Mode_Init(CAN1,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
+        CAN_Mode_Init(CAN2,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
 
 	
  	while(1)
@@ -310,6 +327,65 @@ void can1_can2_test(void)
 			t=0;
 			cnt++;
 			printf("%d",cnt);	//显示数据
+		}		   
+	}
+}
+
+void hw_can_test(void)
+ {	 
+	u8 i=0,t=0;
+	u8 canbuf_recv[8];
+	u8 res;
+        u8 can_rcv;
+	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+        u32 aa = 0;
+	 	
+   
+	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
+//        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
+
+	
+ 	while(1)
+	{
+          
+                aa++;
+          
+                  //CAN1发送
+          
+                  HW_TEST();
+                  
+                  if(aa == 100)
+                  {
+                  
+                        res=Can_Send_Msg(CAN1,canbuf_send,2);//发送2个字节 
+                        
+                        if(res)
+                          printf("Failed");		//提示发送失败
+                        else 
+                          printf("OK    ");	 		//提示发送成功	
+                        
+                        LED0=!LED0;
+                        aa = 0;
+                  }
+
+                //CAN2接收  
+		can_rcv=Can_Receive_Msg(CAN1,canbuf_recv);
+		if(can_rcv)//接收到有数据
+		{			
+			
+ 			for(i=0;i<can_rcv;i++)
+			{									    
+                              printf("%s",canbuf_recv[i]);	//显示数据
+ 			}
+		}
+                
+                
+		t++; 
+		delay_ms(10);
+		if(t==50)
+		{
+			LED1=!LED1;//提示系统正在运行	
+			t=0;
 		}		   
 	}
 }

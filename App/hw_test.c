@@ -50,6 +50,156 @@ void HW_TEST_INIT(void)
 
 }
 
+u8 sflag,t,inputnum = 0;
+extern u8 canbuf_send[8];
+u8 passflag = 1;
+
+#if 1
+
+void HW_TEST(void)
+{
+    
+        canbuf_send[0] = 0;
+        canbuf_send[1] = 0;
+    
+//        sflag = 0;
+//        inputnum = 0;
+        
+        
+        
+        if(passflag && ( /*IN1 && IN2 && IN3 && IN4 && IN5 && IN6 && IN7 && IN8 && */
+                        IN9 && IN10/* && IN11 && IN12 && IN13 && IN14 && IN15 && IN16  */))
+        {
+                GRL1 = 1;
+                GRL2 = 1;
+                GRL3 = 1;
+                GRL4 = 1;
+                GRL5 = 1;
+                GRL6 = 1;
+                GRL7 = 1;
+                GRL8 = 1;
+                GRL9 = 1;
+                
+                GSFR1 = 1;
+                GSFR2 = 1;
+                GSFR3 = 1;
+                GSFR4 = 1;
+                
+                TRANS_CTRL1 = 1;
+                TRANS_CTRL2 = 1;
+                
+                canbuf_send[0] = 0xff;
+                canbuf_send[1] = 0xff;
+          
+        }
+        else   
+        {
+                passflag = 0;
+                
+                GRL1 = 0;
+                GRL2 = 0;
+                GRL3 = 0;
+                GRL4 = 0;
+                GRL5 = 0;
+                GRL6 = 0;
+                GRL7 = 0;
+                GRL8 = 0;
+                GRL9 = 0;
+                
+                GSFR1 = 0;
+                GSFR2 = 0;
+                GSFR3 = 0;
+                GSFR4 = 0;
+                
+                TRANS_CTRL1 = 0;
+                TRANS_CTRL2 = 0;                
+                
+                canbuf_send[0] = 0xff;
+                canbuf_send[1] = 0xfc;
+        
+                if ( IN1 )
+                {       
+                    canbuf_send[0] |= 1 << 0;
+                }
+                if ( IN2 ) 
+                {
+                    canbuf_send[0] |= 1 << 1;
+                }
+                if ( IN3 ) 
+                {           
+                    canbuf_send[0] |= 1 << 2;
+
+                }
+                if ( IN4 ) 
+                {
+                    canbuf_send[0] |= 1 << 3;
+                } 
+                if ( IN5 ) 
+                {         
+                    canbuf_send[0] |= 1 << 4;
+                }
+                if ( IN6 ) 
+                {        
+                    canbuf_send[0] |= 1 << 5;
+
+                }
+                if ( IN7 ) 
+                {      
+                    canbuf_send[0] |= 1 << 6;
+
+                }        
+                if ( IN8 ) 
+                {         
+                    canbuf_send[0] |= 1 << 7;
+
+                }
+                if ( IN9 ) 
+                {        
+                    canbuf_send[1] |= 1 << 0;
+
+                }
+                if ( IN10 ) 
+                {        
+                    canbuf_send[1] |= 1 << 1;
+
+                } 
+                if ( IN11 ) 
+                {         
+                    canbuf_send[1] |= 1 << 2;
+
+                }
+                if ( IN12 ) 
+                {         
+                    canbuf_send[1] |= 1 << 3;
+
+                }
+                if ( IN13 ) 
+                {           
+                    canbuf_send[1] |= 1 << 4;
+
+                }         
+                if ( IN14 ) 
+                {           
+                    canbuf_send[1] |= 1 << 5;
+
+                }
+                if ( IN15 ) 
+                {
+                    canbuf_send[1] |= 1 << 6;
+
+                }
+                if ( IN16 ) 
+                {               
+                    canbuf_send[1] |= 1 << 7;
+
+                }                   
+                
+        }
+                    
+    
+}
+
+#else
 void HW_TEST(void)
 {
     u8 sflag,t,inputnum = 0;
@@ -288,3 +438,4 @@ void HW_TEST(void)
         
     }
 }
+#endif

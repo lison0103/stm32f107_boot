@@ -68,7 +68,24 @@ u8 CreateFile(char *readfilename, char *createfilename)
           res = f_write(fp2,tempbuf,bread,&offx);
 //          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);//更新FLASH代码 	  
           offx+=bread;
-          if(bread!=1024)break;					//读完了.
+          if(bread!=1024)
+          {
+//            	u32 total,free;
+//                u8 res=0;
+//	 
+//                res=exf_getfree("0:",&total,&free);
+//        	if(res==0)
+//                {	   
+//                        total = total>>10;
+//                        free  = free>>10;
+//
+//                        f_write(fp2,tempbuf,bread,&offx);
+//	    	
+//                } 
+                
+                
+                break;					//读完了.
+          }
         }       
       
       
