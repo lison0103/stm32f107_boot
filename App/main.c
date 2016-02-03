@@ -13,6 +13,7 @@
 #include "update.h"
 #include "can.h"
 #include "hw_test.h"
+#include "spi.h"
 
 void can_test(void);
 void can1_can2_test(void);
@@ -24,6 +25,47 @@ USB_OTG_CORE_HANDLE  USB_OTG_Core;
 extern u8 dis_data[3];
 
 u8 canbuf_send[8];
+
+u8 Master_Temp =0;
+
+void spi1_test(void)
+{  
+  
+    u8 t;
+    
+    SPI1_Init();
+
+//    SPI1_SetSpeed(SPI_BaudRatePrescaler_256);
+
+   while(1)
+   { 
+
+
+     
+#if 0
+       SPI1_ReadWriteByte(0x55); 
+       Master_Temp = SPI1_ReadWriteByte(0x00);
+#else
+       SPI1_WriteByte(0x66); 
+//       delay_ms(1);
+       Master_Temp = SPI1_ReadByte(0x00);
+#endif
+       
+       delay_ms(10); 
+       
+       t++;
+       if(t == 50)
+       {
+             t = 0;
+             LED0 =! LED0;
+                             
+         
+       }
+       
+
+   }
+
+}
 
 //void EXTI1_IRQHandler(void)
 //{
@@ -171,7 +213,7 @@ int main(void)
 		}
 	}	
 #else
-
+//          spi1_test();
 #if 1
         HW_TEST_INIT();
 //        HW_TEST();

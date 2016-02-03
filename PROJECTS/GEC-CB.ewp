@@ -314,6 +314,7 @@
           <state>$PROJ_DIR$\..\HARDWARE\EWDT</state>
           <state>$PROJ_DIR$\..\HARDWARE\STMFLASH</state>
           <state>$PROJ_DIR$\..\HARDWARE\CAN</state>
+          <state>$PROJ_DIR$\..\HARDWARE\SPI</state>
           <state>$PROJ_DIR$\..\IAP</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
         </option>
@@ -1992,6 +1993,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\IIC\myiic.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\SPI\spi.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\STMFLASH\stmflash.c</name>
