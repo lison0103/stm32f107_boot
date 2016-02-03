@@ -67,8 +67,8 @@ void HW_TEST(void)
         
         
         
-        if(passflag && ( /*IN1 && IN2 && IN3 && IN4 && IN5 && IN6 && IN7 && IN8 && */
-                        IN9 && IN10/* && IN11 && IN12 && IN13 && IN14 && IN15 && IN16  */))
+        if(passflag && ( IN1 && IN2 && IN3 && IN4 && IN5 && IN6 && IN7 && IN8 && 
+                        IN9 && IN10 && IN11 && IN12 && IN13 && IN14 && IN15 && IN16 ))
         {
                 GRL1 = 1;
                 GRL2 = 1;
@@ -114,8 +114,8 @@ void HW_TEST(void)
                 TRANS_CTRL1 = 0;
                 TRANS_CTRL2 = 0;                
                 
-                canbuf_send[0] = 0xff;
-                canbuf_send[1] = 0xfc;
+//                canbuf_send[0] = 0xff;
+//                canbuf_send[1] = 0xfc;
         
                 if ( IN1 )
                 {       

@@ -107,7 +107,7 @@ int main(void)
         delay_init();
         
         //外部看门狗初始化
-        EWDT_Drv_pin_config();
+//        EWDT_Drv_pin_config();
 //        power_on_bsp_check(); 
         
         //初始化串口波特率为115200
