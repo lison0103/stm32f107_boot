@@ -214,7 +214,7 @@ int main(void)
 	}	
 #else
 //          spi1_test();
-#if 1
+#if 0
         HW_TEST_INIT();
 //        HW_TEST();
         
@@ -242,17 +242,23 @@ int main(void)
 #else        
         //can测试
 //        can_test();
-        can1_can2_test();
-        
+//        can1_can2_test();
+        u8 len = 0;
         //485test
-        while(1){
+        while(1)
+        {
+          
 //        USART3_SEND("ABCDE",6);
-          if( (USART_GetITStatus(USART3, USART_IT_RXNE) == RESET) && (USART_RX_STA != 0))
-          {
-//                USART3->SR &= ~0x00000040;
-                USART3_SEND(USART_RX_BUF,USART_RX_STA);
-                USART_RX_STA = 0;
+                    
+          if(USART_RX_STA&0x8000)
+          {					   
+              len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+              
+              USART3_SEND(USART_RX_BUF,len);
+              USART_RX_STA=0;
           }
+                
+          EWDT_TOOGLE();
         }
 #endif   
         
