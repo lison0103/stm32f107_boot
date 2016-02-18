@@ -1,5 +1,5 @@
 #include "update.h"
-
+#include "ewdt.h"
 
 
 
@@ -126,9 +126,10 @@ u8 UpdateApp(char *filename)
         res = f_open(fp,filename,FA_READ);    
         printf("\r\n open res = %d \r\n",res);
         
-        INTX_DISABLE();//关闭所有中断
+//        INTX_DISABLE();//关闭所有中断
         while(res==FR_OK)//死循环执行
         {
+          EWDT_TOOGLE();
           res=f_read(fp,tempbuf,4096,(UINT *)&bread);		//读取数据	
           if(res!=FR_OK)break;					//执行错误
           if(0 == flag)
@@ -144,7 +145,7 @@ u8 UpdateApp(char *filename)
           offx+=bread;
           if(bread!=4096)break;					//读完了.
         }      
-        INTX_ENABLE();//打开所有中断
+//        INTX_ENABLE();//打开所有中断
     }
     
     printf("\r\n update res = %d \r\n",res);

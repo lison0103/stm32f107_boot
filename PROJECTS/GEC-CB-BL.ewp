@@ -167,7 +167,7 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F10X_CL</state>
           <state>USE_USB_OTG_FS</state>
-          <state>GEC_CB_MAIN</state>
+          <state>GEC_CB_BOOTLOADER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -588,7 +588,7 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>2</version>
-          <state>2</state>
+          <state>1</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
@@ -596,7 +596,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>GEC-CB.bin</state>
+          <state>GEC-CB-BL.hex</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -650,7 +650,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>GEC-CB.out</state>
+          <state>GEC-CB-BL.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -714,7 +714,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\stm32f10x_flash.icf</state>
+          <state>$PROJ_DIR$\stm32f10x_flash_bl.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>

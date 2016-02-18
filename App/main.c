@@ -14,6 +14,13 @@
 #include "can.h"
 #include "hw_test.h"
 #include "spi.h"
+#include "iap.h"
+
+#ifdef GEC_CB_BOOTLOADER
+
+u32 timecounter = 0;
+
+#endif
 
 void can_test(void);
 void can1_can2_test(void);
@@ -84,6 +91,9 @@ u8 USH_User_App(void)
 	u32 total,free;
 	u8 res=0;
 	printf("设备连接成功!.\n");	 
+        
+        LED0=1;
+        
 	res=exf_getfree("0:",&total,&free);
 	if(res==0)
 	{	   
@@ -93,7 +103,20 @@ u8 USH_User_App(void)
 		printf("U Disk Total Size:  %d   MB\n",total);//显示U盘总容量 MB	 
 		printf("U Disk  Free Size:  %d   MB\n",free); 	    	
 	} 
+
+#ifdef GEC_CB_BOOTLOADER
+
+        timecounter = 0;
         
+        if(!isFileExist("0:GEC-CB.bin"))
+        {
+            UpdateApp("0:GEC-CB.bin");
+        }
+        
+        INTX_DISABLE();
+        iap_load_app(FLASH_APP1_ADDR);
+        
+#else        
         if(isFileExist("0:123.txt"))
         {
             printf("文件不存在\n");
@@ -112,12 +135,10 @@ u8 USH_User_App(void)
               
 //              DeleteFile("0:123.txt");
               
-//            UpdateApp("0:stm32f107_cb.bin");
-//            INTX_DISABLE();
-//            iap_load_app(FLASH_APP1_ADDR);
+
         }
+#endif        
         
-        LED0=1;
 	while(HCD_IsDeviceConnected(&USB_OTG_Core))//设备连接成功
 	{	
 		LED1=!LED1;
@@ -141,6 +162,10 @@ u8 USH_User_App(void)
 
 int main(void)
 {        
+
+#ifdef GEC_CB_MAIN  
+   SCB->VTOR = FLASH_BASE | 0x10000;
+#endif
 	u8 t;
         RCC_ClocksTypeDef RCC_Clocks;
         //设置系统中断优先级分组2
@@ -185,7 +210,9 @@ int main(void)
           
         }
 //RCC_GetClocksFreq(&RCC_Clocks); 
-#if 0        
+        
+#ifdef GEC_CB_BOOTLOADER
+        
         //为fatfs相关变量申请内存 
  	if(exfuns_init())			
         {
@@ -203,6 +230,17 @@ int main(void)
 		USBH_Process(&USB_OTG_Core, &USB_Host);
 		delay_ms(1);
 		t++;
+                
+#ifdef GEC_CB_BOOTLOADER
+
+                timecounter++;
+                
+                if(timecounter == 3000)
+                {
+                    INTX_DISABLE();
+                    iap_load_app(FLASH_APP1_ADDR);                               
+                }
+#endif  
 		if(t==200)
 		{
 //                        RCC_GetClocksFreq(&RCC_Clocks); 
