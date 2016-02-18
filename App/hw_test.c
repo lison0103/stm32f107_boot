@@ -3,9 +3,15 @@
 #include "hw_test.h"
 #include "led.h"
 #include "digital_led.h"
+#include "usart.h"
+#include "ewdt.h"
+#include "can.h"
+#include "spi.h"
 
 extern u8 dis_data[3];
 
+/******************************************************************************* 
+*******************************************************************************/
 void HW_TEST_INIT(void)
 {
       RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE, ENABLE );
@@ -48,6 +54,24 @@ void HW_TEST_INIT(void)
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6; 
       GPIO_Init(GPIOE , &GPIO_InitStruct);  
 
+      /** relay output init **/
+        GRL1 = 0;
+        GRL2 = 0;
+        GRL3 = 0;
+        GRL4 = 0;
+        GRL5 = 0;
+        GRL6 = 0;
+        GRL7 = 0;
+        GRL8 = 0;
+        GRL9 = 0;
+        
+        GSFR1 = 0;
+        GSFR2 = 0;
+        GSFR3 = 0;
+        GSFR4 = 0;
+        
+        TRANS_CTRL1 = 0;
+        TRANS_CTRL2 = 0;
 }
 
 u8 sflag,t,inputnum = 0;
@@ -439,3 +463,225 @@ void HW_TEST(void)
     }
 }
 #endif
+
+
+
+
+#define USE_CAN CAN1
+
+/******************************************************************************* 
+*******************************************************************************/
+void can_test(void)
+ {	 
+	u8 i=0,t=0;
+	u8 cnt=0;
+	u8 canbuf_send[8],canbuf_recv[8];
+	u8 res;
+        u8 can_rcv;
+	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+
+	 	
+        CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,mode);
+	CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
+
+	
+ 	while(1)
+	{
+
+	
+                for(i=0;i<8;i++)
+                {
+                  canbuf_send[i]=cnt+i;//填充发送缓冲区
+                  
+                  printf("%s",canbuf_send[i]);	//显示数据
+                }
+                
+                res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
+                if(res)printf("Failed");		//提示发送失败
+                else printf("OK    ");	 		//提示发送成功								   
+                
+                can_rcv=Can_Receive_Msg(USE_CAN,canbuf_recv);
+		if(can_rcv)//接收到有数据
+		{			
+			
+ 			for(i=0;i<can_rcv;i++)
+			{									    
+                              printf("%s",canbuf_recv[i]);	//显示数据
+ 			}
+		}
+		t++; 
+		delay_ms(10);
+		if(t==20)
+		{
+			LED1=!LED1;//提示系统正在运行	
+			t=0;
+			cnt++;
+			printf("%d",cnt);	//显示数据
+		}		   
+	}
+}
+
+/******************************************************************************* 
+*******************************************************************************/
+void can1_can2_test(void)
+ {	 
+	u8 i=0,t=0;
+	u8 cnt=0;
+	u8 canbuf_send[8],canbuf_recv[8];
+	u8 res;
+        u8 can_rcv;
+	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+
+	 	
+   
+	CAN_Mode_Init(CAN1,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
+        CAN_Mode_Init(CAN2,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
+
+	
+ 	while(1)
+	{
+                //CAN1发送
+		if(mode==CAN_Mode_Normal)
+		{
+			for(i=0;i<8;i++)
+			{
+				canbuf_send[i]=cnt+i;//填充发送缓冲区
+
+				printf("%s",canbuf_send[i]);	//显示数据
+ 			}
+			res=Can_Send_Msg(CAN1,canbuf_send,8);//发送8个字节 
+			if(res)
+                          printf("Failed");		//提示发送失败
+			else 
+                          printf("OK    ");	 		//提示发送成功								   
+		}
+
+                //CAN2接收  
+		can_rcv=Can_Receive_Msg(CAN2,canbuf_recv);
+		if(can_rcv)//接收到有数据
+		{			
+			
+ 			for(i=0;i<can_rcv;i++)
+			{									    
+                              printf("%s",canbuf_recv[i]);	//显示数据
+ 			}
+		}
+                
+                
+		t++; 
+		delay_ms(10);
+		if(t==20)
+		{
+			LED1=!LED1;//提示系统正在运行	
+			t=0;
+			cnt++;
+			printf("%d",cnt);	//显示数据
+		}		   
+	}
+}
+
+
+/******************************************************************************* 
+*******************************************************************************/
+void hw_can_test(void)
+ {	 
+	u8 i=0,t=0;
+	u8 canbuf_recv[8];
+	u8 res;
+        u8 can_rcv;
+	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+        u32 aa = 0;
+	 	
+   
+	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
+//        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
+
+	
+ 	while(1)
+	{
+          
+                aa++;
+          
+                  //CAN1发送
+          
+                  HW_TEST();
+                  
+                  if(aa == 100)
+                  {
+                  
+                        res=Can_Send_Msg(CAN1,canbuf_send,2);//发送2个字节 
+                        
+                        if(res)
+                          printf("Failed");		//提示发送失败
+                        else 
+                          printf("OK    ");	 		//提示发送成功	
+                        
+                        LED0=!LED0;
+                        aa = 0;
+                  }
+
+                //CAN2接收  
+		can_rcv=Can_Receive_Msg(CAN1,canbuf_recv);
+		if(can_rcv)//接收到有数据
+		{			
+			
+ 			for(i=0;i<can_rcv;i++)
+			{									    
+                              printf("%s",canbuf_recv[i]);	//显示数据
+ 			}
+		}
+                
+                
+		t++; 
+		delay_ms(10);
+		if(t==50)
+		{
+			LED1=!LED1;//提示系统正在运行	
+                        EWDT_TOOGLE();
+			t=0;
+		}		   
+	}
+}
+
+
+/******************************************************************************* 
+*******************************************************************************/
+u8 Master_Temp =0;
+void spi1_test(void)
+{  
+  
+    u8 t;
+    
+    SPI1_Init();
+
+//    SPI1_SetSpeed(SPI_BaudRatePrescaler_256);
+
+   while(1)
+   { 
+
+
+     
+#if 0
+       SPI1_ReadWriteByte(0x55); 
+       Master_Temp = SPI1_ReadWriteByte(0x00);
+#else
+       SPI1_WriteByte(0x66); 
+//       delay_ms(1);
+       Master_Temp = SPI1_ReadByte(0x00);
+#endif
+       
+       delay_ms(10); 
+       
+       t++;
+       if(t == 50)
+       {
+             t = 0;
+             LED0 =! LED0;
+                             
+         
+       }
+       
+
+   }
+
+}

@@ -3,7 +3,9 @@
 
 void HW_TEST_INIT(void);
 void HW_TEST(void);
-
+void can_test(void);
+void can1_can2_test(void);
+void hw_can_test(void);
 
 //INPUT
 #define IN1     PAin(3)

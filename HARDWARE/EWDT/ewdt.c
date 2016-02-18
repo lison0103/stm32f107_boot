@@ -3,8 +3,10 @@
 #include "delay.h"
 #include "ewdt.h"
 
-//min:1.12 typ:1.6 max:2.4
 
+/******************************************************************************* 
+*******************************************************************************/
+//min:1.12 typ:1.6 max:2.4
 void EWDT_Drv_pin_config(void)
 {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE );

@@ -1862,6 +1862,9 @@
     <name>App</name>
     <file>
       <name>$PROJ_DIR$\..\App\hw_test.c</name>
+      <excluded>
+        <configuration>Debug</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\App\update.c</name>
@@ -1979,6 +1982,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\CAN\can.c</name>
+      <excluded>
+        <configuration>Debug</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\DIGITAL_LED\digital_led.c</name>
@@ -1997,6 +2003,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\SPI\spi.c</name>
+      <excluded>
+        <configuration>Debug</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\STMFLASH\stmflash.c</name>

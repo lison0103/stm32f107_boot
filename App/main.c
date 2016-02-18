@@ -11,88 +11,238 @@
 #include "digital_led.h"
 #include "ewdt.h"
 #include "update.h"
-#include "can.h"
-#include "hw_test.h"
-#include "spi.h"
 #include "iap.h"
 
-#ifdef GEC_CB_BOOTLOADER
 
-u32 timecounter = 0;
+#ifdef GEC_CB_MAIN
 
-#endif
-
-void can_test(void);
-void can1_can2_test(void);
-void hw_can_test(void);
-
-USBH_HOST  USB_Host;
-USB_OTG_CORE_HANDLE  USB_OTG_Core;
+#include "hw_test.h"
 
 extern u8 dis_data[3];
 
 u8 canbuf_send[8];
 
-u8 Master_Temp =0;
-
-void spi1_test(void)
-{  
-  
-    u8 t;
-    
-    SPI1_Init();
-
-//    SPI1_SetSpeed(SPI_BaudRatePrescaler_256);
-
-   while(1)
-   { 
-
-
-     
-#if 0
-       SPI1_ReadWriteByte(0x55); 
-       Master_Temp = SPI1_ReadWriteByte(0x00);
 #else
-       SPI1_WriteByte(0x66); 
-//       delay_ms(1);
-       Master_Temp = SPI1_ReadByte(0x00);
+
+u32 timecounter = 0;
+
 #endif
-       
-       delay_ms(10); 
-       
-       t++;
-       if(t == 50)
-       {
-             t = 0;
-             LED0 =! LED0;
-                             
-         
-       }
-       
 
-   }
 
+USBH_HOST  USB_Host;
+USB_OTG_CORE_HANDLE  USB_OTG_Core;
+
+ 
+/******************************************************************************* 
+*******************************************************************************/
+void Bsp_Init(void)
+{
+    
+        /** set system interrupt priority group 2 **/
+	NVIC_Configuration();
+        
+        /** delay init **/
+	delay_init();  
+        
+        /** LED init **/
+	LED_Init();
+
+        /** ewdt init **/
+        EWDT_Drv_pin_config();
+//        power_on_bsp_check();      
+
+        /** mem init **/	
+	mem_init();        
+        
+#ifdef GEC_CB_MAIN        
+
+        /** input and relay output test init **/
+        HW_TEST_INIT();
+        
+        /**usart init **/
+	uart_init(115200);		
+                	                	
+               
+        /** digital led init **/
+        digital_led_gpio_init();               
+        digital_led_check();
+
+
+        /** MB85RCXX init **/
+        eep_init();
+        if(MB85RCXX_Check())
+        {
+            printf("MB85RCXX_Check fail \n");
+          
+        }        
+
+        /** AT24CXX init **/
+        AT24CXX_Init();        
+        if(AT24CXX_Check())
+        {
+            printf("AT24CXX_Check fail \n");
+          
+        }       
+        
+#else       
+        
+        /** fatfs apply memory **/ 
+ 	if(exfuns_init())			
+        {
+            printf("fatfs memory apply fail \n");
+        
+        }
+             
+	/** USB HOST init **/
+  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks); 
+        
+#endif
+        
 }
 
-//void EXTI1_IRQHandler(void)
-//{
-//  if(EXTI_GetITStatus(EXTI_Line1) != RESET)
-//  {
-//      USB_Host.usr_cb->OverCurrentDetected();
-//      EXTI_ClearITPendingBit(EXTI_Line1);
-//  }
-//}
+/******************************************************************************* 
+*******************************************************************************/
+void Task_Loop(void)
+{
+  
+    u8 t;
+  
+  
+#ifdef GEC_CB_MAIN 
+  
+#if   0   
+    
+        /** fatfs apply memory **/ 
+ 	if(exfuns_init())			
+        {
+            printf("fatfs memory apply fail \n");
+        
+        }
+             
+	/** USB HOST init **/
+  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks);    
+    
+        while(1)
+        {
+              USBH_Process(&USB_OTG_Core, &USB_Host);
+              delay_ms(1);
+              t++;
+              
+              if(t==200)
+              {
+                  LED0=!LED0;
+                  t=0;
+                  
+                  EWDT_TOOGLE();
+              }
+        }
+#endif
+          
 
+#if   1
+                      
+        hw_can_test();
+               
+#endif        
+        
+#if   0        
+        //can测试
+//        can_test();
+//        can1_can2_test();
+        
+        
+        u8 len = 0;
+        
+        //485test
+        while(1)
+        {
+          
+//        USART3_SEND("ABCDE",6);
+                    
+          if(USART_RX_STA&0x8000)
+          {					   
+              len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+              
+              USART3_SEND(USART_RX_BUF,len);
+              USART_RX_STA=0;
+          }
+                
+          EWDT_TOOGLE();
+        }
+#endif   
+        
+        
+#else
+        
+        
+	while(1)
+	{
+          
+		USBH_Process(&USB_OTG_Core, &USB_Host);
+		delay_ms(1);
+		t++;
+                timecounter++;
+                
+                if(timecounter == 3000)
+                {
+                    LED0 = 1;
+                    LED1 = 1;
+                    iap_load_app(FLASH_APP1_ADDR);                               
+                }
+ 
+		if(t==200)
+		{
+
+			LED0=!LED0;
+			t=0;
+                        
+                        EWDT_TOOGLE();
+		}
+	}        
+          
+#endif
+        
+}
+
+/******************************************************************************* 
+*******************************************************************************/
+int main(void)
+{        
+ 	        
+        Bsp_Init();
+        Task_Loop();
+        
+}
+
+
+
+/******************************************************************************* 
 //用户测试主程序
 //返回值:0,正常
 //       1,有问题
+*******************************************************************************/
 u8 USH_User_App(void)
 { 
 	u32 total,free;
 	u8 res=0;
 	printf("设备连接成功!.\n");	 
         
-        LED0=1;
+        LED0 = 1;
+
+#ifdef GEC_CB_BOOTLOADER
+
+        timecounter = 0;
+        
+        if(!isFileExist("0:GEC-CB.bin"))
+        {
+            UpdateApp("0:GEC-CB.bin");
+        }
+        
+//        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_OTG_FS, DISABLE);
+        LED1 = 1;
+        iap_load_app(FLASH_APP1_ADDR);
+        
+#else 
         
 	res=exf_getfree("0:",&total,&free);
 	if(res==0)
@@ -104,19 +254,7 @@ u8 USH_User_App(void)
 		printf("U Disk  Free Size:  %d   MB\n",free); 	    	
 	} 
 
-#ifdef GEC_CB_BOOTLOADER
-
-        timecounter = 0;
-        
-        if(!isFileExist("0:GEC-CB.bin"))
-        {
-            UpdateApp("0:GEC-CB.bin");
-        }
-        
-        INTX_DISABLE();
-        iap_load_app(FLASH_APP1_ADDR);
-        
-#else        
+       
         if(isFileExist("0:123.txt"))
         {
             printf("文件不存在\n");
@@ -157,322 +295,4 @@ u8 USH_User_App(void)
 	printf("设备连接中...\n");
 
 	return res;
-} 
-
-
-int main(void)
-{        
-
-#ifdef GEC_CB_MAIN  
-   SCB->VTOR = FLASH_BASE | 0x10000;
-#endif
-	u8 t;
-        RCC_ClocksTypeDef RCC_Clocks;
-        //设置系统中断优先级分组2
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-        
-        delay_init();
-        
-        //外部看门狗初始化
-        EWDT_Drv_pin_config();
-//        power_on_bsp_check(); 
-        
-        //初始化串口波特率为115200
-	uart_init(115200);		
-        
-        //初始化与LED连接的硬件接口
-	LED_Init();		
-        
-        //初始化USMART	
-//	usmart_dev.init(84); 	 
-               
-        //初始化内部内存池	
-	mem_init();	
-               
-        //数码管初始化
-        digital_led_gpio_init();               
-        digital_led_check();
-
-
-        //MB85RCXX初始化
-        eep_init();
-        if(MB85RCXX_Check())
-        {
-            printf("MB85RCXX_Check失败\n");
-          
-        }        
-
-        //AT24CXX初始化
-        AT24CXX_Init();        
-        if(AT24CXX_Check())
-        {
-            printf("AT24CXX_Check失败\n");
-          
-        }
-//RCC_GetClocksFreq(&RCC_Clocks); 
-        
-#ifdef GEC_CB_BOOTLOADER
-        
-        //为fatfs相关变量申请内存 
- 	if(exfuns_init())			
-        {
-            printf("fatfs内存申请失败\n");
-        
-        }
-        
-//        //挂载U盘  
-//  	f_mount(fs[0],"0:",1); 	
-//     	 RCC_GetClocksFreq(&RCC_Clocks);      
-	//初始化USB主机
-  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks);  
-	while(1)
-	{
-		USBH_Process(&USB_OTG_Core, &USB_Host);
-		delay_ms(1);
-		t++;
-                
-#ifdef GEC_CB_BOOTLOADER
-
-                timecounter++;
-                
-                if(timecounter == 3000)
-                {
-                    INTX_DISABLE();
-                    iap_load_app(FLASH_APP1_ADDR);                               
-                }
-#endif  
-		if(t==200)
-		{
-//                        RCC_GetClocksFreq(&RCC_Clocks); 
-			LED0=!LED0;
-			t=0;
-                        
-                        EWDT_TOOGLE();
-		}
-	}	
-#else
-//          spi1_test();
-#if 0
-        HW_TEST_INIT();
-//        HW_TEST();
-        
-        GRL1 = 0;
-        GRL2 = 0;
-        GRL3 = 0;
-        GRL4 = 0;
-        GRL5 = 0;
-        GRL6 = 0;
-        GRL7 = 0;
-        GRL8 = 0;
-        GRL9 = 0;
-        
-        GSFR1 = 0;
-        GSFR2 = 0;
-        GSFR3 = 0;
-        GSFR4 = 0;
-        
-        TRANS_CTRL1 = 0;
-        TRANS_CTRL2 = 0;
-              
-        hw_can_test();
-               
-
-#else        
-        //can测试
-//        can_test();
-//        can1_can2_test();
-        u8 len = 0;
-        //485test
-        while(1)
-        {
-          
-//        USART3_SEND("ABCDE",6);
-                    
-          if(USART_RX_STA&0x8000)
-          {					   
-              len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
-              
-              USART3_SEND(USART_RX_BUF,len);
-              USART_RX_STA=0;
-          }
-                
-          EWDT_TOOGLE();
-        }
-#endif   
-        
-#endif
-        
-}
-
-
-
-
-#define USE_CAN CAN1
-
-
-void can_test(void)
- {	 
-	u8 i=0,t=0;
-	u8 cnt=0;
-	u8 canbuf_send[8],canbuf_recv[8];
-	u8 res;
-        u8 can_rcv;
-	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
-
-	 	
-        CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,mode);
-	CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
-
-	
- 	while(1)
-	{
-
-	
-                for(i=0;i<8;i++)
-                {
-                  canbuf_send[i]=cnt+i;//填充发送缓冲区
-                  
-                  printf("%s",canbuf_send[i]);	//显示数据
-                }
-                
-                res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
-                if(res)printf("Failed");		//提示发送失败
-                else printf("OK    ");	 		//提示发送成功								   
-                
-                can_rcv=Can_Receive_Msg(USE_CAN,canbuf_recv);
-		if(can_rcv)//接收到有数据
-		{			
-			
- 			for(i=0;i<can_rcv;i++)
-			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
- 			}
-		}
-		t++; 
-		delay_ms(10);
-		if(t==20)
-		{
-			LED1=!LED1;//提示系统正在运行	
-			t=0;
-			cnt++;
-			printf("%d",cnt);	//显示数据
-		}		   
-	}
-}
-
-void can1_can2_test(void)
- {	 
-	u8 i=0,t=0;
-	u8 cnt=0;
-	u8 canbuf_send[8],canbuf_recv[8];
-	u8 res;
-        u8 can_rcv;
-	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
-
-	 	
-   
-	CAN_Mode_Init(CAN1,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
-        CAN_Mode_Init(CAN2,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
-
-	
- 	while(1)
-	{
-                //CAN1发送
-		if(mode==CAN_Mode_Normal)
-		{
-			for(i=0;i<8;i++)
-			{
-				canbuf_send[i]=cnt+i;//填充发送缓冲区
-
-				printf("%s",canbuf_send[i]);	//显示数据
- 			}
-			res=Can_Send_Msg(CAN1,canbuf_send,8);//发送8个字节 
-			if(res)
-                          printf("Failed");		//提示发送失败
-			else 
-                          printf("OK    ");	 		//提示发送成功								   
-		}
-
-                //CAN2接收  
-		can_rcv=Can_Receive_Msg(CAN2,canbuf_recv);
-		if(can_rcv)//接收到有数据
-		{			
-			
- 			for(i=0;i<can_rcv;i++)
-			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
- 			}
-		}
-                
-                
-		t++; 
-		delay_ms(10);
-		if(t==20)
-		{
-			LED1=!LED1;//提示系统正在运行	
-			t=0;
-			cnt++;
-			printf("%d",cnt);	//显示数据
-		}		   
-	}
-}
-
-void hw_can_test(void)
- {	 
-	u8 i=0,t=0;
-	u8 canbuf_recv[8];
-	u8 res;
-        u8 can_rcv;
-	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
-        u32 aa = 0;
-	 	
-   
-	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
-//        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
-
-	
- 	while(1)
-	{
-          
-                aa++;
-          
-                  //CAN1发送
-          
-                  HW_TEST();
-                  
-                  if(aa == 100)
-                  {
-                  
-                        res=Can_Send_Msg(CAN1,canbuf_send,2);//发送2个字节 
-                        
-                        if(res)
-                          printf("Failed");		//提示发送失败
-                        else 
-                          printf("OK    ");	 		//提示发送成功	
-                        
-                        LED0=!LED0;
-                        aa = 0;
-                  }
-
-                //CAN2接收  
-		can_rcv=Can_Receive_Msg(CAN1,canbuf_recv);
-		if(can_rcv)//接收到有数据
-		{			
-			
- 			for(i=0;i<can_rcv;i++)
-			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
- 			}
-		}
-                
-                
-		t++; 
-		delay_ms(10);
-		if(t==50)
-		{
-			LED1=!LED1;//提示系统正在运行	
-                        EWDT_TOOGLE();
-			t=0;
-		}		   
-	}
 }
