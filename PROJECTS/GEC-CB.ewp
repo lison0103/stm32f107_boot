@@ -1909,6 +1909,12 @@
         <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\croutine.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\deprecated_definitions.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\event_groups.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</name>
       </file>
       <file>
@@ -1953,6 +1959,9 @@
     </group>
     <file>
       <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\croutine.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\event_groups.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\list.c</name>
