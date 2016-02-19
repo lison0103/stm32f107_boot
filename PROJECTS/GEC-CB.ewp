@@ -1964,6 +1964,9 @@
       <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\event_groups.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\freertos_timers.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\list.c</name>
     </file>
     <file>
@@ -1971,9 +1974,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\tasks.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\timers.c</name>
     </file>
   </group>
   <group>

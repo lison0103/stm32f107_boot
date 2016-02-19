@@ -78,7 +78,7 @@ task.h is included from an application file. */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-#include "timers.h"
+#include "freertos_timers.h"
 
 #if ( INCLUDE_xTimerPendFunctionCall == 1 ) && ( configUSE_TIMERS == 0 )
 	#error configUSE_TIMERS must be set to 1 to make the xTimerPendFunctionCall() function available.

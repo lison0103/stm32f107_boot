@@ -79,7 +79,7 @@ task.h is included from an application file. */
 /* FreeRTOS includes. */
 #include "FreeRTOS.h"
 #include "task.h"
-#include "timers.h"
+#include "freertos_timers.h"
 #include "StackMacros.h"
 
 /* Lint e961 and e750 are suppressed as a MISRA exception justified because the
