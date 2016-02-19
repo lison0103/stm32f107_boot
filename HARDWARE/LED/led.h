@@ -1,6 +1,6 @@
 #ifndef _LED_H
 #define _LED_H
-#include "sys.h"
+#include "lsys.h"
 
 
 //LED¶Ë¿Ú¶¨Òå

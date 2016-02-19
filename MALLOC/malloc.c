@@ -17,7 +17,7 @@ const u32 memsize=MEM_MAX_SIZE;					//内存总大小
 //内存管理控制器
 struct _m_mallco_dev mallco_dev=
 {
-	mem_init,			//内存初始化
+	mmem_init,			//内存初始化
 	mem_perused,		//内存使用率
 	membase,			//内存池
 	memmapbase,			//内存管理状态表
@@ -44,7 +44,7 @@ void mymemset(void *s,u8 c,u32 count)
     while(count--)*xs++=c;  
 }	   
 //内存管理初始化  
-void mem_init(void)  
+void mmem_init(void)  
 {  
     mymemset(mallco_dev.memmap, 0,memtblsize*2);//内存状态表数据清零  
 	mymemset(mallco_dev.membase, 0,memsize);	//内存池所有数据清零  
@@ -66,7 +66,7 @@ u8 mem_perused(void)
 //memx:所属内存块
 //size:要分配的内存大小(字节)
 //返回值:0XFFFFFFFF,代表错误;其他,内存偏移地址 
-u32 mem_malloc(u32 size)  
+u32 mmem_malloc(u32 size)  
 {  
     signed long offset=0;  
     u16 nmemb;	//需要的内存块数  
@@ -94,7 +94,7 @@ u32 mem_malloc(u32 size)
 //释放内存(内部调用) 
 //offset:内存地址偏移
 //返回值:0,释放成功;1,释放失败;  
-u8 mem_free(u32 offset)  
+u8 mmem_free(u32 offset)  
 {  
     int i;  
     if(!mallco_dev.memrdy)//未初始化,先执行初始化
@@ -120,7 +120,7 @@ void myfree(void *ptr)
 	u32 offset;  
     if(ptr==NULL)return;//地址为0.  
  	offset=(u32)ptr-(u32)mallco_dev.membase;  
-    mem_free(offset);	//释放内存     
+    mmem_free(offset);	//释放内存     
 }  
 //分配内存(外部调用)
 //size:内存大小(字节)
@@ -128,7 +128,7 @@ void myfree(void *ptr)
 void *mymalloc(u32 size)  
 {  
     u32 offset;  									      
-	offset=mem_malloc(size);  	   				   
+	offset=mmem_malloc(size);  	   				   
     if(offset==0XFFFFFFFF)return NULL;  
     else return (void*)((u32)mallco_dev.membase+offset);  
 }  
@@ -139,7 +139,7 @@ void *mymalloc(u32 size)
 void *myrealloc(void *ptr,u32 size)  
 {  
     u32 offset;  
-    offset=mem_malloc(size);  
+    offset=mmem_malloc(size);  
     if(offset==0XFFFFFFFF)return NULL;     
     else  
     {  									   

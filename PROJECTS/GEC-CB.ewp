@@ -303,6 +303,15 @@
           <state>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Class\MSC\inc</state>
           <state>$PROJ_DIR$\..\Libraries\STM32_USB_HOST_Library\Core\inc</state>
           <state>$PROJ_DIR$\..\Libraries\STM32_USB_OTG_Driver\inc</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\source\portable\IAR\ARM_CM3</state>
+          <state>$PROJ_DIR$\..\Libraries\STM32F107_ETH_Driver\inc</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\include\</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\include\lwip</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\include\netif</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\include\ipv4</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107\FreeRTOS\</state>
           <state>$PROJ_DIR$\..\App</state>
           <state>$PROJ_DIR$\..\FATFS\src</state>
           <state>$PROJ_DIR$\..\FATFS\exfuns</state>
@@ -318,6 +327,7 @@
           <state>$PROJ_DIR$\..\HARDWARE\SPI</state>
           <state>$PROJ_DIR$\..\IAP</state>
           <state>$PROJ_DIR$\..\MALLOC</state>
+          <state>$PROJ_DIR$\..\ETHERNET</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -566,7 +576,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state></state>
+          <state>$PROJ_DIR$\..\ETHERNET</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -1861,6 +1871,9 @@
   <group>
     <name>App</name>
     <file>
+      <name>$PROJ_DIR$\..\App\freertos_lwip.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\hw_test.c</name>
     </file>
     <file>
@@ -1889,6 +1902,72 @@
     </file>
   </group>
   <group>
+    <name>FreeRTOS</name>
+    <group>
+      <name>inc</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\croutine.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\FreeRTOS.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\list.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\mpu_wrappers.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\portable.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\projdefs.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\queue.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\semphr.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\StackMacros.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\task.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\include\timers.h</name>
+      </file>
+    </group>
+    <group>
+      <name>portable</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\portable\MemMang\heap_4.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM3\port.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM3\portasm.s</name>
+      </file>
+    </group>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\croutine.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\list.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\queue.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\tasks.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Libraries\Third_Party\FreeRTOS\Source\timers.c</name>
+    </file>
+  </group>
+  <group>
     <name>FWLib</name>
     <group>
       <name>CMSIS</name>
@@ -1903,6 +1982,12 @@
       <name>SRC</name>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\misc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32F107_ETH_Driver\src\stm32f107_eth.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\STM32F107_ETH_Driver\inc\stm32f107_eth.h</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
@@ -2009,6 +2094,126 @@
     </file>
   </group>
   <group>
+    <name>LwIP</name>
+    <group>
+      <name>Api</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\api_lib.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\api_msg.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\err.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\netbuf.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\netdb.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\netifapi.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\sockets.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\api\tcpip.c</name>
+      </file>
+    </group>
+    <group>
+      <name>Core</name>
+      <group>
+        <name>IPV4</name>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\autoip.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\icmp.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\igmp.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\inet.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\inet_chksum.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\ip.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\ip_addr.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\ipv4\ip_frag.c</name>
+        </file>
+      </group>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\dhcp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\dns.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\init.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\mem.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\memp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\netif.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\pbuf.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\raw.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\stats.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\sys.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\tcp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\tcp_in.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\tcp_out.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\core\udp.c</name>
+      </file>
+    </group>
+    <group>
+      <name>Netif</name>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\src\netif\etharp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107\FreeRTOS\ethernetif.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107\FreeRTOS\ethernetif.h</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107\FreeRTOS\sys_arch.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\lwip_v1.3.2\port\STM32F107\FreeRTOS\sys_arch.h</name>
+      </file>
+    </group>
+  </group>
+  <group>
     <name>MALLOC</name>
     <file>
       <name>$PROJ_DIR$\..\MALLOC\malloc.c</name>
@@ -2020,7 +2225,7 @@
       <name>$PROJ_DIR$\..\SYSTEM\delay.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\SYSTEM\sys.c</name>
+      <name>$PROJ_DIR$\..\SYSTEM\lsys.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\SYSTEM\usart.c</name>
@@ -2074,7 +2279,22 @@
   <group>
     <name>USER</name>
     <file>
+      <name>$PROJ_DIR$\..\ETHERNET\FreeRTOSConfig.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ETHERNET\lwipopts.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\main.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ETHERNET\netconf.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ETHERNET\stm32_eth_bsp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ETHERNET\stm32f107_eth_conf.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\stm32f10x_conf.h</name>

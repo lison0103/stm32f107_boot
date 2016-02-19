@@ -1,6 +1,6 @@
 #ifndef __IAP_H__
 #define __IAP_H__
-#include "sys.h"  
+#include "lsys.h"  
 	
 
 typedef  void (*iapfun)(void);				//定义一个函数类型的参数.   

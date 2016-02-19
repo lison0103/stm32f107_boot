@@ -1,6 +1,6 @@
 #ifndef __MYIIC_H
 #define __MYIIC_H
-#include "sys.h"
+#include "lsys.h"
 	  
 
    	   		   

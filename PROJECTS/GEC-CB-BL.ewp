@@ -2029,7 +2029,7 @@
       <name>$PROJ_DIR$\..\SYSTEM\delay.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\SYSTEM\sys.c</name>
+      <name>$PROJ_DIR$\..\SYSTEM\lsys.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\SYSTEM\usart.c</name>

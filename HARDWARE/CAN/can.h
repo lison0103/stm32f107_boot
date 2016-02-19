@@ -1,6 +1,6 @@
 #ifndef __CAN_H
 #define __CAN_H	 
-#include "sys.h"	    
+#include "lsys.h"	    
  
  
 //CAN接收RX0中断使能

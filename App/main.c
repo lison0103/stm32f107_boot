@@ -1,4 +1,4 @@
-#include "sys.h"
+#include "lsys.h"
 #include "delay.h"  
 #include "usart.h"   
 #include "led.h"  
@@ -14,13 +14,16 @@
 #include "iap.h"
 
 
+
 #ifdef GEC_CB_MAIN
 
 #include "hw_test.h"
+#include "freertos_lwip.h" 
 
 extern u8 dis_data[3];
 
 u8 canbuf_send[8];
+
 
 #else
 
@@ -32,7 +35,8 @@ u32 timecounter = 0;
 USBH_HOST  USB_Host;
 USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
- 
+
+
 /******************************************************************************* 
 *******************************************************************************/
 void Bsp_Init(void)
@@ -52,7 +56,7 @@ void Bsp_Init(void)
 //        power_on_bsp_check();      
 
         /** mem init **/	
-	mem_init();        
+	mmem_init();        
         
 #ifdef GEC_CB_MAIN        
 
@@ -65,7 +69,7 @@ void Bsp_Init(void)
                
         /** digital led init **/
         digital_led_gpio_init();               
-        digital_led_check();
+//        digital_led_check();
 
 
         /** MB85RCXX init **/
@@ -109,7 +113,23 @@ void Task_Loop(void)
   
   
 #ifdef GEC_CB_MAIN 
-  
+
+#if   1
+
+	ETH_BSP_Config();
+	/* Initilaize the LwIP stack */
+	LwIP_Init();
+
+	xTaskCreate(led0_task, "LED0", configMINIMAL_STACK_SIZE, NULL, LED0_TASK_PRIO, NULL);
+        xTaskCreate(led1_task, "LED1", configMINIMAL_STACK_SIZE, NULL, LED1_TASK_PRIO, NULL);
+	xTaskCreate(TCPClient, "TCP",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
+
+	/* Start scheduler */
+	vTaskStartScheduler();
+
+
+#endif    
+    
 #if   0   
     
         /** fatfs apply memory **/ 
@@ -296,3 +316,5 @@ u8 USH_User_App(void)
 
 	return res;
 }
+
+
