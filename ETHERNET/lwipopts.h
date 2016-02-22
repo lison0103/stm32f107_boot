@@ -3,21 +3,27 @@
   * @file    lwipopts.h
   * @author  MCD Application Team
   * @version V1.1.0
-  * @date    07-October-2011
+  * @date    31-July-2013
   * @brief   lwIP Options Configuration.
-  *          This file is based on Utilities\lwip_v1.3.2\src\include\lwip\opt.h 
-  *          and contains the lwIP configuration for the STM32F2x7 demonstration.
+  *          This file is based on Utilities\lwip_v1.4.1\src\include\lwip\opt.h 
+  *          and contains the lwIP configuration for the STM32F4x7 demonstration.
   ******************************************************************************
   * @attention
   *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   *
-  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
   ******************************************************************************
   */
 
@@ -34,7 +40,7 @@
 #define ETHARP_TRUST_IP_MAC     0
 #define IP_REASSEMBLY           0
 #define IP_FRAG                 0
-#define ARP_QUEUEING            1//0
+#define ARP_QUEUEING            1
 #define TCP_LISTEN_BACKLOG      1
 
 /**
@@ -51,7 +57,7 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (5*1024)
+#define MEM_SIZE                (6*1024)
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
@@ -99,7 +105,7 @@ a lot of data that needs to be copied, this should be set high. */
 /*  TCP_SND_QUEUELEN: TCP sender buffer space (pbufs). This must be at least
   as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work. */
 
-#define TCP_SND_QUEUELEN        (2* TCP_SND_BUF/TCP_MSS)
+#define TCP_SND_QUEUELEN        (4* TCP_SND_BUF/TCP_MSS)
 
 /* TCP receive window. */
 #define TCP_WND                 (2*TCP_MSS)
@@ -125,6 +131,11 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_STATS 0
 #define LWIP_PROVIDE_ERRNO 1
 
+/* ---------- link callback options ---------- */
+/* LWIP_NETIF_LINK_CALLBACK==1: Support a callback function from an interface
+ * whenever the link changes (i.e., link down)
+ */
+#define LWIP_NETIF_LINK_CALLBACK        0
 
 /*
    --------------------------------------
@@ -153,6 +164,8 @@ The STM32F2x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
   #define CHECKSUM_CHECK_UDP              0
   /* CHECKSUM_CHECK_TCP==0: Check checksums by hardware for incoming TCP packets.*/
   #define CHECKSUM_CHECK_TCP              0
+  /* CHECKSUM_CHECK_ICMP==0: Check checksums by hardware for incoming ICMP packets.*/
+  #define CHECKSUM_GEN_ICMP               0
 #else
   /* CHECKSUM_GEN_IP==1: Generate checksums in software for outgoing IP packets.*/
   #define CHECKSUM_GEN_IP                 1
@@ -166,6 +179,8 @@ The STM32F2x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
   #define CHECKSUM_CHECK_UDP              1
   /* CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.*/
   #define CHECKSUM_CHECK_TCP              1
+  /* CHECKSUM_CHECK_ICMP==1: Check checksums by hardware for incoming ICMP packets.*/
+  #define CHECKSUM_GEN_ICMP               1
 #endif
 
 
@@ -194,42 +209,8 @@ The STM32F2x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
    ---------- DEBUG options ----------
    -----------------------------------
 */
-//µ÷ÊÔÐÅÏ¢
-#define LWIP_DEBUG                      0
 
-#ifdef LWIP_DEBUG
-
-#define LWIP_DBG_MIN_LEVEL         	0
-#define ETHARP_DEBUG                LWIP_DBG_ON
-#define PPP_DEBUG                  	LWIP_DBG_OFF
-#define MEM_DEBUG                  	LWIP_DBG_OFF
-#define MEMP_DEBUG                 	LWIP_DBG_OFF
-#define PBUF_DEBUG                 	LWIP_DBG_OFF
-#define API_LIB_DEBUG              	LWIP_DBG_OFF
-#define API_MSG_DEBUG              	LWIP_DBG_OFF
-#define TCPIP_DEBUG                	LWIP_DBG_OFF
-#define NETIF_DEBUG                	LWIP_DBG_OFF
-#define SOCKETS_DEBUG              	LWIP_DBG_OFF
-#define DNS_DEBUG                  	LWIP_DBG_OFF
-#define AUTOIP_DEBUG               	LWIP_DBG_OFF
-#define DHCP_DEBUG                 	LWIP_DBG_OFF
-#define IP_DEBUG                   	LWIP_DBG_OFF
-#define IP_REASS_DEBUG             	LWIP_DBG_OFF
-#define ICMP_DEBUG                 	LWIP_DBG_OFF
-#define IGMP_DEBUG                 	LWIP_DBG_OFF
-#define UDP_DEBUG                  	LWIP_DBG_OFF
-#define TCP_DEBUG                  	LWIP_DBG_OFF
-#define TCP_INPUT_DEBUG            	LWIP_DBG_OFF
-#define TCP_OUTPUT_DEBUG           	LWIP_DBG_OFF
-#define TCP_RTO_DEBUG              	LWIP_DBG_OFF
-#define TCP_CWND_DEBUG             	LWIP_DBG_OFF
-#define TCP_WND_DEBUG              	LWIP_DBG_OFF
-#define TCP_FR_DEBUG               	LWIP_DBG_OFF
-#define TCP_QLEN_DEBUG             	LWIP_DBG_OFF
-#define TCP_RST_DEBUG              	LWIP_DBG_OFF
-#endif
-
-#define LWIP_DBG_TYPES_ON         (LWIP_DBG_ON|LWIP_DBG_TRACE|LWIP_DBG_STATE|LWIP_DBG_FRESH|LWIP_DBG_HALT)
+//#define LWIP_DEBUG                      0
 
 
 /*
@@ -238,6 +219,7 @@ The STM32F2x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
    ---------------------------------
 */
 
+#define TCPIP_THREAD_NAME              "TCP/IP"
 #define TCPIP_THREAD_STACKSIZE          1000
 #define TCPIP_MBOX_SIZE                 5
 #define DEFAULT_UDP_RECVMBOX_SIZE       2000
@@ -245,6 +227,7 @@ The STM32F2x7 allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define DEFAULT_ACCEPTMBOX_SIZE         2000
 #define DEFAULT_THREAD_STACKSIZE        500
 #define TCPIP_THREAD_PRIO               (configMAX_PRIORITIES - 2)
+#define LWIP_COMPAT_MUTEX               1
 
 
 

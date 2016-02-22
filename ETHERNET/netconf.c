@@ -1,4 +1,29 @@
-
+/**
+  ******************************************************************************
+  * @file    netconf.c
+  * @author  MCD Application Team
+  * @version V1.1.0
+  * @date    31-July-2013
+  * @brief   Network connection configuration
+  ******************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
+  *
+  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * You may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at:
+  *
+  *        http://www.st.com/software_license_agreement_liberty_v2
+  *
+  * Unless required by applicable law or agreed to in writing, software 
+  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
@@ -22,20 +47,16 @@
 
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum
-{
-  DHCP_START=0,
-  DHCP_WAIT_ADDRESS,
-  DHCP_ADDRESS_ASSIGNED,
-  DHCP_TIMEOUT
-}
-DHCP_State_TypeDef;
 /* Private define ------------------------------------------------------------*/
-#define MAX_DHCP_TRIES 5
+#define MAX_DHCP_TRIES 4
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 struct netif xnetif; /* network interface structure */
+extern __IO uint32_t  EthStatus;
+#ifdef USE_DHCP
+__IO uint8_t DHCP_state;
+#endif /* USE_DHCP */
 
 /* Private functions ---------------------------------------------------------*/
 /**
@@ -48,8 +69,8 @@ void LwIP_Init(void)
   struct ip_addr ipaddr;
   struct ip_addr netmask;
   struct ip_addr gw;
-#ifndef USE_DHCP
-  uint8_t iptab[4];
+#ifdef USE_DHCP 
+  uint8_t iptab[4] = {0};
   uint8_t iptxt[20];
 #endif
   /* Create tcp_ip stack thread */
@@ -64,39 +85,68 @@ void LwIP_Init(void)
   IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
   IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1 , NETMASK_ADDR2, NETMASK_ADDR3);
   IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-#ifdef USE_LCD
-  iptab[0] = IP_ADDR3;
-  iptab[1] = IP_ADDR2;
-  iptab[2] = IP_ADDR1;
-  iptab[3] = IP_ADDR0;
-
-  sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
-
-  LCD_DisplayStringLine(Line8, (uint8_t*)"  Static IP address   ");
-  LCD_DisplayStringLine(Line9, iptxt);
-#endif
-#endif
-
+#endif  
+  
   /* - netif_add(struct netif *netif, struct ip_addr *ipaddr,
-            struct ip_addr *netmask, struct ip_addr *gw,
-            void *state, err_t (* init)(struct netif *netif),
-            err_t (* input)(struct pbuf *p, struct netif *netif))
+  struct ip_addr *netmask, struct ip_addr *gw,
+  void *state, err_t (* init)(struct netif *netif),
+  err_t (* input)(struct pbuf *p, struct netif *netif))
 
-   Adds your network interface to the netif_list. Allocate a struct
+  Adds your network interface to the netif_list. Allocate a struct
   netif and pass a pointer to this structure as the first argument.
   Give pointers to cleared ip_addr structures when using DHCP,
   or fill them with sane numbers otherwise. The state pointer may be NULL.
 
   The init function pointer must point to a initialization function for
   your ethernet netif interface. The following code illustrates it's use.*/
-
   netif_add(&xnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &tcpip_input);
 
- /*  Registers the default network interface. */
+  /*  Registers the default network interface.*/
   netif_set_default(&xnetif);
 
- /*  When the netif is fully configured this function must be called.*/
-  netif_set_up(&xnetif);
+//  if (EthStatus == (ETH_INIT_FLAG | ETH_LINK_FLAG))
+//  { 
+//    /* Set Ethernet link flag */
+//    xnetif.flags |= NETIF_FLAG_LINK_UP;
+
+    /* When the netif is fully configured this function must be called.*/
+    netif_set_up(&xnetif);
+//#ifdef USE_DHCP
+//    DHCP_state = DHCP_START;
+//#else
+//#ifdef USE_LCD
+//  iptab[0] = IP_ADDR3;
+//  iptab[1] = IP_ADDR2;
+//  iptab[2] = IP_ADDR1;
+//  iptab[3] = IP_ADDR0;
+//
+//  sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
+//
+//  LCD_DisplayStringLine(Line8, (uint8_t*)"  Static IP address   ");
+//  LCD_DisplayStringLine(Line9, iptxt);
+//#endif
+//#endif /* USE_DHCP */
+//  }
+//  else
+//  {
+//    /*  When the netif link is down this function must be called.*/
+//    netif_set_down(&xnetif);
+//#ifdef USE_DHCP
+//    DHCP_state = DHCP_LINK_DOWN;
+//#endif /* USE_DHCP */
+//    /* Set the LCD Text Color */
+//    LCD_SetTextColor(Red);
+//
+//    /* Display message on the LCD */
+//    LCD_DisplayStringLine(Line5, (uint8_t*)"  Network Cable is  ");
+//    LCD_DisplayStringLine(Line6, (uint8_t*)"    not connected   ");
+//    
+//    /* Set the LCD Text Color */
+//    LCD_SetTextColor(White);
+//  }
+//
+//  /* Set the link callback function, this function is called on change of link status*/
+//  netif_set_link_callback(&xnetif, ETH_link_callback);
 }
 
 #ifdef USE_DHCP
@@ -111,11 +161,9 @@ void LwIP_DHCP_task(void * pvParameters)
   struct ip_addr netmask;
   struct ip_addr gw;
   uint32_t IPaddress;
-  uint8_t iptab[4];
+  uint8_t iptab[4] = {0};
   uint8_t iptxt[20];
-  uint8_t DHCP_state;
-  DHCP_state = DHCP_START;
-
+  
   for (;;)
   {
     switch (DHCP_state)
@@ -126,6 +174,10 @@ void LwIP_DHCP_task(void * pvParameters)
         IPaddress = 0;
         DHCP_state = DHCP_WAIT_ADDRESS;
 #ifdef USE_LCD
+        LCD_SetTextColor(White);
+        LCD_ClearLine(Line4);
+        LCD_ClearLine(Line5);
+        LCD_ClearLine(Line6);
         LCD_DisplayStringLine(Line4, (uint8_t*)"     Looking for    ");
         LCD_DisplayStringLine(Line5, (uint8_t*)"     DHCP server    ");
         LCD_DisplayStringLine(Line6, (uint8_t*)"     please wait... ");
@@ -153,6 +205,7 @@ void LwIP_DHCP_task(void * pvParameters)
 
           sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
 
+          LCD_SetTextColor(White);
           LCD_ClearLine(Line4);
           LCD_ClearLine(Line5);
           LCD_ClearLine(Line6);
@@ -163,7 +216,6 @@ void LwIP_DHCP_task(void * pvParameters)
 #endif
           /* end of DHCP process: LED1 stays ON*/
           STM_EVAL_LEDOn(LED1);
-          vTaskDelete(NULL);
         }
         else
         {
@@ -181,9 +233,7 @@ void LwIP_DHCP_task(void * pvParameters)
             IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
             netif_set_addr(&xnetif, &ipaddr , &netmask, &gw);
 
-#ifdef USE_LCD
-            LCD_DisplayStringLine(Line7, (uint8_t*)"    DHCP timeout    ");
-
+#ifdef USE_LCD   
             iptab[0] = IP_ADDR3;
             iptab[1] = IP_ADDR2;
             iptab[2] = IP_ADDR1;
@@ -191,15 +241,17 @@ void LwIP_DHCP_task(void * pvParameters)
 
             sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
 
+            LCD_SetTextColor(White);
             LCD_ClearLine(Line4);
             LCD_ClearLine(Line5);
             LCD_ClearLine(Line6);
+            LCD_ClearLine(Line7);
+            LCD_DisplayStringLine(Line7, (uint8_t*)"    DHCP timeout    ");
             LCD_DisplayStringLine(Line8, (uint8_t*)"  Static IP address   ");
             LCD_DisplayStringLine(Line9, iptxt);
 #endif
             /* end of DHCP process: LED1 stays ON*/
             STM_EVAL_LEDOn(LED1);
-            vTaskDelete(NULL);
           }
         }
       }
@@ -207,9 +259,7 @@ void LwIP_DHCP_task(void * pvParameters)
 
       default: break;
     }
-
-    /* Toggle LED1 */
-    STM_EVAL_LEDToggle(LED1);
+    
     /* wait 250 ms */
     vTaskDelay(250);
   }
