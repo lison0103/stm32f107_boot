@@ -40,38 +40,26 @@ void HW_TEST_INIT(void)
       //output
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15; 
       GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+      GPIO_ResetBits(GPIOA, GPIO_Pin_15);
       GPIO_Init(GPIOA , &GPIO_InitStruct);  
+      
             
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7 | GPIO_Pin_8; 
+      GPIO_ResetBits(GPIOB, GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7 | GPIO_Pin_8);
       GPIO_Init(GPIOB , &GPIO_InitStruct);  
       
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_12; 
+      GPIO_ResetBits(GPIOC, GPIO_Pin_12);
       GPIO_Init(GPIOC , &GPIO_InitStruct);        
   
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7; 
+      GPIO_ResetBits(GPIOD, GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
       GPIO_Init(GPIOD , &GPIO_InitStruct);  
       
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6; 
+      GPIO_ResetBits(GPIOE, GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6);
       GPIO_Init(GPIOE , &GPIO_InitStruct);  
 
-      /** relay output init **/
-        GRL1 = 0;
-        GRL2 = 0;
-        GRL3 = 0;
-        GRL4 = 0;
-        GRL5 = 0;
-        GRL6 = 0;
-        GRL7 = 0;
-        GRL8 = 0;
-        GRL9 = 0;
-        
-        GSFR1 = 0;
-        GSFR2 = 0;
-        GSFR3 = 0;
-        GSFR4 = 0;
-        
-        TRANS_CTRL1 = 0;
-        TRANS_CTRL2 = 0;
 }
 
 u8 sflag,t,inputnum = 0;
@@ -493,7 +481,7 @@ void can_test(void)
                 {
                   canbuf_send[i]=cnt+i;//填充发送缓冲区
                   
-                  printf("%s",canbuf_send[i]);	//显示数据
+//                  printf("%s",canbuf_send[i]);	//显示数据
                 }
                 
                 res=Can_Send_Msg(USE_CAN,canbuf_send,8);//发送8个字节 
@@ -506,7 +494,7 @@ void can_test(void)
 			
  			for(i=0;i<can_rcv;i++)
 			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
+//                              printf("%s",canbuf_recv[i]);	//显示数据
  			}
 		}
 		t++; 
@@ -547,7 +535,7 @@ void can1_can2_test(void)
 			{
 				canbuf_send[i]=cnt+i;//填充发送缓冲区
 
-				printf("%s",canbuf_send[i]);	//显示数据
+//				printf("%s",canbuf_send[i]);	//显示数据
  			}
 			res=Can_Send_Msg(CAN1,canbuf_send,8);//发送8个字节 
 			if(res)
@@ -563,7 +551,7 @@ void can1_can2_test(void)
 			
  			for(i=0;i<can_rcv;i++)
 			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
+//                              printf("%s",canbuf_recv[i]);	//显示数据
  			}
 		}
                 
@@ -627,7 +615,7 @@ void hw_can_test(void)
 			
  			for(i=0;i<can_rcv;i++)
 			{									    
-                              printf("%s",canbuf_recv[i]);	//显示数据
+//                              printf("%s",canbuf_recv[i]);	//显示数据
  			}
 		}
                 
