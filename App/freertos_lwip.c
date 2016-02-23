@@ -37,7 +37,6 @@ typedef struct _XTCPCLIENTSOCK{
 XTCPCLIENTSOCK xSeverSocket;
 
 #define BUF_SIZE		1024
-char ClientRevBuf[BUF_SIZE];
 
 #if 1
 
@@ -191,6 +190,7 @@ void TCPClient(void *arg)
 
 
 #else
+char ClientRevBuf[BUF_SIZE];
 void TCPClient(void *arg)
 {
 	struct sockaddr_in ServerAddr;

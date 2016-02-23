@@ -55,8 +55,7 @@ void Bsp_Init(void)
         EWDT_Drv_pin_config();
 //        power_on_bsp_check();      
 
-        /** mem init **/	
-	mmem_init();        
+       
         
 #ifdef GEC_CB_MAIN        
 
@@ -89,6 +88,8 @@ void Bsp_Init(void)
         }       
         
 #else       
+        /** mem init **/	
+	mmem_init(); 
         
         /** fatfs apply memory **/ 
  	if(exfuns_init())			
@@ -132,6 +133,9 @@ void Task_Loop(void)
     
 #if   0   
     
+        /** mem init **/	
+	mmem_init(); 
+        
         /** fatfs apply memory **/ 
  	if(exfuns_init())			
         {
@@ -159,7 +163,7 @@ void Task_Loop(void)
 #endif
           
 
-#if   1
+#if   0
                       
         hw_can_test();
                
