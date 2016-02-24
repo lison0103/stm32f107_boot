@@ -123,7 +123,8 @@ void Task_Loop(void)
 
 	xTaskCreate(led0_task, "LED0", configMINIMAL_STACK_SIZE, NULL, LED0_TASK_PRIO, NULL);
         xTaskCreate(led1_task, "LED1", configMINIMAL_STACK_SIZE, NULL, LED1_TASK_PRIO, NULL);
-	xTaskCreate(TCPClient, "TCP",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
+//	xTaskCreate(TCPClient, "TCPClient",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
+        xTaskCreate(TCPServer, "TCPServer",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
 
 	/* Start scheduler */
 	vTaskStartScheduler();

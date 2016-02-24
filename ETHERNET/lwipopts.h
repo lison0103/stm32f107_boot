@@ -137,6 +137,18 @@ a lot of data that needs to be copied, this should be set high. */
  */
 #define LWIP_NETIF_LINK_CALLBACK        0
 
+/**
+ * MEMP_NUM_NETBUF: the number of struct netbufs.
+ * (only needed if you use the sequential API, like api_lib.c)
+ */
+#define MEMP_NUM_NETBUF                 2
+
+/**
+ * MEMP_NUM_NETCONN: the number of struct netconns.
+ * (only needed if you use the sequential API, like api_lib.c)
+ */
+#define MEMP_NUM_NETCONN                12
+
 /*
    --------------------------------------
    ---------- Checksum options ----------
