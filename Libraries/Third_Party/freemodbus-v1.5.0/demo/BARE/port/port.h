@@ -22,26 +22,28 @@
 #ifndef _PORT_H
 #define _PORT_H
 
-#include <assert.h>
-#include <inttypes.h>
+/* ----------------------- Defines ------------------------------------------*/
 
-#define	INLINE                      inline
+
+#define	INLINE                      //__inline
 #define PR_BEGIN_EXTERN_C           extern "C" {
 #define	PR_END_EXTERN_C             }
 
-#define ENTER_CRITICAL_SECTION( )   
-#define EXIT_CRITICAL_SECTION( )    
+#define ENTER_CRITICAL_SECTION()					vPortEnterCritical()
+#define EXIT_CRITICAL_SECTION()						vPortExitCritical()
 
-typedef uint8_t BOOL;
+#define assert( x )
+
+typedef char    BOOL;
 
 typedef unsigned char UCHAR;
-typedef char CHAR;
+typedef char    CHAR;
 
-typedef uint16_t USHORT;
-typedef int16_t SHORT;
+typedef unsigned short USHORT;
+typedef short   SHORT;
 
-typedef uint32_t ULONG;
-typedef int32_t LONG;
+typedef unsigned long ULONG;
+typedef long    LONG;
 
 #ifndef TRUE
 #define TRUE            1

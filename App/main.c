@@ -24,6 +24,7 @@ extern u8 dis_data[3];
 
 u8 canbuf_send[8];
 
+extern void modbus_socket_init(void);
 
 #else
 
@@ -124,8 +125,8 @@ void Task_Loop(void)
 	xTaskCreate(led0_task, "LED0", configMINIMAL_STACK_SIZE, NULL, LED0_TASK_PRIO, NULL);
         xTaskCreate(led1_task, "LED1", configMINIMAL_STACK_SIZE, NULL, LED1_TASK_PRIO, NULL);
 //	xTaskCreate(TCPClient, "TCPClient",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
-        xTaskCreate(TCPServer, "TCPServer",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
-
+//        xTaskCreate(TCPServer, "TCPServer",  configTCP_STACK_SIZE, NULL, TCP_TASK_PRIO, NULL);
+        modbus_socket_init();
 	/* Start scheduler */
 	vTaskStartScheduler();
 
