@@ -1,6 +1,8 @@
 #ifndef __HW_TEST_H
 #define __HW_TEST_H	
 
+#include "lsys.h"
+
 void HW_TEST_INIT(void);
 void HW_TEST(void);
 void can_test(void);
