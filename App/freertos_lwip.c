@@ -1,5 +1,6 @@
 #include "freertos_lwip.h" 
 #include "led.h"  
+#include "ewdt.h"
 
 #include <string.h>
 
@@ -12,6 +13,7 @@ void led_task(void *arg)
 	{
                 LED0 =!LED0;
                 LED1 =!LED1;
+                EWDT_TOOGLE();
 		vTaskDelay( 500 );
 	}
 }

@@ -2,12 +2,12 @@
 #include "usart.h"
 #include "delay.h"
 ////////////////////////////////////////////////////////////////////////////////// 	 
-  
- 
+#include "includes.h"  
+#include "port.h" 
 
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
-#if EN_USART3_PRINTF
+#if DEBUG_PRINTF
 //#pragma import(__use_no_semihosting)             
 //标准库需要的支持函数                 
 //struct __FILE 
@@ -26,7 +26,8 @@
 int fputc(int ch, FILE *f)
 {      
 	while((USART3->SR&0X40)==0);//循环发送,直到发送完毕   
-    USART3->DR = (u8) ch;      
+            USART3->DR = (u8) ch;  
+            
 	return ch;
 }
 #else
@@ -38,6 +39,23 @@ int fputc(int ch, FILE *f)
 
 #endif 
 
+/*
+//72M
+//n=2000 T=392us
+//n=1000 T=196us
+//n=500  T=98us
+//n=100  T=20.6us
+*/ 
+void Delay_us(uint32_t n)
+{ 
+	uint32_t m=0;
+        m=n*50;
+	
+	while(m)
+	{
+            m--;
+	}	
+}
  
 
 //串口1中断服务程序
@@ -82,8 +100,12 @@ void uart_init(u32 bound){
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(USART3_TRX_GPIO , &GPIO_InitStructure);
-    
+
+#ifdef DEBUG_PRINTF
+    USART3_TRX_CONTROL = 1;
+#else
     USART3_TRX_CONTROL = 0;
+#endif
 #endif    
     
 
@@ -114,7 +136,7 @@ void uart_init(u32 bound){
 void USART3_SEND(u8 * str,int len)
 {
     USART3_TRX_CONTROL = 1;
-    delay_ms(1);
+    Delay_us(4000);
     
     for(int t = 0;t < len; t++)
     {      
@@ -126,39 +148,63 @@ void USART3_SEND(u8 * str,int len)
 //    if(USART_GetITStatus(USART1, USART_IT_TC) == SET)
 //    {
         USART3_TRX_CONTROL = 0;
-        delay_ms(1);
 //    }
 }
 
-int a;
-#if EN_USART3_RX   //如果使能了接收
-//void USART3_IRQHandler(void)                	//串口1中断服务程序
-//{
-//  u8 Res;
-//  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
-//  {
-// 
-//      Res =USART_ReceiveData(USART3);
-//      if((USART_RX_STA&0x8000)==0)//接收未完成
-//      {
-//          if(USART_RX_STA&0x4000)//接收到了0x0d
-//          {
-//              if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
-//              else USART_RX_STA|=0x8000;	//接收完成了 
-//          }
-//          else //还没收到0X0D
-//          {	
-//              if(Res==0x0d)USART_RX_STA|=0x4000;
-//              else
-//              {
-//                  USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
-//                  USART_RX_STA++;
-//                  if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
-//              }		 
-//          }
-//      }      
-//      
-//  }
-//} 
-#endif	
 
+#ifndef MODBUS_RTU_TEST
+
+#if EN_USART3_RX   //如果使能了接收
+void USART3_IRQHandler(void)                	//串口3中断服务程序
+{
+  u8 Res;
+  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+  {
+ 
+      Res =USART_ReceiveData(USART3);
+      if((USART_RX_STA&0x8000)==0)//接收未完成
+      {
+          if(USART_RX_STA&0x4000)//接收到了0x0d
+          {
+              if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
+              else 
+              {
+                  USART_RX_STA|=0x8000;	//接收完成了 
+//                  USART_ITConfig(USART3, USART_IT_RXNE, DISABLE);
+//                  USART3_TRX_CONTROL = 1;
+              }
+          }
+          else //还没收到0X0D
+          {	
+              if(Res==0x0d)USART_RX_STA|=0x4000;
+              else
+              {
+                  USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
+                  USART_RX_STA++;
+                  if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
+              }		 
+          }
+      }      
+      
+  }
+} 
+#endif	
+#endif
+
+#if MODBUS_RTU_TEST
+void USART3_IRQHandler(void)
+{
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
+	{		
+		prvvUARTRxISR();
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+	}
+
+	if(USART_GetITStatus(USART3, USART_IT_TXE) == SET)
+	{
+		prvvUARTTxReadyISR();
+// 		USART_ClearITPendingBit(USART1, USART_IT_TXE);
+	}
+}
+
+#endif

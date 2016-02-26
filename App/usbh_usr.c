@@ -1,7 +1,7 @@
 #include "usbh_usr.h" 
 #include "led.h"
 #include "ff.h" 
-//#include "usart.h" 
+#include "usart.h" 
 #include "exfuns.h" 	   
 
 static u8 AppState;
@@ -42,7 +42,7 @@ USBH_Usr_cb_TypeDef USR_Callbacks=
 void USBH_USR_Init(void)
 {
 	printf("USB OTG HS MSC Host\r\n");
-	printf("> USB Host library started.\r\n");
+	printf(" USB Host library started.\r\n");
 	printf("  USB Host Library v2.1.0\r\n\r\n");
 	
 }

@@ -580,7 +580,7 @@
         </option>
         <option>
           <name>AUserIncludes</name>
-          <state>$PROJ_DIR$\..\ETHERNET</state>
+          <state>$PROJ_DIR$\</state>
         </option>
         <option>
           <name>AExtraOptionsCheckV2</name>
@@ -1881,6 +1881,9 @@
       <name>$PROJ_DIR$\..\App\hw_test.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\App\mbserver.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\modbusTask.c</name>
     </file>
     <file>
@@ -2000,9 +2003,6 @@
         <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port\porttimer.c</name>
       </file>
     </group>
-    <file>
-      <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\mbserver.c</name>
-    </file>
   </group>
   <group>
     <name>FreeRTOS</name>
@@ -2391,13 +2391,16 @@
   <group>
     <name>USER</name>
     <file>
-      <name>$PROJ_DIR$\..\ETHERNET\FreeRTOSConfig.h</name>
+      <name>$PROJ_DIR$\FreeRTOSConfig.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\includes.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\ETHERNET\lwipopts.h</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\App\main.c</name>
+      <name>$PROJ_DIR$\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\ETHERNET\netconf.c</name>

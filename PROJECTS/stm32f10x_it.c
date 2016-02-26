@@ -78,20 +78,6 @@ void DebugMon_Handler(void)
 //void SysTick_Handler(void)
 //{
 //}
-void USART3_IRQHandler(void)
-{
-	if(USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
-	{		
-		prvvUARTRxISR();
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-	}
-
-	if(USART_GetITStatus(USART3, USART_IT_TXE) == SET)
-	{
-		prvvUARTTxReadyISR();
-// 		USART_ClearITPendingBit(USART1, USART_IT_TXE);
-	}
-}
 /*******************************************************************************
 * Function Name  : TIM2_IRQHandler
 * Description    : This function handles TIM2 global interrupt request.
