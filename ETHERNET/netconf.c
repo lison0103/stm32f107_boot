@@ -49,7 +49,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define MAX_DHCP_TRIES 4
-
+#define USE_LCD
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 struct netif xnetif; /* network interface structure */
@@ -70,8 +70,8 @@ void LwIP_Init(void)
   struct ip_addr netmask;
   struct ip_addr gw;
 #ifdef USE_DHCP 
-  uint8_t iptab[4] = {0};
-  uint8_t iptxt[20];
+//  uint8_t iptab[4] = {0};
+//  uint8_t iptxt[20];
 #endif
   /* Create tcp_ip stack thread */
   tcpip_init( NULL, NULL );
@@ -111,8 +111,9 @@ void LwIP_Init(void)
 
     /* When the netif is fully configured this function must be called.*/
     netif_set_up(&xnetif);
-//#ifdef USE_DHCP
-//    DHCP_state = DHCP_START;
+#ifdef USE_DHCP
+    DHCP_state = DHCP_START;
+#endif
 //#else
 //#ifdef USE_LCD
 //  iptab[0] = IP_ADDR3;
@@ -155,6 +156,7 @@ void LwIP_Init(void)
   * @param  None
   * @retval None
   */
+
 void LwIP_DHCP_task(void * pvParameters)
 {
   struct ip_addr ipaddr;
@@ -174,13 +176,13 @@ void LwIP_DHCP_task(void * pvParameters)
         IPaddress = 0;
         DHCP_state = DHCP_WAIT_ADDRESS;
 #ifdef USE_LCD
-        LCD_SetTextColor(White);
-        LCD_ClearLine(Line4);
-        LCD_ClearLine(Line5);
-        LCD_ClearLine(Line6);
-        LCD_DisplayStringLine(Line4, (uint8_t*)"     Looking for    ");
-        LCD_DisplayStringLine(Line5, (uint8_t*)"     DHCP server    ");
-        LCD_DisplayStringLine(Line6, (uint8_t*)"     please wait... ");
+//        LCD_SetTextColor(White);
+//        LCD_ClearLine(Line4);
+//        LCD_ClearLine(Line5);
+//        LCD_ClearLine(Line6);
+//        LCD_DisplayStringLine(Line4, (uint8_t*)"     Looking for    ");
+//        LCD_DisplayStringLine(Line5, (uint8_t*)"     DHCP server    ");
+//        LCD_DisplayStringLine(Line6, (uint8_t*)"     please wait... ");
 #endif
       }
       break;
@@ -205,17 +207,17 @@ void LwIP_DHCP_task(void * pvParameters)
 
           sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
 
-          LCD_SetTextColor(White);
-          LCD_ClearLine(Line4);
-          LCD_ClearLine(Line5);
-          LCD_ClearLine(Line6);
-          /* Display the IP address */
-          LCD_DisplayStringLine(Line7, (uint8_t*)"IP address assigned ");
-          LCD_DisplayStringLine(Line8, (uint8_t*)"  by a DHCP server  ");
-          LCD_DisplayStringLine(Line9, iptxt);
+//          LCD_SetTextColor(White);
+//          LCD_ClearLine(Line4);
+//          LCD_ClearLine(Line5);
+//          LCD_ClearLine(Line6);
+//          /* Display the IP address */
+//          LCD_DisplayStringLine(Line7, (uint8_t*)"IP address assigned ");
+//          LCD_DisplayStringLine(Line8, (uint8_t*)"  by a DHCP server  ");
+//          LCD_DisplayStringLine(Line9, iptxt);
 #endif
           /* end of DHCP process: LED1 stays ON*/
-          STM_EVAL_LEDOn(LED1);
+//          STM_EVAL_LEDOn(LED1);
         }
         else
         {
@@ -241,17 +243,17 @@ void LwIP_DHCP_task(void * pvParameters)
 
             sprintf((char*)iptxt, "  %d.%d.%d.%d", iptab[3], iptab[2], iptab[1], iptab[0]);
 
-            LCD_SetTextColor(White);
-            LCD_ClearLine(Line4);
-            LCD_ClearLine(Line5);
-            LCD_ClearLine(Line6);
-            LCD_ClearLine(Line7);
-            LCD_DisplayStringLine(Line7, (uint8_t*)"    DHCP timeout    ");
-            LCD_DisplayStringLine(Line8, (uint8_t*)"  Static IP address   ");
-            LCD_DisplayStringLine(Line9, iptxt);
+//            LCD_SetTextColor(White);
+//            LCD_ClearLine(Line4);
+//            LCD_ClearLine(Line5);
+//            LCD_ClearLine(Line6);
+//            LCD_ClearLine(Line7);
+//            LCD_DisplayStringLine(Line7, (uint8_t*)"    DHCP timeout    ");
+//            LCD_DisplayStringLine(Line8, (uint8_t*)"  Static IP address   ");
+//            LCD_DisplayStringLine(Line9, iptxt);
 #endif
             /* end of DHCP process: LED1 stays ON*/
-            STM_EVAL_LEDOn(LED1);
+//            STM_EVAL_LEDOn(LED1);
           }
         }
       }

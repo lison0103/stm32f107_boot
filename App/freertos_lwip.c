@@ -3,28 +3,18 @@
 
 #include <string.h>
 
-void led0_task(void *arg)
+void led_task(void *arg)
 {
         LED0 = 0;
-        
-	for( ; ; )
-	{
-                LED0 =!LED0;
-		vTaskDelay( 500 );
-	}
-}
-void led1_task(void *arg)
-{
         LED1 = 1;
         
 	for( ; ; )
 	{
+                LED0 =!LED0;
                 LED1 =!LED1;
 		vTaskDelay( 500 );
 	}
 }
-
-
 
 
 char *SERVER_ADDRESS = "10.129.200.77";

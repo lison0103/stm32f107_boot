@@ -8,11 +8,7 @@
 #include "netconf.h"
 #include "lwip/sockets.h"
 
-#define LED0_TASK_PRIO			( tskIDLE_PRIORITY + 1 )
-#define LED1_TASK_PRIO			( tskIDLE_PRIORITY + 2 )
-#define TCP_TASK_PRIO			( tskIDLE_PRIORITY + 3 )
 
-#define configTCP_STACK_SIZE	        ( ( unsigned short ) 1024 )
 
 typedef struct _XTCPCLIENTSOCK{
 	int s;						/*socket 标识符 -1无效，>= 0 有效*/
@@ -28,8 +24,7 @@ typedef struct _XTCPCLIENTSOCK{
 #define BACKLOG 3     // how many pending connections queue will hold  
 
 
-void led0_task(void *arg);
-void led1_task(void *arg);
+void led_task(void *arg);
 void TCPServer(void *arg);
 void TCPClient(void *arg);
 

@@ -8,7 +8,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
+#define DHCP_START                 1
+#define DHCP_WAIT_ADDRESS          2
+#define DHCP_ADDRESS_ASSIGNED      3
+#define DHCP_TIMEOUT               4
+#define DHCP_LINK_DOWN             5   
 /* Exported constants --------------------------------------------------------*/
+//#define USE_DHCP   
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void LwIP_Init(void);
