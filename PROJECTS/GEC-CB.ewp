@@ -315,6 +315,7 @@
           <state>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port</state>
           <state>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\include</state>
           <state>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\tcp</state>
+          <state>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\rtu</state>
           <state>$PROJ_DIR$\..\App</state>
           <state>$PROJ_DIR$\..\FATFS\src</state>
           <state>$PROJ_DIR$\..\FATFS\exfuns</state>
@@ -1960,6 +1961,15 @@
         </file>
       </group>
       <group>
+        <name>rtu</name>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\rtu\mbcrc.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\rtu\mbrtu.c</name>
+        </file>
+      </group>
+      <group>
         <name>tcp</name>
         <file>
           <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\modbus\tcp\mbtcp.c</name>
@@ -1981,7 +1991,13 @@
         <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port\portevent.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port\portserial.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port\porttcp.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\Third_Party\freemodbus-v1.5.0\demo\BARE\port\porttimer.c</name>
       </file>
     </group>
     <file>

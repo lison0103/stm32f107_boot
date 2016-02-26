@@ -15,6 +15,25 @@ extern unsigned char TmpBuf[256];
 extern unsigned short mbFramBuflen;
 
 
+void modbus_rtu_thread(void *arg)
+{
+  
+        eMBInit(MB_RTU, 0x0A, 0, 115200, MB_PAR_NONE);
+	eMBEnable();
+        
+	while(1)
+	{
+		(void)eMBPoll();
+		vTaskDelay( 100 );
+	}										 
+}	
+
+
+void modbus_rtu_init(void)
+{
+	sys_thread_new("Modbus", modbus_rtu_thread, NULL, DEFAULT_THREAD_STACKSIZE * 2, MODBUS_THREAD_PRIO);	
+}
+
 
 #if defined(MULTIPLE_MODBUS_TCP_CONNECT)
 

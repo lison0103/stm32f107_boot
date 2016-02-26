@@ -19,6 +19,7 @@
 
 #include "hw_test.h"
 #include "freertos_lwip.h" 
+#include "modbusTask.h"
 
 #define LED_TASK_PRIO			( tskIDLE_PRIORITY + 1 )
 #define TCP_TASK_PRIO			( tskIDLE_PRIORITY + 3 )
@@ -27,8 +28,6 @@
 extern u8 dis_data[3];
 
 u8 canbuf_send[8];
-
-extern void modbus_socket_init(void);
 
 #else
 
@@ -120,19 +119,50 @@ void Task_Loop(void)
   
 #ifdef GEC_CB_MAIN 
 
-#if   1
+#if   0
 
 	ETH_BSP_Config();
 	/* Initilaize the LwIP stack */
 	LwIP_Init();
 
 //	xTaskCreate(TCPClient, "TCPClient",  DEFAULT_THREAD_STACKSIZE * 2, NULL, TCP_TASK_PRIO, NULL);
-//        xTaskCreate(TCPServer, "TCPServer",  DEFAULT_THREAD_STACKSIZE * 2, NULL, TCP_TASK_PRIO, NULL);
+        xTaskCreate(TCPServer, "TCPServer",  DEFAULT_THREAD_STACKSIZE * 2, NULL, TCP_TASK_PRIO, NULL);
+
+#ifdef USE_DHCP
+        /* Start DHCPClient */
+        xTaskCreate(LwIP_DHCP_task, "DHCP", configMINIMAL_STACK_SIZE * 2, NULL,DHCP_TASK_PRIO, NULL);
+#endif                	
+        
+        xTaskCreate(led_task, "LED", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
+        
+	/* Start scheduler */
+	vTaskStartScheduler();
+
+#endif
+
+#if   0
+
+        ETH_BSP_Config();
+	/* Initilaize the LwIP stack */
+	LwIP_Init();
+
         modbus_socket_init();
 #ifdef USE_DHCP
         /* Start DHCPClient */
         xTaskCreate(LwIP_DHCP_task, "DHCP", configMINIMAL_STACK_SIZE * 2, NULL,DHCP_TASK_PRIO, NULL);
 #endif        
+        	       
+        xTaskCreate(led_task, "LED", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
+        
+	/* Start scheduler */
+	vTaskStartScheduler();
+    
+#endif
+    
+    
+#if   1      
+        	
+        modbus_rtu_init();
         
         xTaskCreate(led_task, "LED", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
         

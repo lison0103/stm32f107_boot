@@ -20,65 +20,87 @@
  */
 
 #include "port.h"
-
+#include "usart.h"	
 /* ----------------------- Modbus includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
-
-/* ----------------------- static functions ---------------------------------*/
-static void prvvUARTTxReadyISR( void );
-static void prvvUARTRxISR( void );
-
 /* ----------------------- Start implementation -----------------------------*/
-void
-vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
+void vMBPortSerialEnable( BOOL xRxEnable, BOOL xTxEnable )
 {
-    /* If xRXEnable enable serial receive interrupts. If xTxENable enable
-     * transmitter empty interrupts.
-     */
+	if(TRUE==xRxEnable)
+	{
+		USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
+                USART3_TRX_CONTROL = 0;
+	}
+	else
+	{
+		USART_ITConfig(USART3, USART_IT_RXNE, DISABLE);	
+                USART3_TRX_CONTROL = 1;
+	}
+
+	if(TRUE==xTxEnable)
+	{
+		USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
+	}
+	else
+	{
+	   USART_ITConfig(USART3, USART_IT_TXE, DISABLE);
+	}
+}
+
+void
+vMBPortClose( void )
+{
+	USART_ITConfig(USART3, USART_IT_TXE|USART_IT_RXNE, DISABLE);
+	USART_Cmd(USART3, DISABLE);
 }
 
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
-    return FALSE;
+	uart_init(ulBaudRate);
+
+	return TRUE;
 }
 
 BOOL
 xMBPortSerialPutByte( CHAR ucByte )
 {
-    /* Put a byte in the UARTs transmit buffer. This function is called
-     * by the protocol stack if pxMBFrameCBTransmitterEmpty( ) has been
-     * called. */
-    return TRUE;
+
+  USART_SendData(USART3, ucByte);
+  while (USART_GetFlagStatus(USART3, USART_FLAG_TC) == RESET)/*¦Ì¨¨¡äy¡¤¡é?¨ª¨ª¨º3¨¦*/
+  {
+  
+  }		
+	return TRUE;
 }
 
 BOOL
 xMBPortSerialGetByte( CHAR * pucByte )
 {
-    /* Return the byte in the UARTs receive buffer. This function is called
-     * by the protocol stack after pxMBFrameCBByteReceived( ) has been called.
-     */
-    return TRUE;
+	*pucByte = USART_ReceiveData(USART3);
+	return TRUE;
 }
 
-/* Create an interrupt handler for the transmit buffer empty interrupt
+/* 
+ * Create an interrupt handler for the transmit buffer empty interrupt
  * (or an equivalent) for your target processor. This function should then
  * call pxMBFrameCBTransmitterEmpty( ) which tells the protocol stack that
  * a new character can be sent. The protocol stack will then call 
  * xMBPortSerialPutByte( ) to send the character.
  */
-static void prvvUARTTxReadyISR( void )
+void prvvUARTTxReadyISR(void)
 {
-    pxMBFrameCBTransmitterEmpty(  );
+    pxMBFrameCBTransmitterEmpty();
 }
 
-/* Create an interrupt handler for the receive interrupt for your target
+/* 
+ * Create an interrupt handler for the receive interrupt for your target
  * processor. This function should then call pxMBFrameCBByteReceived( ). The
  * protocol stack will then call xMBPortSerialGetByte( ) to retrieve the
  * character.
  */
-static void prvvUARTRxISR( void )
+void prvvUARTRxISR(void)
 {
     pxMBFrameCBByteReceived(  );
 }

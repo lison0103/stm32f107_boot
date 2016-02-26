@@ -38,6 +38,10 @@
 
 #define assert( x )
 
+void prvvUARTTxReadyISR(void);
+void prvvUARTRxISR(void);
+void TIMERExpiredISR(void);
+
 typedef char    BOOL;
 
 typedef unsigned char UCHAR;

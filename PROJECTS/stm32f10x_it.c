@@ -23,7 +23,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h" 
-
+#include "port.h"
 
  
 void NMI_Handler(void)
@@ -78,7 +78,32 @@ void DebugMon_Handler(void)
 //void SysTick_Handler(void)
 //{
 //}
+void USART3_IRQHandler(void)
+{
+	if(USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
+	{		
+		prvvUARTRxISR();
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+	}
 
+	if(USART_GetITStatus(USART3, USART_IT_TXE) == SET)
+	{
+		prvvUARTTxReadyISR();
+// 		USART_ClearITPendingBit(USART1, USART_IT_TXE);
+	}
+}
+/*******************************************************************************
+* Function Name  : TIM2_IRQHandler
+* Description    : This function handles TIM2 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM2_IRQHandler(void)
+{
+	TIMERExpiredISR();
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
