@@ -11,9 +11,175 @@
 
 #define MODBUS_THREAD_PRIO    ( tskIDLE_PRIORITY + 3 )
 
-extern char TmpBuf[256];
+extern unsigned char TmpBuf[256];
 extern unsigned short mbFramBuflen;
-extern int newconn;
+
+
+
+#if defined(MULTIPLE_MODBUS_TCP_CONNECT)
+
+#define BACKLOG 3
+int fd_A[BACKLOG] = {0};    // accepted connection fd  
+int tcp_fd_num = 0;
+void modbus_socket_thread(void *arg)
+{
+      int sock_fd, new_fd;             // listen on sock_fd, new connection on new_fd  
+      struct sockaddr_in server_addr;  // server address information  
+      struct sockaddr_in client_addr;  // connector's address information  
+      socklen_t sin_size;  
+      int yes = 1;   
+
+      int conn_amount;      // current connection amount 
+      int ret;  
+      int i;  
+      
+      if ((sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {  
+
+      }  
+      
+      //ÉèÎª·Ç×èÈû  
+      if (fcntl(sock_fd, F_SETFL, O_NONBLOCK) == -1) {  
+         
+      
+      }  
+      
+      /** don't support this Protocol **/
+      if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {  
+
+      }  
+      server_addr.sin_family = AF_INET;         // host byte order  
+      server_addr.sin_port = htons(502);     // short, network byte order  
+      server_addr.sin_addr.s_addr = INADDR_ANY; // automatically fill with my IP  
+      
+      
+      if (bind(sock_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {  
+
+      }  
+      
+      
+      if (listen(sock_fd, BACKLOG) == -1) {  
+ 
+      }
+      
+      eMBTCPInit(502);
+      eMBEnable(); 
+  
+      
+      fd_set fdsr;  
+      int maxsock;  
+      struct timeval tv;  
+      conn_amount = 0;  
+      sin_size = sizeof(client_addr);  
+      maxsock = sock_fd;  
+      
+      
+      while (1)   
+      {  
+        // initialize file descriptor set  
+        FD_ZERO(&fdsr);  
+        FD_SET(sock_fd, &fdsr);  // add fd  
+        
+        
+        // timeout setting  
+        tv.tv_sec = 10;  
+        tv.tv_usec = 0;  
+        
+        
+        // add active connection to fd set  
+        for (i = 0; i < BACKLOG; i++) {  
+          if (fd_A[i] != 0) {  
+            FD_SET(fd_A[i], &fdsr);  
+          }  
+        }  
+        
+        
+        ret = select(maxsock + 1, &fdsr, NULL, NULL, &tv);  
+        if (ret < 0) 
+        {      
+          // error   
+          break;  
+        } else if (ret == 0) 
+        {  
+          // time out   
+          continue;  
+        }  
+        
+        
+        // check every fd in the set  
+        for (i = 0; i < BACKLOG; i++)   
+        {  
+            if((fd_A[i] != 0))
+            { 
+                  // check which fd is ready 
+                  if (FD_ISSET(fd_A[i], &fdsr))  
+                  {  
+                    
+                      ret = recv(fd_A[i], TmpBuf, sizeof(TmpBuf), 0);  
+                      if (ret <= 0)   
+                      {        
+                          // client close   
+                          close(fd_A[i]);  
+                          // delete fd  
+                          FD_CLR(fd_A[i], &fdsr);   
+                          fd_A[i] = 0;  
+                          conn_amount--;  
+                      }  
+                      else   
+                      {        
+                          // receive data  
+                          tcp_fd_num = i;
+                          mbFramBuflen  = ret;
+                          ( void )xMBPortEventPost( EV_FRAME_RECEIVED );  
+                          for(i=0;i<2;i++)
+                          {
+                              eMBPoll();
+                          }
+                       
+                      }  
+                  }  
+            }  
+        }
+        
+        // check whether a new connection comes  
+        if (FD_ISSET(sock_fd, &fdsr))   
+        {  
+            // accept new connection  
+            new_fd = accept(sock_fd, (struct sockaddr *)&client_addr, &sin_size);  
+            if (new_fd <= 0)   
+            {  
+                continue;  
+            }                     
+            
+            // add to fd queue  
+            if (conn_amount < BACKLOG)   
+            {  
+                for (i = 0; i < BACKLOG; i++) {  
+                  if (fd_A[i] == 0) {  
+                    fd_A[i] = new_fd;  
+                    conn_amount++;
+                    break;
+                  }  
+                }   
+     
+                // update the maxsock fd for select function  
+                if (new_fd > maxsock)  
+                {
+                    maxsock = new_fd;  
+                }
+            }  
+            else   
+            {   
+                close(new_fd);       
+            }  
+        }  
+        
+      }  
+  
+}
+
+#else
+
+int newconn;
 
 void modbus_socket_thread(void *arg)
 {
@@ -67,6 +233,8 @@ void modbus_socket_thread(void *arg)
 	 }
   }		
 }
+
+#endif
 
 void modbus_socket_init(void)
 {

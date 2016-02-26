@@ -27,7 +27,7 @@
 #include "sockets.h"
 
 /* ----------------------- Extern variables ---------------------------------*/
-char TmpBuf[256];
+unsigned char TmpBuf[256];
 unsigned short mbFramBuflen = 0;
 /* ----------------------- Begin implementation -----------------------------*/
 BOOL
@@ -50,13 +50,43 @@ vMBTCPPortDisable( void )
 BOOL
 xMBTCPPortGetRequest( UCHAR ** ppucMBTCPFrame, USHORT * usTCPLength )
 {
-	*ppucMBTCPFrame = &TmpBuf[0];
-	*usTCPLength = mbFramBuflen;	
-    return TRUE;
+        *ppucMBTCPFrame = &TmpBuf[0];
+        *usTCPLength = mbFramBuflen;	
+        
+        return TRUE;
 }
-int newconn;
+
+#if defined(MULTIPLE_MODBUS_TCP_CONNECT)
+extern int fd_A[3];     
+extern fd_set fdsr;
+extern int tcp_fd_num;
+
 BOOL
 xMBTCPPortSendResponse( const UCHAR * pucMBTCPFrame, USHORT usTCPLength )
 {
-	write(newconn, (char*)pucMBTCPFrame, usTCPLength);		
+        if((send(fd_A[tcp_fd_num],(char*)pucMBTCPFrame, usTCPLength,0)) == -1)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
 }
+
+#else
+extern int newconn;
+
+BOOL
+xMBTCPPortSendResponse( const UCHAR * pucMBTCPFrame, USHORT usTCPLength )
+{
+	if((write(newconn, (char*)pucMBTCPFrame, usTCPLength)) == -1)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+}
+#endif

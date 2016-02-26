@@ -22,6 +22,10 @@
 #ifndef _PORT_H
 #define _PORT_H
 
+/* Scheduler includes */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 /* ----------------------- Defines ------------------------------------------*/
 
 
@@ -52,5 +56,8 @@ typedef long    LONG;
 #ifndef FALSE
 #define FALSE           0
 #endif
+
+//add by lison @thyssenkrupp
+//#define MULTIPLE_MODBUS_TCP_CONNECT
 
 #endif
