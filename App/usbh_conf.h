@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    USBH_conf.h
   * @author  MCD Application Team
-  * @version V2.1.0
-  * @date    19-March-2012
+  * @version V2.2.0
+  * @date    09-November-2015
   * @brief   General low level driver configuration
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -44,14 +44,16 @@
   * @{
   */ 
 
-#define USBH_MAX_NUM_ENDPOINTS                3
+#define USBH_MAX_NUM_ENDPOINTS                3  /* 1 bulk IN + 1 bulk Out */
+                                                 /* + 1 additional interrupt IN* needed for some keys*/
 #define USBH_MAX_NUM_INTERFACES               2
+#define USBH_MSC_MAX_LUNS                     5  /* Up to 5 LUNs to be supported */
 #ifdef USE_USB_OTG_FS 
 #define USBH_MSC_MPS_SIZE                 0x40
 #else
 #define USBH_MSC_MPS_SIZE                 0x200
 #endif
-
+#define USBH_MAX_DATA_BUFFER              0x400
 /**
   * @}
   */ 

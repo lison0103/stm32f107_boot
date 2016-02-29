@@ -107,7 +107,7 @@ void Bsp_Init(void)
         }
              
 	/** USB HOST init **/
-  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks); 
+  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_cb); 
         
 #endif
         
@@ -190,7 +190,7 @@ void Task_Loop(void)
         }
              
 	/** USB HOST init **/
-  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_Callbacks);    
+  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_cb);    
         printf("wait usb mass storage connected...\n");
         
         while(1)

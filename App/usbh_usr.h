@@ -2,13 +2,13 @@
   ******************************************************************************
   * @file    usbh_usr.h
   * @author  MCD Application Team
-  * @version V2.1.0
-  * @date    19-March-2012
+  * @version V2.2.0
+  * @date    09-November-2015
   * @brief   Header file for usbh_usr.c
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@
   */ 
 
 
-extern  USBH_Usr_cb_TypeDef USR_Callbacks;
+extern  USBH_Usr_cb_TypeDef USR_cb;
 
 
 
