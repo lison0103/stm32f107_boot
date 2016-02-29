@@ -34,7 +34,7 @@
 #include "flag_test.h"
 
 
-#include "main.h"
+#include "self_test.h"
 
 //GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -45,21 +45,21 @@ extern CPUreg_struct CPUregTestPOST_struct;
 
 /* Private function prototypes -----------------------------------------------*/
 
-int main(void)
+int self_test(void)
 {
  
   //unsigned int un;
   //un=(*( u16 *)0x1FFFF7E0);   //闪存容量寄存器
   //type_testResult_t result = IEC61508_testFailed;                 
   volatile type_testResult_t result = IEC61508_testFailed;   /* variable is located in the stack */
-  STM_EVAL_LEDInit(LED1);
+//  STM_EVAL_LEDInit(LED1);
 
   result = flag_test();
   if (result != IEC61508_testPassed)
   {
     while(1);                            /* remains if FLAG test fails */
   }
-  
+#if 0  
   RCC_ClocksTypeDef RCC_Clocks;
   RCC_Configuration();//HSE - 8MHz
   RCC_GetClocksFreq(&RCC_Clocks); 
@@ -130,7 +130,7 @@ int main(void)
 
  /* Configure the system clocks */
   RCC_Configuration();
-  STM_EVAL_LEDInit(LED1);
+//  STM_EVAL_LEDInit(LED1);
   Delay(0x1FFFFF);
  
 /*WWDG**************************/
@@ -152,7 +152,7 @@ int main(void)
   /* Infinite loop */
   if (result != IEC61508_testPassed)
   {
-    STM_EVAL_LEDOn(LED1);
+//    STM_EVAL_LEDOn(LED1);
     while(1)                                      /* remains until WDOG test passes */
     { 
       //等待mcu被IWDG复位
@@ -181,7 +181,7 @@ int main(void)
 
   if (result != IEC61508_testPassed)
   {
-    STM_EVAL_LEDOn(LED1);
+//    STM_EVAL_LEDOn(LED1);
     while(1)                                      /* remains until WDOG test passes */
     { 
       //等待mcu被IWDG复位
@@ -230,7 +230,7 @@ int main(void)
         while (1);
   }
   
-
+#endif
   //no ok  RAM area 0x20000D78 there are progam, must use BIST test, data must be save before testing 
   //type_testResult_t result = IEC61508_testFailed;                 
   //result = ((type_testResult_t)IEC61508_RAMtest(CORE_RAM_BASE_ADDR, IEC61508_RAM_SIZE, BLOCK_SEL_CORE));
@@ -239,18 +239,20 @@ int main(void)
   //      while (1);
   //}
 
-  STM_EVAL_LEDInit(LED1);
-  STM_EVAL_LEDInit(LED2);
-  while(1){
-    STM_EVAL_LEDOn(LED2);
-    /* Turn on LED1 */
-    STM_EVAL_LEDOff(LED1);
-    Delay(0x3FFFFF);
-
-    STM_EVAL_LEDOn(LED1);
-    STM_EVAL_LEDOff(LED2);
-    Delay(0x3FFFFF);
-  }
+//  STM_EVAL_LEDInit(LED1);
+//  STM_EVAL_LEDInit(LED2);
+//  while(1){
+//    STM_EVAL_LEDOn(LED2);
+//    /* Turn on LED1 */
+//    STM_EVAL_LEDOff(LED1);
+//    Delay(0x3FFFFF);
+//
+//    STM_EVAL_LEDOn(LED1);
+//    STM_EVAL_LEDOff(LED2);
+//    Delay(0x3FFFFF);
+//  }
+  
+  return result;
 } 
 
 /**
@@ -263,66 +265,66 @@ void Delay(__IO uint32_t nCount)
   for(; nCount != 0; nCount--);
 }
 
-/**
-  * @brief  Configures LED GPIO.
-  * @param  Led: Specifies the Led to be configured. 
-  *   This parameter can be one of following parameters:
-  *     @arg LED1
-  *     @arg LED2
-  * @retval None
-  */
-void STM_EVAL_LEDInit(Led_TypeDef Led)
-{
-  GPIO_InitTypeDef  GPIO_InitStructure;
-  
-  /* Enable the GPIO_LED Clock */
-  RCC_APB2PeriphClockCmd(GPIO_CLK[Led], ENABLE);
-
-  /* Configure the GPIO_LED pin */
-  GPIO_InitStructure.GPIO_Pin = GPIO_PIN[Led];
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-  GPIO_Init(GPIO_PORT[Led], &GPIO_InitStructure);
-}
-
-/**
-  * @brief  Turns selected LED On.
-  * @param  Led: Specifies the Led to be set on. 
-  *   This parameter can be one of following parameters:
-  *     @arg LED1
-  *     @arg LED2
-  * @retval None
-  */
-void STM_EVAL_LEDOn(Led_TypeDef Led)
-{
-  GPIO_PORT[Led]->BSRR = GPIO_PIN[Led];     
-}
-
-/**
-  * @brief  Turns selected LED Off.
-  * @param  Led: Specifies the Led to be set off. 
-  *   This parameter can be one of following parameters:
-  *     @arg LED1
-  *     @arg LED2
-  * @retval None
-  */
-void STM_EVAL_LEDOff(Led_TypeDef Led)
-{
-  GPIO_PORT[Led]->BRR = GPIO_PIN[Led];  
-}
-
-/**
-  * @brief  Toggles the selected LED.
-  * @param  Led: Specifies the Led to be toggled. 
-  *   This parameter can be one of following parameters:
-  *     @arg LED1
-  *     @arg LED2
-  * @retval None
-  */
-void STM_EVAL_LEDToggle(Led_TypeDef Led)
-{
-  GPIO_PORT[Led]->ODR ^= GPIO_PIN[Led];
-}
+///**
+//  * @brief  Configures LED GPIO.
+//  * @param  Led: Specifies the Led to be configured. 
+//  *   This parameter can be one of following parameters:
+//  *     @arg LED1
+//  *     @arg LED2
+//  * @retval None
+//  */
+//void STM_EVAL_LEDInit(Led_TypeDef Led)
+//{
+//  GPIO_InitTypeDef  GPIO_InitStructure;
+//  
+//  /* Enable the GPIO_LED Clock */
+//  RCC_APB2PeriphClockCmd(GPIO_CLK[Led], ENABLE);
+//
+//  /* Configure the GPIO_LED pin */
+//  GPIO_InitStructure.GPIO_Pin = GPIO_PIN[Led];
+//  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//
+//  GPIO_Init(GPIO_PORT[Led], &GPIO_InitStructure);
+//}
+//
+///**
+//  * @brief  Turns selected LED On.
+//  * @param  Led: Specifies the Led to be set on. 
+//  *   This parameter can be one of following parameters:
+//  *     @arg LED1
+//  *     @arg LED2
+//  * @retval None
+//  */
+//void STM_EVAL_LEDOn(Led_TypeDef Led)
+//{
+//  GPIO_PORT[Led]->BSRR = GPIO_PIN[Led];     
+//}
+//
+///**
+//  * @brief  Turns selected LED Off.
+//  * @param  Led: Specifies the Led to be set off. 
+//  *   This parameter can be one of following parameters:
+//  *     @arg LED1
+//  *     @arg LED2
+//  * @retval None
+//  */
+//void STM_EVAL_LEDOff(Led_TypeDef Led)
+//{
+//  GPIO_PORT[Led]->BRR = GPIO_PIN[Led];  
+//}
+//
+///**
+//  * @brief  Toggles the selected LED.
+//  * @param  Led: Specifies the Led to be toggled. 
+//  *   This parameter can be one of following parameters:
+//  *     @arg LED1
+//  *     @arg LED2
+//  * @retval None
+//  */
+//void STM_EVAL_LEDToggle(Led_TypeDef Led)
+//{
+//  GPIO_PORT[Led]->ODR ^= GPIO_PIN[Led];
+//}
 
 /************************************** EOF *********************************/

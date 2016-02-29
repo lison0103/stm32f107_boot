@@ -90,6 +90,22 @@ void TIM2_IRQHandler(void)
 	TIMERExpiredISR();
 	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }
+
+/**
+  * @brief  This function handles External line 0 interrupt request.
+  * @param  None
+  * @retval None
+  */
+void EXTI0_IRQHandler(void)
+{
+  if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+  {
+    //STM_EVAL_LEDOn(0);
+    //Delay(0x3FFFFF);
+    /* Clear the  EXTI line 0 pending bit */
+    EXTI_ClearITPendingBit(EXTI_Line0);
+  }
+}
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */

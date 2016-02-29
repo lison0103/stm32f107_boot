@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "iec61508.h"
 #include "ram_test.h"
+#include "stm32f10x.h"
 
 /*! @addtogroup IEC61508_RAM_TEST
  * @{

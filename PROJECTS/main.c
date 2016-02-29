@@ -21,6 +21,7 @@
 #include "hw_test.h"
 #include "freertos_lwip.h" 
 #include "modbusTask.h"
+#include "self_test.h"
 
 #define LED_TASK_PRIO			( tskIDLE_PRIORITY + 1 )
 #define TCP_TASK_PRIO			( tskIDLE_PRIORITY + 3 )
@@ -46,6 +47,8 @@ USB_OTG_CORE_HANDLE  USB_OTG_Core;
 *******************************************************************************/
 void Bsp_Init(void)
 {
+        /** stm32 self test **/
+        self_test();
     
         /** set system interrupt priority group 2 **/
 	NVIC_Configuration();
