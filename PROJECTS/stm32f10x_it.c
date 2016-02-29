@@ -23,8 +23,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h" 
+    
+#ifdef GEC_CB_MAIN
+    
 #include "port.h"
 
+#endif
  
 void NMI_Handler(void)
 {
@@ -78,6 +82,7 @@ void DebugMon_Handler(void)
 //void SysTick_Handler(void)
 //{
 //}
+#ifdef GEC_CB_MAIN
 /*******************************************************************************
 * Function Name  : TIM2_IRQHandler
 * Description    : This function handles TIM2 global interrupt request.
@@ -106,6 +111,7 @@ void EXTI0_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line0);
   }
 }
+#endif
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */

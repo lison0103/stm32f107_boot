@@ -2083,7 +2083,10 @@
   <group>
     <name>USER</name>
     <file>
-      <name>$PROJ_DIR$\..\App\main.c</name>
+      <name>$PROJ_DIR$\includes.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\stm32f10x_conf.h</name>

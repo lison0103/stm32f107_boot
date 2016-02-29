@@ -47,9 +47,10 @@ USB_OTG_CORE_HANDLE  USB_OTG_Core;
 *******************************************************************************/
 void Bsp_Init(void)
 {
+#ifdef GEC_CB_MAIN
         /** stm32 self test **/
         self_test();
-    
+#endif
         /** set system interrupt priority group 2 **/
 	NVIC_Configuration();
         
