@@ -58,16 +58,15 @@ void Bsp_Init(void)
 	delay_init();  
         
         /** LED init **/
-	LED_Init();
-
-        /** ewdt init **/
-        EWDT_Drv_pin_config();
-//        power_on_bsp_check();      
-
+	LED_Init();     
        
         
 #ifdef GEC_CB_MAIN        
 
+        /** ewdt init **/
+        EWDT_Drv_pin_config();
+        power_on_bsp_check();         
+        
         /** input and relay output test init **/
         HW_TEST_INIT();
         

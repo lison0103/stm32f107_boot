@@ -9,16 +9,34 @@
 //min:1.12 typ:1.6 max:2.4
 void EWDT_Drv_pin_config(void)
 {
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE );
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+#ifdef GEC_CB_MAIN
   
-    GPIO_InitTypeDef GPIO_InitStruct;
-    
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP; 
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
-    GPIO_Init(GPIOC , &GPIO_InitStruct);
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE );
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+      
+        GPIO_InitTypeDef GPIO_InitStruct;
+        
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP; 
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
+        GPIO_Init(GPIOC , &GPIO_InitStruct);
+#else
 
+    if(BKP_ReadBackupRegister(BKP_DR1) == 0x00)
+    {
+  
+        RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE );
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+      
+        GPIO_InitTypeDef GPIO_InitStruct;
+        
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP; 
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
+        GPIO_Init(GPIOC , &GPIO_InitStruct);
+    }
+#endif
+    
 }
 
 /*******************************************************************************
