@@ -109,7 +109,7 @@ u8 AT24CXX_Check(void)
 //ReadAddr :开始读出的地址 对24c02为0~255
 //pBuffer  :数据数组首地址
 //NumToRead:要读出数据的个数
-void AT24CXX_Read(u16 ReadAddr,u8 *pBuffer,u16 NumToRead)
+void AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 {
 	while(NumToRead)
 	{
@@ -121,7 +121,7 @@ void AT24CXX_Read(u16 ReadAddr,u8 *pBuffer,u16 NumToRead)
 //WriteAddr :开始写入的地址 对24c02为0~255
 //pBuffer   :数据数组首地址
 //NumToWrite:要写入数据的个数
-void AT24CXX_Write(u16 WriteAddr,u8 *pBuffer,u16 NumToWrite)
+void AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 {
 	while(NumToWrite--)
 	{
