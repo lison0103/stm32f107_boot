@@ -1861,10 +1861,16 @@
   <group>
     <name>App</name>
     <file>
+      <name>$PROJ_DIR$\..\App\bsp_iocfg.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\hw_test.c</name>
       <excluded>
         <configuration>Debug</configuration>
       </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\App\initial_devices.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\App\update.c</name>

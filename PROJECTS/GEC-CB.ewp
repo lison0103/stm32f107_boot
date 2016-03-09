@@ -1876,10 +1876,16 @@
   <group>
     <name>App</name>
     <file>
+      <name>$PROJ_DIR$\..\App\bsp_iocfg.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\App\freertos_lwip.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\App\hw_test.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\App\initial_devices.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\App\mbserver.c</name>

@@ -1,35 +1,10 @@
-#include "lsys.h"
-#include "delay.h"  
-#include "usart.h"   
-#include "led.h"  
-#include "malloc.h" 
-#include "ff.h"  
-#include "exfuns.h"     
-#include "usbh_usr.h" 
-#include "24cxx.h"
-#include "mb85rcxx.h"
-#include "digital_led.h"
-#include "ewdt.h"
-#include "update.h"
-#include "iap.h"
-
+#include "initial_devices.h"
 #include "includes.h"
+
 
 
 #ifdef GEC_CB_MAIN
 
-#include "hw_test.h"
-#include "freertos_lwip.h" 
-#include "modbusTask.h"
-#include "self_test.h"
-
-#define LED_TASK_PRIO			( tskIDLE_PRIORITY + 1 )
-#define TCP_TASK_PRIO			( tskIDLE_PRIORITY + 3 )
-#define DHCP_TASK_PRIO                  ( tskIDLE_PRIORITY + 4 ) 
-
-extern u8 dis_data[3];
-
-u8 canbuf_send[8];
 
 #else
 
@@ -38,80 +13,10 @@ u32 timecounter = 0;
 #endif
 
 
-USBH_HOST  USB_Host;
-USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
 
 
-/******************************************************************************* 
-*******************************************************************************/
-void Bsp_Init(void)
-{
-#ifdef GEC_CB_MAIN
-        /** stm32 self test **/
-        self_test();
-#endif
-        /** set system interrupt priority group 2 **/
-	NVIC_Configuration();
-        
-        /** delay init **/
-	delay_init();  
-        
-        /** LED init **/
-	LED_Init();     
-       
-        
-#ifdef GEC_CB_MAIN        
 
-        /** ewdt init **/
-        EWDT_Drv_pin_config();
-        power_on_bsp_check();         
-        
-        /** input and relay output test init **/
-        HW_TEST_INIT();
-        
-        /** usart init **/
-	uart_init(115200);		
-                	                	
-               
-        /** digital led init **/
-        digital_led_gpio_init();               
-//        digital_led_check();
-
-
-        /** MB85RCXX init **/
-        eep_init();
-        if(MB85RCXX_Check())
-        {
-            printf("MB85RCXX_Check fail \n");
-          
-        }        
-
-        /** AT24CXX init **/
-        AT24CXX_Init();        
-        if(AT24CXX_Check())
-        {
-            printf("AT24CXX_Check fail \n");
-          
-        }       
-        
-#else       
-        /** mem init **/	
-	mmem_init(); 
-        
-        /** fatfs apply memory **/ 
- 	if(exfuns_init())			
-        {
-            printf("fatfs memory apply fail \n");
-        
-        }
-             
-	/** USB HOST init **/
-  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_cb); 
-        
-#endif
-        
-}
 
 /******************************************************************************* 
 *******************************************************************************/
