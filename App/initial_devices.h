@@ -19,6 +19,8 @@
 extern USBH_HOST  USB_Host;
 extern USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
+void Bsp_Init(void);
+
 #ifdef GEC_CB_MAIN
 
 #include "hw_test.h"

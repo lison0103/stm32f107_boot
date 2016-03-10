@@ -97,7 +97,7 @@ void uart_init(u32 bound){
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
     GPIO_Init(GPIOC, &GPIO_InitStructure);  //初始化PB11
     
-#ifdef USART3_TRX_EN
+#if USART3_TRX_EN
     RCC_APB2PeriphClockCmd(USART3_TRX_RCC, ENABLE); 
     
     GPIO_InitStructure.GPIO_Pin = USART3_TRX_PIN;
@@ -105,11 +105,12 @@ void uart_init(u32 bound){
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(USART3_TRX_GPIO , &GPIO_InitStructure);
 
-#ifdef DEBUG_PRINTF
+#if DEBUG_PRINTF
     USART3_TRX_CONTROL = 1;
 #else
     USART3_TRX_CONTROL = 0;
 #endif
+    
 #endif    
     
 
@@ -156,7 +157,7 @@ void USART3_SEND(u8 * str,int len)
 }
 
 
-#ifndef MODBUS_RTU_TEST
+#if RX485_TEST
 
 #if EN_USART3_RX   //如果使能了接收
 void USART3_IRQHandler(void)                	//串口3中断服务程序
