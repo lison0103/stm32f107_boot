@@ -28,3 +28,6 @@ void USART3_SEND(u8 * str,int len);
 #endif
 
 
+void USART2_Init(void);
+uint32_t BSP_USART_Receive(USART_TypeDef* USARTx,uint8_t *buff,uint32_t mlen);
+void BSP_USART_Send(USART_TypeDef* USARTx,uint8_t *buff,uint32_t len);

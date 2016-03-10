@@ -32,7 +32,7 @@ void Bsp_Init(void)
         
         /** usart init **/
 	uart_init(115200);		
-                	                	
+        USART2_Init();        	                	
                
         /** digital led init **/
         digital_led_gpio_init();               
