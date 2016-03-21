@@ -73,7 +73,8 @@ u16 USART_RX_STA=0;       //接收状态标记
 
 //初始化IO 串口1 
 //bound:波特率
-void uart_init(u32 bound){
+void USART3_Init(void)
+{
     //GPIO端口设置
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -124,7 +125,7 @@ void uart_init(u32 bound){
   
    //USART 初始化设置
 
-	USART_InitStructure.USART_BaudRate = bound;//一般设置为9600;
+	USART_InitStructure.USART_BaudRate = 115200;//一般设置为9600;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//字长为8位数据格式
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
 	USART_InitStructure.USART_Parity = USART_Parity_No;//无奇偶校验位

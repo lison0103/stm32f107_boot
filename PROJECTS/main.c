@@ -151,7 +151,52 @@ void Task_Loop(void)
           EWDT_TOOGLE();
         }
 #endif   
-/******************************************************************************/         
+/******************************************************************************/ 
+#if     RTC_CLOCK_TEST
+
+        while(1)
+	{								    
+            if(t!=calendar.sec)
+            {
+                t=calendar.sec;
+                printf("%d - %d - %d \n", calendar.w_year, calendar.w_month, calendar.w_date);
+           
+                switch(calendar.week)
+                {
+                    case 0:
+                      printf("Sunday \n");
+                      break;
+                    case 1:
+                      printf("Monday \n");
+                      break;
+                    case 2:
+                      printf("Tuesday \n");
+                      break;
+                    case 3:
+                      printf("Wednesday \n");
+                      break;
+                    case 4:
+                      printf("Thursday \n");
+                      break;
+                    case 5:
+                      printf("Friday \n");
+                      break;
+                    case 6:
+                      printf("Saturday \n");
+                      break;  
+                    default:
+                      printf("error \n");
+                      break;
+                }
+                printf("%d - %d - %d \n", calendar.hour, calendar.min, calendar.sec);
+
+                LED0=!LED0;
+            }	
+            delay_ms(10);								  
+	};  								
+        
+
+#endif        
         
 #else
         

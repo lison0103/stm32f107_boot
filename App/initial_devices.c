@@ -38,7 +38,7 @@ void Bsp_Init(void)
         Input_Output_PinInit();
         
         /** usart init **/
-	uart_init(115200);		
+	USART3_Init();		
         USART2_Init();        	                	
                
         /** digital led init **/
