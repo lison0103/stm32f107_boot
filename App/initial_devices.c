@@ -23,6 +23,13 @@ void Bsp_Init(void)
         
 #ifdef GEC_CB_MAIN        
 
+        /**  RTC init **/
+        while( RTC_Init() )		
+	{           
+            /** rtc init error , cystal problem **/
+            delay_ms(800);	
+	}	
+        
         /** ewdt init **/
         EWDT_Drv_pin_config();
         power_on_bsp_check();         

@@ -15,6 +15,7 @@
 #include "ewdt.h"
 #include "update.h"
 #include "iap.h"
+#include "rtc.h"
 
 extern USBH_HOST  USB_Host;
 extern USB_OTG_CORE_HANDLE  USB_OTG_Core;

@@ -2204,6 +2204,7 @@
           <state>$PROJ_DIR$\..\MALLOC</state>
           <state>$PROJ_DIR$\..\ETHERNET</state>
           <state>$PROJ_DIR$\..\SELFTEST\inc</state>
+          <state>$PROJ_DIR$\..\HARDWARE\RTC</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -3159,6 +3160,7 @@
           <state>$PROJ_DIR$\..\MALLOC</state>
           <state>$PROJ_DIR$\..\ETHERNET</state>
           <state>$PROJ_DIR$\..\SELFTEST\inc</state>
+          <state>$PROJ_DIR$\..\HARDWARE\RTC</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -3848,6 +3850,9 @@
   </group>
   <group>
     <name>FreeModbus</name>
+    <excluded>
+      <configuration>GEC-CB-BL</configuration>
+    </excluded>
     <group>
       <name>modbus</name>
       <group>
@@ -3941,6 +3946,9 @@
   </group>
   <group>
     <name>FreeRTOS</name>
+    <excluded>
+      <configuration>GEC-CB-BL</configuration>
+    </excluded>
     <group>
       <name>inc</name>
       <file>
@@ -4032,30 +4040,59 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F107_ETH_Driver\src\stm32f107_eth.c</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F107_ETH_Driver\inc\stm32f107_eth.h</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c</name>
@@ -4068,15 +4105,27 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
@@ -4089,9 +4138,16 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c</name>
@@ -4101,6 +4157,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
       </file>
     </group>
   </group>
@@ -4129,6 +4188,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\IIC\myiic.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\HARDWARE\RTC\rtc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\HARDWARE\SPI\spi.c</name>
