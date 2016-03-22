@@ -159,7 +159,7 @@ void Task_Loop(void)
             if(t!=calendar.sec)
             {
                 t=calendar.sec;
-                printf("%d - %d - %d \n", calendar.w_year, calendar.w_month, calendar.w_date);
+                printf("%d - %02d - %02d \n", calendar.w_year, calendar.w_month, calendar.w_date);
            
                 switch(calendar.week)
                 {
@@ -188,11 +188,13 @@ void Task_Loop(void)
                       printf("error \n");
                       break;
                 }
-                printf("%d - %d - %d \n", calendar.hour, calendar.min, calendar.sec);
+                printf("%02d : %02d : %02d \n", calendar.hour, calendar.min, calendar.sec);
 
                 LED0=!LED0;
-            }	
-            delay_ms(10);								  
+            }
+            
+            delay_ms(10);
+            EWDT_TOOGLE();
 	};  								
         
 
