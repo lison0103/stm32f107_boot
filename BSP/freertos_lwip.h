@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name          : stmflash.h
+* File Name          : freertos_lwip.h
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
@@ -8,45 +8,30 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STMFLASH_H
-#define __STMFLASH_H
+#ifndef __FREERTOS_LWIP_H
+#define __FREERTOS_LWIP_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "lsys.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "stm32_eth_bsp.h"
+#include "netconf.h"
+#include "lwip/sockets.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-u16 STMFLASH_ReadHalfWord(u32 faddr);		                        //读出半字  
-void STMFLASH_WriteLenByte(u32 WriteAddr,u32 DataToWrite,u16 Len);	//指定地址开始写入指定长度的数据
-u32 STMFLASH_ReadLenByte(u32 ReadAddr,u16 Len);				//指定地址开始读取指定长度数据
-void STMFLASH_Write(u32 WriteAddr,u16 *pBuffer,u16 NumToWrite);		//从指定地址开始写入指定长度的数据
-void STMFLASH_Read(u32 ReadAddr,u16 *pBuffer,u16 NumToRead);   		//从指定地址开始读出指定长度的数据
-void Test_Write(u32 WriteAddr,u16 WriteData);                           //测试写入
+void led_task(void *arg);
+void TCPServer(void *arg);
+void TCPClient(void *arg);
 
 
-#endif /* __STMFLASH_H */
+
+#endif /* __IAP_H */
 
 
 /******************************  END OF FILE  *********************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

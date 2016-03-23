@@ -1,26 +1,47 @@
-#include "sys.h"
+/*******************************************************************************
+* File Name          : rtc.c
+* Author             : lison
+* Version            : V1.0
+* Date               : 03/23/2016
+* Description        : 
+*                      
+*******************************************************************************/
+
+
+/* Includes ------------------------------------------------------------------*/
+#include "lsys.h"
 #include "delay.h"
 #include "usart.h"
-#include "rtc.h" 		    
+#include "rtc.h"
 
-	   
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
+
+//月份数据表											 
+u8 const table_week[12]={0,3,3,6,1,4,6,2,5,0,3,5}; //月修正数据表	  
+//平年的月份日期表
+const u8 mon_table[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+
 _calendar_obj calendar;//时钟结构体 
-/*
-void set_clock(u16 divx)
-{
- 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	//使能PWR和BKP外设时钟  
-	PWR_BackupAccessCmd(ENABLE);	//使能RTC和后备寄存器访问 
 
-	RTC_EnterConfigMode();/// 允许配置	
- 
-	RTC_SetPrescaler(divx); //设置RTC预分频的值          									 
-	RTC_ExitConfigMode();//退出配置模式  				   		 									  
-	RTC_WaitForLastTask();	//等待最近一次对RTC寄存器的写操作完成		 									  
-}	   
-*/
+
+
+/*******************************************************************************
+* Function Name  : RTC_NVIC_Config
+* Description    : None
+*                  
+* Input          : None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/
 static void RTC_NVIC_Config(void)
 {	
-    NVIC_InitTypeDef NVIC_InitStructure;
+        NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;		//RTC全局中断
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;	//先占优先级1位,从优先级3位
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	//先占优先级0位,从优先级4位
@@ -28,12 +49,17 @@ static void RTC_NVIC_Config(void)
 	NVIC_Init(&NVIC_InitStructure);		//根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器
 }
 
-//实时时钟配置
-//初始化RTC时钟,同时检测时钟是否工作正常
-//BKP->DR1用于保存是否第一次配置的设置
-//返回0:正常
-//其他:错误代码
 
+/*******************************************************************************
+* Function Name  : RTC_Init
+* Description    : 实时时钟配置
+*                  初始化RTC时钟,同时检测时钟是否工作正常
+*                  BKP->DR1用于保存是否第一次配置的设置
+* Input          : None
+*                  
+* Output         : None
+* Return         : 0:正常  其他:错误代码
+*******************************************************************************/
 u8 RTC_Init(void)
 {
 	//检查是不是第一次配置时钟
@@ -75,10 +101,18 @@ u8 RTC_Init(void)
 	RTC_Get();//更新时间	
 	return 0; //ok
 
-}		 				    
-//RTC时钟中断
-//每秒触发一次  
-//extern u16 tcnt; 
+}	
+
+
+/*******************************************************************************
+* Function Name  : RTC_IRQHandler
+* Description    : RTC时钟中断
+*                  每秒触发一次
+* Input          : None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 void RTC_IRQHandler(void)
 {		 
 	if (RTC_GetITStatus(RTC_IT_SEC) != RESET)//秒钟中断
@@ -92,12 +126,19 @@ void RTC_IRQHandler(void)
 	RTC_ClearITPendingBit(RTC_IT_SEC|RTC_IT_OW);		//清闹钟中断
 	RTC_WaitForLastTask();	  	    						 	   	 
 }
-//判断是否是闰年函数
-//月份   1  2  3  4  5  6  7  8  9  10 11 12
-//闰年   31 29 31 30 31 30 31 31 30 31 30 31
-//非闰年 31 28 31 30 31 30 31 31 30 31 30 31
-//输入:年份
-//输出:该年份是不是闰年.1,是.0,不是
+
+
+/*******************************************************************************
+* Function Name  : Is_Leap_Year
+* Description    : 判断是否是闰年函数
+*                  月份   1  2  3  4  5  6  7  8  9  10 11 12
+*                  闰年   31 29 31 30 31 30 31 31 30 31 30 31
+*                  非闰年 31 28 31 30 31 30 31 31 30 31 30 31                
+* Input          : 年份
+*                  
+* Output         : None
+* Return         : 该年份是不是闰年.1,是.0,不是
+*******************************************************************************/
 u8 Is_Leap_Year(u16 year)
 {			  
 	if(year%4==0) //必须能被4整除
@@ -108,16 +149,19 @@ u8 Is_Leap_Year(u16 year)
 			else return 0;   
 		}else return 1;   
 	}else return 0;	
-}	 			   
-//设置时钟
-//把输入的时钟转换为秒钟
-//以1970年1月1日为基准
-//1970~2099年为合法年份
-//返回值:0,成功;其他:错误代码.
-//月份数据表											 
-u8 const table_week[12]={0,3,3,6,1,4,6,2,5,0,3,5}; //月修正数据表	  
-//平年的月份日期表
-const u8 mon_table[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+}	 
+
+
+
+/*******************************************************************************
+* Function Name  : RTC_Set
+* Description    : 设置时钟
+*                  把输入的时钟转换为秒钟,以1970年1月1日为基准,1970~2099年为合法年份
+* Input          : None
+*                  
+* Output         : None
+* Return         : 0,成功;其他:错误代码.
+*******************************************************************************/
 u8 RTC_Set(u16 syear,u8 smon,u8 sday,u8 hour,u8 min,u8 sec)
 {
 	u16 t;
@@ -147,8 +191,18 @@ u8 RTC_Set(u16 syear,u8 smon,u8 sday,u8 hour,u8 min,u8 sec)
 	RTC_Get();
 	return 0;	    
 }
-//得到当前的时间
-//返回值:0,成功;其他:错误代码.
+
+
+
+/*******************************************************************************
+* Function Name  : RTC_Get
+* Description    : 得到当前的时间
+*                  
+* Input          : None
+*                  
+* Output         : None
+* Return         : ,成功;其他:错误代码.
+*******************************************************************************/
 u8 RTC_Get(void)
 {
 	static u16 daycnt=0;
@@ -196,11 +250,19 @@ u8 RTC_Get(void)
 	calendar.sec=(temp%3600)%60; 	//秒钟
 	calendar.week=RTC_Get_Week(calendar.w_year,calendar.w_month,calendar.w_date);//获取星期   
 	return 0;
-}	 
-//获得现在是星期几
-//功能描述:输入公历日期得到星期(只允许1901-2099年)
-//输入参数：公历年月日 
-//返回值：星期号																						 
+}	
+
+
+
+/*******************************************************************************
+* Function Name  : RTC_Get_Week
+* Description    : 获得现在是星期几
+*                  输入公历日期得到星期(只允许1901-2099年)
+* Input          : 公历年月日
+*                  
+* Output         : None
+* Return         : 星期号
+*******************************************************************************/																					 
 u8 RTC_Get_Week(u16 year,u8 month,u8 day)
 {	
 	u16 temp2;
@@ -218,6 +280,8 @@ u8 RTC_Get_Week(u16 year,u8 month,u8 day)
 }			  
 
 
+
+/******************************  END OF FILE  *********************************/
 
 
 

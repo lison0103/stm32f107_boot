@@ -1,11 +1,21 @@
- 
+/*******************************************************************************
+* File Name          : mb85rcxx.c
+* Author             : lison
+* Version            : V1.0
+* Date               : 03/23/2016
+* Description        : 
+*                      
+*******************************************************************************/
+
+/* Includes ------------------------------------------------------------------*/
 #include "mb85rcxx.h"
 #include "stm32f10x_gpio.h"
 #include "delay.h" 
 
-/******************************************************************************* 
-*******************************************************************************/
-#define	EEP_SDA_PORT	  GPIOA
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+#define	EEP_SDA_PORT	        GPIOA
 #define	EEP_SDA_PIN			GPIO_Pin_9
 
 #define	EEP_SCL_PORT		GPIOA
@@ -22,70 +32,123 @@
 #define EEP_NACK      1
 #define EEP_ERROR     1
 
+#define MB85RC16        2047
+#define MB85RC64        8191
+
+#define MB85RCXX_TYPE     MB85RC16
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
+
 u16 EEPROM_WR_TIME=0;
 
-/******************************************************************************* 
-*******************************************************************************/
+
+
+/*******************************************************************************
+* Function Name  : EEP_SDA_OUT
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 void EEP_SDA_OUT(void)  
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE );
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE );
   
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_9;             
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;    
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_OD; 
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;    
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_OD; 
 	
 	GPIO_Init(GPIOA , &GPIO_InitStruct);	
 }
 
+/*******************************************************************************
+* Function Name  : EEP_SCL_OUT
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void EEP_SCL_OUT(void) 
 {
 	GPIO_InitTypeDef GPIO_InitStruct;
 	
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10;             
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;   
+        GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
+        GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;   
 	
 	GPIO_Init(GPIOA , &GPIO_InitStruct);
 }
 
-/******************************************************************************* 
+/*******************************************************************************
+* Function Name  : eep_start
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
 *******************************************************************************/
 void eep_start(void)	 
 { 
-  //scl和sda同时为高电平，
+  /** scl and sda high level at the same **/
   delay_us(6);
   EEP_SDA_SET();
   EEP_SCL_SET();
   
-  //时间>5us
+  /** delay > 5us **/
   delay_us(6); 
-  EEP_SDA_CLR(); //SDA置0
+  /** SDA set 0 **/
+  EEP_SDA_CLR(); 
 
-  //时间>5us
+  /** delay > 5us **/
   delay_us(6); 
-  EEP_SCL_CLR(); //SCL置0 
+  /** SCL set 0 **/
+  EEP_SCL_CLR(); 
 }
 
+/*******************************************************************************
+* Function Name  : eep_stop
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void eep_stop(void)	
 {
-  //scl和sda同时为低电平，
+  /** scl and sda low level at the same **/
   EEP_SCL_CLR();  
   EEP_SDA_CLR(); 
-  //
+
   delay_us(5); 
 
-  //SCL置1
+  /** SCL set 1 **/
   EEP_SCL_SET(); 
   
-  //延时>5us
+  /** delay > 5us **/
   delay_us(10); 
 
-  //SDA置1
+  /** SDA set 1 **/
   EEP_SDA_SET(); 
 }
 
+/*******************************************************************************
+* Function Name  : eep_write
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 u8 eep_write(u8 d)		
 {
   u8 i;
@@ -114,10 +177,10 @@ u8 eep_write(u8 d)
     delay_us(1); 
   }   
   
-  //转输入
+  /** turn input **/
   EEP_SDA_SET();
 
-  //ACK
+  /** ACK **/
   delay_us(3); 
   EEP_SCL_SET(); 
   delay_us(5); 
@@ -133,7 +196,16 @@ u8 eep_write(u8 d)
   
   return(i);
 }
-      
+
+/*******************************************************************************
+* Function Name  : eep_read
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 u8 eep_read(u8 ack)	 
 {
   u8 d=0, i;
@@ -144,13 +216,13 @@ u8 eep_read(u8 ack)
   for (i = 0; i < 8; i++)	
   {
     delay_us(5);
-    EEP_SCL_SET();    //SCL=1
+    EEP_SCL_SET();    
 
     delay_us(5);
     d = d << 1;
     if(EEP_SDA_READ()) d++;		                  
  
-    EEP_SCL_CLR();   //SCK=0
+    EEP_SCL_CLR();   
   }
   
   if(ack==EEP_ACK)  
@@ -162,15 +234,22 @@ u8 eep_read(u8 ack)
     EEP_SDA_SET();     
   } 
       
-  delay_us(5);   //延时 5us 
+  delay_us(5);   
   EEP_SCL_SET();
-  delay_us(5);   //延时 5us 
+  delay_us(5);    
   EEP_SCL_CLR();   
   
   return d;
 } 
 
-/******************************************************************************* 
+/*******************************************************************************
+* Function Name  : eep_init
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
 *******************************************************************************/
 void eep_init(void)
 {
@@ -181,7 +260,14 @@ void eep_init(void)
   EEP_SCL_SET();  
 }
 
-/******************************************************************************* 
+/*******************************************************************************
+* Function Name  : eeprom_data_write1
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
 *******************************************************************************/
 uint8_t eeprom_data_write1(u16 addr,u16 len,u8 *dat)
 {
@@ -217,6 +303,15 @@ uint8_t eeprom_data_write1(u16 addr,u16 len,u8 *dat)
   return(err);
 }
 
+/*******************************************************************************
+* Function Name  : eeprom_write
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 u8 eeprom_write(u16 addr,u16 len,u8 *dat)
 {
 	u8 ucCounter=0,err=0;
@@ -233,7 +328,14 @@ u8 eeprom_write(u16 addr,u16 len,u8 *dat)
 	return(err); 
 }
 
-/******************************************************************************* 
+/*******************************************************************************
+* Function Name  : eeprom_data_read1
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
 *******************************************************************************/
 uint8_t eeprom_data_read1(u16 addr, u16 len, u8 *dat)
 {
@@ -251,7 +353,6 @@ uint8_t eeprom_data_read1(u16 addr, u16 len, u8 *dat)
         {
             if(eep_write(addr)) err=1;
         }
-        
 	eep_start();
 	if(eep_write(0xA1))  err=1;
   
@@ -270,6 +371,15 @@ uint8_t eeprom_data_read1(u16 addr, u16 len, u8 *dat)
 	return(err);                                                                                              
 }
 
+/*******************************************************************************
+* Function Name  : eeprom_read
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 u8 eeprom_read(u16 addr,u16 len,u8 *dat)
 {
 	u8 ucCounter=0,err=0;
@@ -286,12 +396,23 @@ u8 eeprom_read(u16 addr,u16 len,u8 *dat)
 	return(err);   
 }
 
+
+/*******************************************************************************
+* Function Name  : MB85RCXX_Check
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 u8 MB85RCXX_Check(void)
 {
 	u8 temp;
 	eeprom_read(2047,1,&temp);	//2048		   
 	if(temp==0X55)return 0;		   
-	else//排除第一次初始化的情况
+        /** Rule out the first initialization **/
+	else
 	{       
                 temp = 0x55;
 		eeprom_write(2047,1,&temp);
@@ -302,5 +423,8 @@ u8 MB85RCXX_Check(void)
 
 }
 
-/******************************************************************************* 
-*******************************************************************************/
+
+/******************************  END OF FILE  *********************************/
+
+
+

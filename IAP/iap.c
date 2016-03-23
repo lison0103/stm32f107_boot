@@ -1,14 +1,41 @@
+/*******************************************************************************
+* File Name          : iap.c
+* Author             : lison
+* Version            : V1.0
+* Date               : 03/23/2016
+* Description        : 
+*                      
+*******************************************************************************/
+
+
+/* Includes ------------------------------------------------------------------*/
 #include "lsys.h"
 #include "delay.h"
 #include "stmflash.h"
 #include "iap.h"
-	
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
 
 iapfun jump2app; 
-u16 iapbuf[1024];   
-//appxaddr:应用程序的起始地址
-//appbuf:应用程序CODE.
-//appsize:应用程序大小(字节).
+u16 iapbuf[1024]; 
+
+
+
+/*******************************************************************************
+* Function Name  : iap_write_appbin
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 void iap_write_appbin(u32 appxaddr,u8 *appbuf,u32 appsize)
 {
 	u16 t;
@@ -32,8 +59,16 @@ void iap_write_appbin(u32 appxaddr,u8 *appbuf,u32 appsize)
 	if(i)STMFLASH_Write(fwaddr,iapbuf,i);//将最后的一些内容字节写进去.  
 }
 
-//跳转到应用程序段
-//appxaddr:用户代码起始地址.
+
+/*******************************************************************************
+* Function Name  : iap_load_app
+* Description    : 跳转到应用程序段
+*                  
+* Input          : appxaddr:用户代码起始地址.
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 void iap_load_app(u32 appxaddr)
 {
         //检查栈顶地址是否合法.
@@ -120,6 +155,8 @@ void iap_load_app(u32 appxaddr)
 }		 
 
 
+
+/******************************  END OF FILE  *********************************/
 
 
 

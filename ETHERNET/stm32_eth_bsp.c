@@ -1,6 +1,18 @@
+/*******************************************************************************
+* File Name          : stm32_eth_bsp.c
+* Author             : lison
+* Version            : V1.0
+* Date               : 03/24/2016
+* Description        : 
+*                      
+*******************************************************************************/
+
+
+/* Includes ------------------------------------------------------------------*/
 #include "stm32f107_eth.h"
 #include "stm32_eth_bsp.h"
 
+ 
 //	使用 RMII总线，注意线路板上的跳线
 #define RMII_MODE       /* RMII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
 

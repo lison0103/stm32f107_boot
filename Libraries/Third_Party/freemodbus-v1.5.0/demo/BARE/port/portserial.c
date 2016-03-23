@@ -58,7 +58,7 @@ vMBPortClose( void )
 BOOL
 xMBPortSerialInit( UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits, eMBParity eParity )
 {
-	uart_init(ulBaudRate);
+//	uart_init(ulBaudRate);
 
 	return TRUE;
 }

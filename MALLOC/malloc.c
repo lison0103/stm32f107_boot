@@ -1,5 +1,25 @@
-#include "malloc.h"	    
+/*******************************************************************************
+* File Name          : malloc.c
+* Author             : lison
+* Version            : V1.0
+* Date               : 03/24/2016
+* Description        : 
+*                      
+*******************************************************************************/
 
+
+/* Includes ------------------------------------------------------------------*/
+#include "malloc.h"
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+//内存参数设定.
+#define MEM_BLOCK_SIZE			32  	  						//内存块大小为32字节
+#define MEM_MAX_SIZE			13*1024           				        //最大管理内存 13K
+#define MEM_ALLOC_TABLE_SIZE	MEM_MAX_SIZE/MEM_BLOCK_SIZE 	                                //内存表大小
+
+/* Private variables ---------------------------------------------------------*/
 #pragma pack(push) //保存对齐状态 
 #pragma pack(4)//设定为4字节对齐  
 __no_init u8 membase[MEM_MAX_SIZE]; //内部SRAM内存池   
@@ -13,6 +33,10 @@ const u32 memtblsize=MEM_ALLOC_TABLE_SIZE;		//内存表大小
 const u32 memblksize=MEM_BLOCK_SIZE;			//内存分块大小
 const u32 memsize=MEM_MAX_SIZE;					//内存总大小
 
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
+
+
 
 //内存管理控制器
 struct _m_mallco_dev mallco_dev=
@@ -22,8 +46,20 @@ struct _m_mallco_dev mallco_dev=
 	membase,			//内存池
 	memmapbase,			//内存管理状态表
 	0,  				//内存管理未就绪
-};
+}; 
 
+
+
+/*******************************************************************************
+* Function Name  : mymemcpy
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 	   
 //复制内存
 //*des:目的地址
 //*src:源地址
@@ -34,6 +70,18 @@ void mymemcpy(void *des,void *src,u32 n)
 	u8 *xsrc=src; 
     while(n--)*xdes++=*xsrc++;  
 }  
+
+
+/*******************************************************************************
+* Function Name  : mymemset
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //设置内存
 //*s:内存首地址
 //c :要设置的值
@@ -42,7 +90,19 @@ void mymemset(void *s,u8 c,u32 count)
 {  
     u8 *xs = s;  
     while(count--)*xs++=c;  
-}	   
+}	
+
+
+/*******************************************************************************
+* Function Name  : mmem_init
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //内存管理初始化  
 void mmem_init(void)  
 {  
@@ -50,6 +110,17 @@ void mmem_init(void)
 	mymemset(mallco_dev.membase, 0,memsize);	//内存池所有数据清零  
 	mallco_dev.memrdy=1;						//内存管理初始化OK  
 }  
+
+/*******************************************************************************
+* Function Name  : mem_perused
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //获取内存使用率
 //返回值:使用率(0~100)
 u8 mem_perused(void)  
@@ -62,6 +133,18 @@ u8 mem_perused(void)
     } 
     return (used*100)/(memtblsize);  
 }  
+
+
+/*******************************************************************************
+* Function Name  : mmem_malloc
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //内存分配(内部调用)
 //memx:所属内存块
 //size:要分配的内存大小(字节)
@@ -91,6 +174,18 @@ u32 mmem_malloc(u32 size)
     }  
     return 0XFFFFFFFF;//未找到符合分配条件的内存块  
 }  
+
+
+/*******************************************************************************
+* Function Name  : mmem_free
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //释放内存(内部调用) 
 //offset:内存地址偏移
 //返回值:0,释放成功;1,释放失败;  
@@ -113,6 +208,18 @@ u8 mmem_free(u32 offset)
         return 0;  
     }else return 2;//偏移超区了.  
 }  
+
+
+/*******************************************************************************
+* Function Name  : myfree
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //释放内存(外部调用) 
 //ptr:内存首地址 
 void myfree(void *ptr)  
@@ -122,6 +229,18 @@ void myfree(void *ptr)
  	offset=(u32)ptr-(u32)mallco_dev.membase;  
     mmem_free(offset);	//释放内存     
 }  
+
+
+/*******************************************************************************
+* Function Name  : mymalloc
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //分配内存(外部调用)
 //size:内存大小(字节)
 //返回值:分配到的内存首地址.
@@ -132,6 +251,18 @@ void *mymalloc(u32 size)
     if(offset==0XFFFFFFFF)return NULL;  
     else return (void*)((u32)mallco_dev.membase+offset);  
 }  
+
+
+/*******************************************************************************
+* Function Name  : myrealloc
+* Description    : None
+*                  
+* Input          : appxaddr:应用程序的起始地址
+*                  appbuf:应用程序CODE.
+*                  appsize:应用程序大小(字节).
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 //重新分配内存(外部调用)
 //*ptr:旧内存首地址
 //size:要分配的内存大小(字节)
@@ -148,6 +279,11 @@ void *myrealloc(void *ptr,u32 size)
         return (void*)((u32)mallco_dev.membase+offset);  			//返回新内存首地址
     }  
 }
+
+
+/******************************  END OF FILE  *********************************/
+
+
 
 
 
