@@ -86,7 +86,10 @@ void Bsp_Init(void)
         {
             printf("AT24CXX_Check fail \n");
           
-        }       
+        }      
+        
+        /* Self test routines initialization ---------------------------------*/
+        STL_InitRunTimeChecks();
         
 #else       
         

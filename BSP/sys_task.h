@@ -19,7 +19,7 @@
 void rx485_test_init(void);
 void rtc_clock_init(void);
 void led_ewdt_init(void);
-
+void self_check_init(void);
 
 #endif /* _SYS_TASK_H */
 

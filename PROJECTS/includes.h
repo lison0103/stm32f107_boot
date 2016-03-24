@@ -33,6 +33,8 @@
 #include "hw_test.h"
 #include "freertos_lwip.h" 
 #include "modbusTask.h"
+#include "stm32f10x_STLlib.h"
+#include "stm32f10x_STLclassBvar.h"
 #endif
 
 /* Exported types ------------------------------------------------------------*/
@@ -47,6 +49,7 @@
 #define TCP_TASK_PRIO			( tskIDLE_PRIORITY + 5 )
 #define DHCP_TASK_PRIO                  ( tskIDLE_PRIORITY + 8 ) 
 #define INPUT_TASK_PRIO                 ( tskIDLE_PRIORITY + 6 )
+#define SELFCHEK_TASK_PRIO              ( tskIDLE_PRIORITY + 8 )
 
 /*************************  TEST    *******************************************/
 #define ETH_LWIP_TEST    0

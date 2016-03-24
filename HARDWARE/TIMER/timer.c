@@ -174,19 +174,19 @@ void TIM4_IRQHandler(void)   //TIM4ÖÐ¶Ï
               TimeBaseFlag = 0xAAAAAAAA;
               TimeBaseFlagInv = 0x55555555;
 
-              if ((CurrentHSEPeriod ^ CurrentHSEPeriodInv) == 0xFFFFFFFFuL)
-              {
-                ISRCtrlFlowCnt += MEASPERIOD_ISR_CALLER;
-                CurrentHSEPeriod = STL_MeasurePeriod();
-                CurrentHSEPeriodInv = ~CurrentHSEPeriod;
-                ISRCtrlFlowCntInv -= MEASPERIOD_ISR_CALLER;
-              }
-              else  /* Class B Error on CurrentHSEPeriod */
-              {
-              #ifdef STL_VERBOSE
-                printf("\n\r Class B Error on CurrentHSEPeriod \n\r");
-              #endif  /* STL_VERBOSE */
-              }
+//              if ((CurrentHSEPeriod ^ CurrentHSEPeriodInv) == 0xFFFFFFFFuL)
+//              {
+//                ISRCtrlFlowCnt += MEASPERIOD_ISR_CALLER;
+//                CurrentHSEPeriod = STL_MeasurePeriod();
+//                CurrentHSEPeriodInv = ~CurrentHSEPeriod;
+//                ISRCtrlFlowCntInv -= MEASPERIOD_ISR_CALLER;
+//              }
+//              else  /* Class B Error on CurrentHSEPeriod */
+//              {
+//              #ifdef STL_VERBOSE
+//                printf("\n\r Class B Error on CurrentHSEPeriod \n\r");
+//              #endif  /* STL_VERBOSE */
+//              }
 
               ISRCtrlFlowCnt += RAM_MARCHC_ISR_CALLER;
               RamTestResult = STL_TranspMarchC();
@@ -202,7 +202,7 @@ void TIM4_IRQHandler(void)   //TIM4ÖÐ¶Ï
                   break;
                 case TEST_OK:
                   #ifdef STL_VERBOSE
-//                    printf("\n\r Full RAM verified (Run-time)\n\r");
+                    printf("\n\r Full RAM verified (Run-time)\n\r");
 //                    GPIO_WriteBit(GPIOC, GPIO_Pin_7, (BitAction)(1-GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_7)));
                   #endif  /* STL_VERBOSE */
                   break;

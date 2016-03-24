@@ -20,9 +20,29 @@
 void led_ewdt_task(void *arg);
 void rx485_task(void *arg);
 void rtc_task(void *arg);
+void selfcheck_task(void *arg);
 
 
-
+/*******************************************************************************
+* Function Name  : selfcheck_task
+* Description    : None
+*                  
+* Input          : None
+*                  None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void selfcheck_task(void *arg)
+{
+        
+	for( ; ; )
+	{
+                /* self check */
+                STL_DoRunTimeChecks();
+                vTaskDelay( 1 );
+	}
+}
 
 /*******************************************************************************
 * Function Name  : led_ewdt_task
@@ -184,6 +204,21 @@ void led_ewdt_init(void)
 	xTaskCreate(led_ewdt_task, "LED_EWDT", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
 }
 
+
+/*******************************************************************************
+* Function Name  : self_check_init
+* Description    : None
+*                  
+* Input          : None
+*                  None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void self_check_init(void)
+{
+	xTaskCreate(selfcheck_task, "SELF_CHECK", configMINIMAL_STACK_SIZE * 4, NULL, SELFCHEK_TASK_PRIO, NULL);
+}
 
 
 /******************************  END OF FILE  *********************************/

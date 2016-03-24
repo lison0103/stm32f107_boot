@@ -127,6 +127,20 @@ allow to react more quickly */
                           CRC16_TEST_CALLER + \
                           CRC16_TEST_CALLEE)
 
+#if GEC_CB_MAIN  
+/* CB board remove clock test, because rtc occupied */
+#define CHECKPOINT2 ((u32)STACK_OVERFLOW_TEST)
+
+/* This is for run-time tests with 16-bit CRC */
+#define DELTA_MAIN  ((u32)CPU_TEST_CALLER + \
+                          CPU_TEST_CALLEE + \
+                          STACK_OVERFLOW_TEST + \
+                          STACK_OVERFLOW_CALLEE + \
+                          FLASH_TEST_CALLER + \
+                          CRC16_RUN_TEST_CALLEE + \
+                          CRC16_TEST_CALLEE)
+#else
+
 #define CHECKPOINT2 ((u32)CLOCK_TEST_CALLER + \
                           CLOCK_TEST_CALLEE + \
                           LSI_INIT_CALLEE + \
@@ -147,6 +161,10 @@ allow to react more quickly */
                           FLASH_TEST_CALLER + \
                           CRC16_RUN_TEST_CALLEE + \
                           CRC16_TEST_CALLEE)
+
+#endif
+
+
 #define LAST_DELTA_MAIN ((u32) DELTA_MAIN)
 #define FULL_FLASH_CHECKED ((u32)DELTA_MAIN * STEPS_NUMBER)
 
@@ -174,11 +192,17 @@ allow to react more quickly */
 #define RAM_MARCHX_ISR_CALLER   ((u32)13)
 #define RAM_MARCHX_ISR_CALLEE   ((u32)17)
 
+#if GEC_CB_MAIN 
+/* This is for March C tests */
+#define DELTA_ISR  ((u32)  RAM_MARCHC_ISR_CALLER + \
+                           RAM_MARCHC_ISR_CALLEE)
+#else
 /* This is for March C tests */
 #define DELTA_ISR  ((u32)  MEASPERIOD_ISR_CALLER + \
                            MEASPERIOD_ISR_CALLEE + \
                            RAM_MARCHC_ISR_CALLER + \
                            RAM_MARCHC_ISR_CALLEE)
+#endif
 
 /* This is for March X tests */
 //#define DELTA_ISR  ((u32)  MEASPERIOD_ISR_CALLER + \

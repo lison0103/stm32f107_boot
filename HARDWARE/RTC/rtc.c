@@ -65,7 +65,7 @@ u8 RTC_Init(void)
 	//检查是不是第一次配置时钟
 	u8 temp=0;
  
-	if (BKP_ReadBackupRegister(BKP_DR42) != 0x1010)		//从指定的后备寄存器中读出数据:读出了与写入的指定数据不相乎
+	if (BKP_ReadBackupRegister(BKP_DR42) != 0x5050)		//从指定的后备寄存器中读出数据:读出了与写入的指定数据不相乎
         {	 			
             RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	//使能PWR和BKP外设时钟   
             PWR_BackupAccessCmd(ENABLE);	//使能后备寄存器访问 
@@ -86,9 +86,9 @@ u8 RTC_Init(void)
             RTC_EnterConfigMode();/// 允许配置	
             RTC_SetPrescaler(32767); //设置RTC预分频的值
             RTC_WaitForLastTask();	//等待最近一次对RTC寄存器的写操作完成
-            RTC_Set(2016,3,22,16,18,30);  //设置时间	
+            RTC_Set(2016,3,24,17,23,20);  //设置时间	
             RTC_ExitConfigMode(); //退出配置模式  
-            BKP_WriteBackupRegister(BKP_DR42, 0X1010);	//向指定的后备寄存器中写入用户程序数据
+            BKP_WriteBackupRegister(BKP_DR42, 0x5050);	//向指定的后备寄存器中写入用户程序数据
         }
 	else//系统继续计时
         {

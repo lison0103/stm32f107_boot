@@ -36,9 +36,12 @@
 *******************************************************************************/ 
 void Task_Loop(void)
 {
-   
+        
   
 #ifdef GEC_CB_MAIN 
+  
+        /* self check */
+        self_check_init();
 
       
 #if   ETH_LWIP_TEST 

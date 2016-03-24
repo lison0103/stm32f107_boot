@@ -62,7 +62,7 @@ void STL_SysTickRTCSync(void)
   RCC_GetClocksFreq(&RCC_Clocks);
   SysTick->CTRL &= SysTick_Counter_Disable;
   SysTick->VAL = SysTick_Counter_Clear;
-#endif
+
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 
   /* Allow access to BKP Domain */
@@ -85,7 +85,7 @@ void STL_SysTickRTCSync(void)
   RTC_WaitForLastTask();
 
   RTC_SetPrescaler(0);    /* Do not prescale to have the highest precision */
-
+#endif
 #if 0  
 SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);  
 //SysTick->LOAD = SYSTICK_2_ms_PLL;//SysTick_SetReload(SYSTICK_TB_START);          /* Set reload rate (Ref period) */
@@ -99,7 +99,7 @@ SysTick_Config(SYSTICK_TB_RUN);
     TIM4_Int_Init(19,7199);
 
   /* Reset RTC */
-  RTC_SetCounter(0);
+//  RTC_SetCounter(0);
   /* Start down-counting */
 //  SysTick_CounterCmd(SysTick_Counter_Enable);
 //  SysTick->CTRL |= SysTick_Counter_Enable;

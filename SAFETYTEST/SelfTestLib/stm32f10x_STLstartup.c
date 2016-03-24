@@ -243,6 +243,7 @@ void STL_StartUp(void)
   /*--------------------------------------------------------------------------*/
   /*----------------------- Clock Frequency Self Test ------------------------*/
   /*--------------------------------------------------------------------------*/
+#if 0
   CtrlFlowCnt += CLOCK_TEST_CALLER;
   switch ( STL_ClockStartUpTest() )
   {
@@ -292,7 +293,7 @@ void STL_StartUp(void)
   }
   // Either switch back to HSI or start PLL on HSE asap
   CtrlFlowCntInv -= CLOCK_TEST_CALLER;
-
+#endif
   /*--------------------------------------------------------------------------*/
   /* -----  Verify Control flow before Starting main program execution ------ */
   /*--------------------------------------------------------------------------*/
