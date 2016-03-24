@@ -15,6 +15,7 @@
 #define DHCP_LINK_DOWN             5   
 /* Exported constants --------------------------------------------------------*/
 //#define USE_DHCP   
+   
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void LwIP_Init(void);

@@ -17,10 +17,9 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+void NVIC_Configuration(void);
 
 
-USBH_HOST  USB_Host;
-USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
 
 /*******************************************************************************
@@ -87,18 +86,6 @@ void Bsp_Init(void)
         }       
         
 #else       
-        /** mem init **/	
-	mmem_init(); 
-        
-        /** fatfs apply memory **/ 
- 	if(exfuns_init())			
-        {
-            printf("fatfs memory apply fail \n");
-        
-        }
-             
-	/** USB HOST init **/
-  	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_cb); 
         
 #endif
         

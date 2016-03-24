@@ -17,6 +17,7 @@
 #include "ewdt.h"
 #include "can.h"
 #include "bsp_iocfg.h"
+#include "includes.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -563,7 +564,7 @@ void can1_can2_test(void)
 
 
 /*******************************************************************************
-* Function Name  : hw_can_test
+* Function Name  : input_can_task
 * Description    : None
 *                  
 * Input          : None
@@ -572,7 +573,7 @@ void can1_can2_test(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void hw_can_test(void)
+void input_test_task(void *arg)
  {	 
 	u8 i=0,t=0;
 	u8 canbuf_recv[8];
@@ -630,6 +631,22 @@ void hw_can_test(void)
 			t=0;
 		}		   
 	}
+}
+
+
+/*******************************************************************************
+* Function Name  : rtc_clock_init
+* Description    : None
+*                  
+* Input          : None
+*                  None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void input_test_init(void)
+{
+	xTaskCreate(input_test_task, "INPUT_TEST", configMINIMAL_STACK_SIZE * 2, NULL, INPUT_TASK_PRIO, NULL);
 }
 
 

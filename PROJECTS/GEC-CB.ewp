@@ -2911,7 +2911,7 @@
         </option>
         <option>
           <name>OGLastSavedByProductVersion</name>
-          <state>6.50.6.4952</state>
+          <state>6.50.1.4445</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -3823,10 +3823,19 @@
       </excluded>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\BSP\sys_task.c</name>
+      <excluded>
+        <configuration>GEC-CB-BL</configuration>
+      </excluded>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\BSP\update.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\BSP\usb_bsp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\BSP\usb_task.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\BSP\usbh_usr.c</name>

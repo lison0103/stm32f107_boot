@@ -22,7 +22,7 @@
 void Input_Check(void);
 void can_test(void);
 void can1_can2_test(void);
-void hw_can_test(void);
+void input_test_init(void);
 
 extern u8 canbuf_send[8];
 

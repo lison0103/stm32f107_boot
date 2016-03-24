@@ -24,9 +24,9 @@
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void led_task(void *arg);
-void TCPServer(void *arg);
-void TCPClient(void *arg);
-
+void tcp_client_init(void);
+void tcp_server_init(void);
+void lwip_dhcp_init(void);
 
 
 #endif /* __IAP_H */

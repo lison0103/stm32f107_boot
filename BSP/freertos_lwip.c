@@ -13,6 +13,7 @@
 #include "led.h"  
 #include "ewdt.h"
 #include <string.h>
+#include "includes.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct _XTCPCLIENTSOCK{
@@ -35,12 +36,15 @@ char show_buf[] = "The most number of connections reached! bye!";
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+void TCPServer(void *arg);
+void TCPClient(void *arg);
+
 
 
 
 
 /*******************************************************************************
-* Function Name  : led_task
+* Function Name  : tcp_client_init
 * Description    : None
 *                  
 * Input          : None
@@ -49,19 +53,43 @@ char show_buf[] = "The most number of connections reached! bye!";
 * Output         : None
 * Return         : None
 *******************************************************************************/ 
-void led_task(void *arg)
+void tcp_client_init(void)
 {
-        LED0 = 0;
-        LED1 = 1;
-        
-	for( ; ; )
-	{
-                LED0 =!LED0;
-                LED1 =!LED1;
-                EWDT_TOOGLE();
-		vTaskDelay( 500 );
-	}
+	xTaskCreate(TCPClient, "TCPClient",  DEFAULT_THREAD_STACKSIZE * 2, NULL, TCP_TASK_PRIO, NULL);
 }
+
+
+/*******************************************************************************
+* Function Name  : tcp_server_init
+* Description    : None
+*                  
+* Input          : None
+*                  None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void tcp_server_init(void)
+{
+	xTaskCreate(TCPServer, "TCPServer",  DEFAULT_THREAD_STACKSIZE * 2, NULL, TCP_TASK_PRIO, NULL);
+}
+
+
+/*******************************************************************************
+* Function Name  : tcp_server_init
+* Description    : None
+*                  
+* Input          : None
+*                  None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void lwip_dhcp_init(void)
+{
+	xTaskCreate(LwIP_DHCP_task, "DHCP", configMINIMAL_STACK_SIZE * 2, NULL,DHCP_TASK_PRIO, NULL);
+}
+
 
 
 
@@ -488,6 +516,8 @@ void TCPClient(void *arg)
 		}	
 	}
 }
+
+
 
 
 /******************************  END OF FILE  *********************************/

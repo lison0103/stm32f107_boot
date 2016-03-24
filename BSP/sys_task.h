@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name          : modbusTask.h
+* File Name          : sys_task.h
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
@@ -8,19 +8,20 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef _MODBUSTASK_H
-#define _MODBUSTASK_H
+#ifndef _SYS_TASK_H
+#define _SYS_TASK_H
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void modbus_rtu_init(void);
-void modbus_socket_init(void);
+void rx485_test_init(void);
+void rtc_clock_init(void);
+void led_ewdt_init(void);
 
 
-#endif /* _MODBUSTASK_H */
+#endif /* _SYS_TASK_H */
 
 
 /******************************  END OF FILE  *********************************/

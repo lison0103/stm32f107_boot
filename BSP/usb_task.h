@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name          : modbusTask.h
+* File Name          : usb_task.h
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
@@ -8,19 +8,18 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef _MODBUSTASK_H
-#define _MODBUSTASK_H
+#ifndef _USB_TASK_H
+#define _USB_TASK_H
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void modbus_rtu_init(void);
-void modbus_socket_init(void);
+void usb_mass_storage_init(void);
+void usb_process(void);
 
-
-#endif /* _MODBUSTASK_H */
+#endif /* _USB_TASK_H */
 
 
 /******************************  END OF FILE  *********************************/
