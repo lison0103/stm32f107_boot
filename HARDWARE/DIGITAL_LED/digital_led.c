@@ -46,7 +46,6 @@ u8 dis_data[3]={0,0,0};
 *******************************************************************************/
 void digital_led_gpio_init(void)
 {
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE );
   
       GPIO_InitTypeDef GPIO_InitStruct;
       

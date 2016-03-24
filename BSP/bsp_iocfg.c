@@ -31,7 +31,6 @@
 *******************************************************************************/
 void Input_Output_PinInit(void)
 {
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE, ENABLE );
       
       RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
       GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);  

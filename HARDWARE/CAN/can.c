@@ -61,12 +61,8 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 tsjw,u8 tbs2,u8 tbs1,u16 brp,u8 mode)
          RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
         
         if(CANx == CAN1)
-        {
-            RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);//使能PORTD时钟	                   											 
-
-            RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);//使能CAN1时钟	
-            
-            
+        {	                   											 
+           
             GPIO_PinRemapConfig(GPIO_Remap2_CAN1, ENABLE);
 
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
@@ -125,11 +121,7 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 tsjw,u8 tbs2,u8 tbs1,u16 brp,u8 mode)
             
         }
         else if(CANx == CAN2)
-        {
-            RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);//使能PORTB时钟	                   											 
-
-            RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN2, ENABLE);//使能CAN2时钟	
-            
+        {	                   											 	            
             
             GPIO_PinRemapConfig(GPIO_Remap_CAN2, ENABLE);
 

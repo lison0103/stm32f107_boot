@@ -18,7 +18,7 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 void NVIC_Configuration(void);
-
+void RCC_Configuration(void);
 
 
 
@@ -36,6 +36,9 @@ void Bsp_Init(void)
 
         /** set system interrupt priority group 2 **/
 	NVIC_Configuration();
+
+        /** RCC  Configuration **/
+        RCC_Configuration(); 
         
         /** delay init **/
 	delay_init();  
@@ -90,6 +93,74 @@ void Bsp_Init(void)
 #endif
         
 }
+
+
+/*******************************************************************************
+* Function Name  : RCC_Configuration
+* Description    : Configures the different system clocks.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void RCC_Configuration(void)
+{
+
+    /* HCLK = SYSCLK */
+    RCC_HCLKConfig(RCC_SYSCLK_Div1);  
+
+    /* PCLK2 = HCLK */
+    RCC_PCLK2Config(RCC_HCLK_Div1);
+
+    /* PCLK1 = HCLK/2 */
+    RCC_PCLK1Config(RCC_HCLK_Div2); 
+
+    /* Flash 2 wait state */
+    FLASH_SetLatency(FLASH_Latency_2);
+    /* Enable Prefetch Buffer */
+    FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
+
+    /* PLLCLK = 8MHz * 9 = 72 MHz */
+    RCC_PLLConfig(RCC_PLLSource_PREDIV1, RCC_PLLMul_9);
+
+    /* Enable PLL */
+    RCC_PLLCmd(ENABLE);
+
+    /* Wait till PLL is ready */
+    while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET)
+    {
+    }
+
+    /* Select PLL as system clock source */
+    RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+    /* Wait till PLL is used as system clock source */
+    while(RCC_GetSYSCLKSource() != 0x08)
+    {
+    }
+   
+  
+                                        
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO , ENABLE);
+  
+    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA
+                           |RCC_APB2Periph_GPIOB
+                           |RCC_APB2Periph_GPIOC
+                           |RCC_APB2Periph_GPIOD
+                           |RCC_APB2Periph_GPIOE ,
+                           ENABLE); 
+     
+  
+    #ifdef GEC_CB_MAIN
+      /* Enable GPIO and Peripherals clocks */   
+      RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 | RCC_AHBPeriph_CRC, ENABLE);
+      RCC_APB1PeriphClockCmd(RCC_APB1Periph_BKP | RCC_APB1Periph_PWR, ENABLE );
+      RCC_APB1PeriphClockCmd( RCC_APB1Periph_CAN1 , ENABLE); 
+      RCC_APB1PeriphClockCmd( RCC_APB1Periph_CAN2 , ENABLE);    
+      RCC_APB1PeriphClockCmd( RCC_APB1Periph_TIM4 , ENABLE);   
+    #endif
+}
+
+
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration

@@ -30,9 +30,7 @@
 void LED_Init(void)
 {
 
-     GPIO_InitTypeDef  GPIO_InitStructure;
-            
-     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOD, ENABLE);	 //使能PB,PD端口时钟
+     GPIO_InitTypeDef  GPIO_InitStructure;            
             
      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;				 //LED1-->PB.15 端口配置
      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出

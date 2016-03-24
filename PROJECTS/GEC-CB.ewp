@@ -2039,6 +2039,7 @@
           <state>STM32F10X_CL</state>
           <state>USE_USB_OTG_FS</state>
           <state>GEC_CB_MAIN</state>
+          <state>EWARMv5</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -2202,6 +2203,8 @@
           <state>$PROJ_DIR$\..\ETHERNET</state>
           <state>$PROJ_DIR$\..\HARDWARE\RTC</state>
           <state>$PROJ_DIR$\..\HARDWARE\USART</state>
+          <state>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib</state>
+          <state>$PROJ_DIR$\..\HARDWARE\TIMER</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -2662,7 +2665,7 @@
         </option>
         <option>
           <name>DoFill</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>FillerByte</name>
@@ -2670,11 +2673,11 @@
         </option>
         <option>
           <name>FillerStart</name>
-          <state>0x0</state>
+          <state>0x08010000</state>
         </option>
         <option>
           <name>FillerEnd</name>
-          <state>0x0</state>
+          <state>0x0803FFFF</state>
         </option>
         <option>
           <name>CrcSize</name>
@@ -2705,7 +2708,7 @@
         </option>
         <option>
           <name>DoCrc</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IlinkBE8Slave</name>
@@ -4036,6 +4039,15 @@
       <name>CMSIS</name>
       <file>
         <name>$PROJ_DIR$\..\Libraries\CMSIS\startup\startup_stm32f10x_cl.s</name>
+        <excluded>
+          <configuration>GEC-CB-BL</configuration>
+        </excluded>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Libraries\CMSIS\startup\startup_stm32f10x_cl_boot.s</name>
+        <excluded>
+          <configuration>GEC-CB-A</configuration>
+        </excluded>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Libraries\CMSIS\system_stm32f10x.c</name>
@@ -4201,6 +4213,12 @@
       <name>$PROJ_DIR$\..\HARDWARE\STMFLASH\stmflash.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\HARDWARE\TIMER\timer.c</name>
+      <excluded>
+        <configuration>GEC-CB-BL</configuration>
+      </excluded>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\HARDWARE\USART\usart.c</name>
     </file>
   </group>
@@ -4337,6 +4355,57 @@
     <name>MALLOC</name>
     <file>
       <name>$PROJ_DIR$\..\MALLOC\malloc.c</name>
+    </file>
+  </group>
+  <group>
+    <name>SafetyTest</name>
+    <excluded>
+      <configuration>GEC-CB-BL</configuration>
+    </excluded>
+    <group>
+      <name>SelfTestLib</name>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLclockrun.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLclockstart.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcpurunIARv5.s</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcpustartIARv5.s</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcrc16.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcrc16Run.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcrc32.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLcrc32Run.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLfullRamMc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLmain.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLstartup.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLtranspRamMc.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLtranspRamMx.c</name>
+      </file>
+    </group>
+    <file>
+      <name>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib\stm32f10x_STLparam.h</name>
     </file>
   </group>
   <group>

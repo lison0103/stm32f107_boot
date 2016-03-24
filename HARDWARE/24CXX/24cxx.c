@@ -247,9 +247,7 @@ void AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 //初始化IIC
 void IIC_Init(void)
 {					     
-	GPIO_InitTypeDef GPIO_InitStructure;
-	//RCC->APB2ENR|=1<<4;//先使能外设IO PORTC时钟 
-	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC, ENABLE );	
+	GPIO_InitTypeDef GPIO_InitStructure;	
 	   
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP ;   //推挽输出
