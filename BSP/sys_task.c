@@ -40,7 +40,7 @@ void selfcheck_task(void *arg)
 	{
                 /* self check */
                 STL_DoRunTimeChecks();
-                vTaskDelay( 1 );
+                vTaskDelay( 5 );
 	}
 }
 

@@ -455,8 +455,8 @@ void can_test(void)
 	u8 mode=CAN_Mode_LoopBack;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
 
 	 	
-        CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,mode);
-	CAN_Mode_Init(USE_CAN,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,10,CAN_Mode_LoopBack);//CAN初始化环回模式,波特率500Kbps    
+        CAN_Mode_Init(CAN1,mode);
+	CAN_Mode_Init(USE_CAN,CAN_Mode_LoopBack);
 
 	
  	while(1)
@@ -516,8 +516,8 @@ void can1_can2_test(void)
 
 	 	
    
-	CAN_Mode_Init(CAN1,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
-        CAN_Mode_Init(CAN2,CAN_SJW_2tq,CAN_BS2_5tq,CAN_BS1_3tq,20,mode);//CAN初始化环回模式,波特率200Kbps    
+	CAN_Mode_Init(CAN1,mode);  
+        CAN_Mode_Init(CAN2,mode);    
 
 	
  	while(1)
@@ -575,16 +575,16 @@ void can1_can2_test(void)
 *******************************************************************************/
 void input_test_task(void *arg)
  {	 
-	u8 i=0,t=0;
+	u8 i=0;
 	u8 canbuf_recv[8];
 	u8 res;
         u8 can_rcv;
-	u8 mode=CAN_Mode_Normal;//CAN工作模式;CAN_Mode_Normal(0)：普通模式，CAN_Mode_LoopBack(1)：环回模式
+	u8 mode=CAN_Mode_Normal;
         u32 aa = 0;
 	 	
    
-	CAN_Mode_Init(CAN1,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
-//        CAN_Mode_Init(CAN2,CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,8,mode);//CAN初始化环回模式,波特率250Kbps    
+	CAN_Mode_Init(CAN1,mode);//CAN初始化环回模式,波特率250Kbps    
+//        CAN_Mode_Init(CAN2,mode);//CAN初始化环回模式,波特率250Kbps    
 
 	
  	while(1)
@@ -596,7 +596,7 @@ void input_test_task(void *arg)
           
                   Input_Check();
                   
-                  if(aa == 100)
+                  if(aa == 10)
                   {
                   
                         res=Can_Send_Msg(CAN1,canbuf_send,2);//发送2个字节 
@@ -606,7 +606,6 @@ void input_test_task(void *arg)
                         else 
                           printf("OK    ");	 		//提示发送成功	
                         
-                        LED0=!LED0;
                         aa = 0;
                   }
 
@@ -617,19 +616,12 @@ void input_test_task(void *arg)
 			
  			for(i=0;i<can_rcv;i++)
 			{									    
-//                              printf("%s",canbuf_recv[i]);	//显示数据
+                              printf("%d ",canbuf_recv[i]);	//显示数据
  			}
 		}
                 
-                
-		t++; 
-		delay_ms(10);
-		if(t==50)
-		{
-			LED1=!LED1;//提示系统正在运行	
-                        EWDT_TOOGLE();
-			t=0;
-		}		   
+                vTaskDelay( 50 );
+		   
 	}
 }
 
