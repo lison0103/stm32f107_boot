@@ -74,29 +74,34 @@ void AT24CXX_Init(void)
 * Input          : ReadAddr:开始读数的地址  
 *                  
 * Output         : None
-* Return         : 读到的数据
+* Return         : 
 *******************************************************************************/
-u8 AT24CXX_ReadOneByte(u16 ReadAddr)
-{				  
-	u8 temp=0;		  	    																 
-    IIC_Start();  
+u8 AT24CXX_ReadOneByte(u16 ReadAddr, u8 *dat)
+{				  	
+        u8 err=0;
+        
+        IIC_Start();  
 	if(EE_TYPE>AT24C16)
 	{
 		IIC_Send_Byte(0XA0);	   //发送写命令
-		IIC_Wait_Ack();
+		err = IIC_Wait_Ack();
 		IIC_Send_Byte(ReadAddr>>8);//发送高地址
 //		IIC_Wait_Ack();		 
-	}else IIC_Send_Byte(0XA0+((ReadAddr/256)<<1));   //发送器件地址0XA0,写数据 	 
-
-	IIC_Wait_Ack(); 
-    IIC_Send_Byte(ReadAddr%256);   //发送低地址
-	IIC_Wait_Ack();	    
+	}
+        else 
+        {   
+            IIC_Send_Byte(0XA0+((ReadAddr/256)<<1));   //发送器件地址0XA0,写数据 	 
+        }
+	err = IIC_Wait_Ack(); 
+        IIC_Send_Byte(ReadAddr%256);   //发送低地址
+	err = IIC_Wait_Ack();	    
 	IIC_Start();  	 	   
 	IIC_Send_Byte(0XA1);           //进入接收模式			   
-	IIC_Wait_Ack();	 
-    temp=IIC_Read_Byte(0);		   
-    IIC_Stop();//产生一个停止条件	    
-	return temp;
+	err = IIC_Wait_Ack();	 
+        *dat=IIC_Read_Byte(0);		   
+        IIC_Stop();//产生一个停止条件	  
+        
+	return (err);
 }
 
 
@@ -109,25 +114,29 @@ u8 AT24CXX_ReadOneByte(u16 ReadAddr)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
-{				   	  	    																 
-    IIC_Start();  
+u8 AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
+{		
+        u8 err=0;
+        
+        IIC_Start();  
 	if(EE_TYPE>AT24C16)
 	{
 		IIC_Send_Byte(0XA0);	    //发送写命令
-		IIC_Wait_Ack();
+		err = IIC_Wait_Ack();
 		IIC_Send_Byte(WriteAddr>>8);//发送高地址
  	}else
 	{
 		IIC_Send_Byte(0XA0+((WriteAddr/256)<<1));   //发送器件地址0XA0,写数据 
 	}	 
-	IIC_Wait_Ack();	   
-    IIC_Send_Byte(WriteAddr%256);   //发送低地址
-	IIC_Wait_Ack(); 	 										  		   
+	err = IIC_Wait_Ack();	   
+        IIC_Send_Byte(WriteAddr%256);   //发送低地址
+	err = IIC_Wait_Ack(); 	 										  		   
 	IIC_Send_Byte(DataToWrite);     //发送字节							   
-	IIC_Wait_Ack();  		    	   
-    IIC_Stop();//产生一个停止条件 
+	err = IIC_Wait_Ack();  		    	   
+        IIC_Stop();//产生一个停止条件 
 	delay_ms(10);	 
+        
+        return (err);
 }
 
 
@@ -141,14 +150,14 @@ void AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void AT24CXX_WriteLenByte(u16 WriteAddr,u32 DataToWrite,u8 Len)
-{  	
-	u8 t;
-	for(t=0;t<Len;t++)
-	{
-		AT24CXX_WriteOneByte(WriteAddr+t,(DataToWrite>>(8*t))&0xff);
-	}												    
-}
+//void AT24CXX_WriteLenByte(u16 WriteAddr,u32 DataToWrite,u8 Len)
+//{  	
+//	u8 t;
+//	for(t=0;t<Len;t++)
+//	{
+//		AT24CXX_WriteOneByte(WriteAddr+t,(DataToWrite>>(8*t))&0xff);
+//	}												    
+//}
 
 
 
@@ -161,17 +170,17 @@ void AT24CXX_WriteLenByte(u16 WriteAddr,u32 DataToWrite,u8 Len)
 * Output         : None
 * Return         : 数据
 *******************************************************************************/
-u32 AT24CXX_ReadLenByte(u16 ReadAddr,u8 Len)
-{  	
-	u8 t;
-	u32 temp=0;
-	for(t=0;t<Len;t++)
-	{
-		temp<<=8;
-		temp+=AT24CXX_ReadOneByte(ReadAddr+Len-t-1); 	 				   
-	}
-	return temp;												    
-}
+//u32 AT24CXX_ReadLenByte(u16 ReadAddr,u8 Len)
+//{  	
+//	u8 t;
+//	u32 temp=0;
+//	for(t=0;t<Len;t++)
+//	{
+//		temp<<=8;
+//		temp+=AT24CXX_ReadOneByte(ReadAddr+Len-t-1); 	 				   
+//	}
+//	return temp;												    
+//}
 
 
 
@@ -187,12 +196,12 @@ u32 AT24CXX_ReadLenByte(u16 ReadAddr,u8 Len)
 u8 AT24CXX_Check(void)
 {
 	u8 temp;
-	temp=AT24CXX_ReadOneByte(32767);//避免每次开机都写AT24CXX			   
+	AT24CXX_ReadOneByte(32767,&temp);//避免每次开机都写AT24CXX			   
 	if(temp==0X55)return 0;		   
 	else//排除第一次初始化的情况
 	{
 		AT24CXX_WriteOneByte(32767,0X55);
-	    temp=AT24CXX_ReadOneByte(32767);	  
+                AT24CXX_ReadOneByte(32767,&temp);	  
 		if(temp==0X55)return 0;
 	}
 	return 1;											  
@@ -210,13 +219,26 @@ u8 AT24CXX_Check(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
+u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 {
-	while(NumToRead)
+        u8 ucCounter=0,err=0;
+        
+        while(ucCounter<3)
 	{
-		*pBuffer++=AT24CXX_ReadOneByte(ReadAddr++);	
+            
+            while(NumToRead)
+            {
+		err = AT24CXX_ReadOneByte(ReadAddr++, pBuffer++);
+                if(err) break;
 		NumToRead--;
-	}
+            }
+            if(!err) break;
+            
+            ucCounter++;
+            delay_ms( 50 );            
+            
+        }
+        return(err);
 }  
 
 
@@ -231,7 +253,7 @@ void AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
+u8 AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 {
 	while(NumToWrite--)
 	{
@@ -239,6 +261,26 @@ void AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 		WriteAddr++;
 		pBuffer++;
 	}
+        u8 ucCounter=0,err=0;
+        
+        while(ucCounter<3)
+	{
+            
+            while(NumToWrite--)
+            {
+		err = AT24CXX_WriteOneByte(WriteAddr, *pBuffer);
+                WriteAddr++;
+		pBuffer++;
+                if(err) break;
+            }
+            if(!err) break;
+            
+            ucCounter++;
+            delay_ms( 50 );            
+            
+        }
+        return(err);        
+        
 }
  
 

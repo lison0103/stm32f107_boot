@@ -20,7 +20,71 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+//主控参数
+u16 TimingDelay=0,System_Sequence=0,System_Check_Fault_Flag=0;
 
+u8 Modbuff[5400]; 
+
+u8 EscRTBuff[200],McRxBuff[1000];    
+
+u16 *const ptModbuff  = (u16*)Modbuff; 
+
+//------------------------------------------------------------------------------------------- ModBus
+u8 *const pcMbRtccBuff = &Modbuff[50];  				//6字节
+
+//modbus 
+u8 *const pcEscErrorCodeBuff = &Modbuff[454];  	//5字节
+u8 *const pcEscStateBuff = &Modbuff[460];	    	//4字节 
+u8 *const pcEscAlarmBuff = &Modbuff[464];				//4字节
+u8 *const pcEscErrorBuff = &Modbuff[468];				//32字节
+
+//统计数组
+u8 *const pcStatDataBuff = &Modbuff[500];  			
+//记录故障
+u16 *const ptErrorRecordFirstItem = (u16*)&Modbuff[530];
+
+//系统参数
+u8 *const ParaBuff = &Modbuff[1100];
+u16 *const ptParaBuff = (u16*)&Modbuff[1100];
+
+// 通信配置40676																	
+//u16 *ptParaCommCgcBuff = (u16*)&Modbuff[1350];	//242字节
+//u8 *pcParaCommCgcBuff = &Modbuff[1350];			//242字节
+
+//多段速配置 50字节
+u8 *const pcParaMultiSpeedBuff = &Modbuff[1600];	//50字节
+
+//故障复位bit标志
+u8 *const pcParaERB_DecodeBuff = &Modbuff[1660];		//32字节
+
+//故障复位方式，人工复位252字节
+u8 *const pcParaErrorResetBuff = &Modbuff[1700];		//252字节
+
+//记录故障
+u8 *const pcRtDataBuff = &Modbuff[2700];  
+u8 *const pcRtRecordErrorCodeBuff = &Modbuff[2750];  
+
+u8 *const pcErrorRecordBuff = &Modbuff[3000];   
+
+//----------------------------------------------------------------------------------------- 实时数据
+u16 *const ptEscRTBuff = 	(u16*)EscRTBuff;  
+
+u8 *const pcInputBuff = 	&EscRTBuff[4];  
+u8 *const pcCMDBuff = 		&EscRTBuff[20];  
+u8 *const pcOutputBuff = 	&EscRTBuff[30];  
+//u8 *const pcStateBuff = 	&EscRTBuff[60];  
+u8 *const pcAlarmBuff = 	&EscRTBuff[64];  
+u8 *const pcErrorBuff = 	&EscRTBuff[68];
+
+//常数指针 const char* chrPtr
+u32 *const plPowerOnTms = (u32*)&EscRTBuff[140];  
+
+u8 *const pcPgaInputMask = &EscRTBuff[150];    
+u8 *const pcPgaInputBuff = &EscRTBuff[170];  
+u8 *const pcPgaOutputBuff = &EscRTBuff[190];  
+
+//
+u8 *const pcOMC_EscRTBuff = &McRxBuff[0];
 
 
 

@@ -2205,6 +2205,7 @@
           <state>$PROJ_DIR$\..\HARDWARE\USART</state>
           <state>$PROJ_DIR$\..\SAFETYTEST\SelfTestLib</state>
           <state>$PROJ_DIR$\..\HARDWARE\TIMER</state>
+          <state>$PROJ_DIR$\..\ESC</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -3793,6 +3794,12 @@
       </excluded>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\BSP\crc16.c</name>
+      <excluded>
+        <configuration>GEC-CB-BL</configuration>
+      </excluded>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\BSP\delay.c</name>
     </file>
     <file>
@@ -3842,6 +3849,24 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\BSP\usbh_usr.c</name>
+    </file>
+  </group>
+  <group>
+    <name>ESC</name>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\esc_eeprom_process.c</name>
+      <excluded>
+        <configuration>GEC-CB-BL</configuration>
+      </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\esc_en_check.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\esc_error.c</name>
+      <excluded>
+        <configuration>GEC-CB-BL</configuration>
+      </excluded>
     </file>
   </group>
   <group>

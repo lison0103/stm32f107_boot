@@ -277,9 +277,62 @@ u8 RTC_Get_Week(u16 year,u8 month,u8 day)
 	temp2=temp2+day+table_week[month-1];
 	if (yearL%4==0&&month<3)temp2--;
 	return(temp2%7);
-}			  
+}	
 
 
+/*******************************************************************************
+* Function Name  : RTC_GetTime
+* Description    : 得到当前的时间
+*                  
+* Input          : None
+*                  
+* Output         : None
+* Return         : ,成功;其他:错误代码.
+*******************************************************************************/
+u8 RTC_GetTime( unsigned char *pcBuff )
+{
+      static u8 read_cnt=0,second_old=0xff,rtcc_valid=0; 
+    
+      RTC_Get();
+      pcBuff[0] = (calendar.w_year)%100;
+      pcBuff[1] = calendar.w_month;
+      pcBuff[2] = calendar.w_date;
+      pcBuff[3] = calendar.hour;
+      pcBuff[4] = calendar.min;
+      pcBuff[5] = calendar.sec;
+      
+      if(read_cnt++>15)
+      {
+          read_cnt = 0;
+          
+          if((second_old != pcBuff[5]) && (pcBuff[0]>=16))
+          {
+              rtcc_valid = 1;
+          }
+          else
+          {
+              rtcc_valid = 0;
+          }  
+          
+          second_old = pcBuff[5]; 
+      }   
+      
+      return(rtcc_valid);
+}
+
+/*******************************************************************************
+* Function Name  : RTC_SetTime
+* Description    : 设置时钟
+*                  把输入的时钟转换为秒钟,以1970年1月1日为基准,1970~2099年为合法年份
+* Input          : None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void RTC_SetTime( unsigned char *pcBuff )
+{
+    RTC_Set( pcBuff[0], pcBuff[1], pcBuff[2], pcBuff[3], pcBuff[4], pcBuff[5] );    
+}
 
 /******************************  END OF FILE  *********************************/
 
