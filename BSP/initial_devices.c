@@ -86,7 +86,11 @@ void Bsp_Init(void)
         {
             printf("AT24CXX_Check fail \n");
           
-        }      
+        }   
+        
+        /** CAN module init **/
+	CAN_Mode_Init(CAN1,CAN_Mode_Normal);    
+        CAN_Mode_Init(CAN2,CAN_Mode_Normal);      
         
         /* Self test routines initialization ---------------------------------*/
         STL_InitRunTimeChecks();

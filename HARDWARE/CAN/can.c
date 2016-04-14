@@ -26,14 +26,15 @@
 
 /* Private macro -------------------------------------------------------------*/
 //CAN接收RX0中断使能
-#define CAN1_RX0_INT_ENABLE	0		//0,不使能;1,使能.
+#define CAN1_RX0_INT_ENABLE	1		//0,不使能;1,使能.
 #define CAN2_RX0_INT_ENABLE	0		//0,不使能;1,使能.
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
  
-
+u8 can1_receive = 0;
+u8 can2_receive = 0;
 
 
 /*******************************************************************************
@@ -96,7 +97,7 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             CAN_InitStructure.CAN_TTCM=DISABLE;			//非时间触发通信模式  
             CAN_InitStructure.CAN_ABOM=DISABLE;			//软件自动离线管理	 
             CAN_InitStructure.CAN_AWUM=DISABLE;			//睡眠模式通过软件唤醒(清除CAN->MCR的SLEEP位)
-            CAN_InitStructure.CAN_NART=ENABLE;			//禁止报文自动传送 
+            CAN_InitStructure.CAN_NART=DISABLE;//ENABLE;			//禁止报文自动传送 
             CAN_InitStructure.CAN_RFLM=DISABLE;		 	//报文不锁定,新的覆盖旧的  
             CAN_InitStructure.CAN_TXFP=DISABLE;			//优先级由报文标识符决定 
             CAN_InitStructure.CAN_Mode= mode;	        //模式设置： mode:0,普通模式;1,回环模式; 
@@ -197,7 +198,7 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             CAN_InitStructure.CAN_TTCM=DISABLE;			//非时间触发通信模式  
             CAN_InitStructure.CAN_ABOM=DISABLE;			//软件自动离线管理	 
             CAN_InitStructure.CAN_AWUM=DISABLE;			//睡眠模式通过软件唤醒(清除CAN->MCR的SLEEP位)
-            CAN_InitStructure.CAN_NART=ENABLE;			//禁止报文自动传送 
+            CAN_InitStructure.CAN_NART=DISABLE;//ENABLE;			//禁止报文自动传送 
             CAN_InitStructure.CAN_RFLM=DISABLE;		 	//报文不锁定,新的覆盖旧的  
             CAN_InitStructure.CAN_TXFP=DISABLE;			//优先级由报文标识符决定 
             CAN_InitStructure.CAN_Mode= mode;	        //模式设置： mode:0,普通模式;1,回环模式; 
@@ -253,7 +254,7 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 
 	NVIC_InitStructure.NVIC_IRQChannel = CAN2_RX0_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;     // 主优先级为1
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;            // 次优先级为0
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;            // 次优先级为0
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 #endif             
@@ -270,10 +271,8 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 void CAN1_RX0_IRQHandler(void)
 {
   	CanRxMsg RxMessage;
-	int i=0;
+        can1_receive = 1;
         CAN_Receive(CAN1, 0, &RxMessage);
-	for(i=0;i<8;i++)
-	printf("rxbuf[%d]:%d\r\n",i,RxMessage.Data[i]);
 }
 #endif
 
@@ -282,10 +281,8 @@ void CAN1_RX0_IRQHandler(void)
 void CAN2_RX0_IRQHandler(void)
 {
   	CanRxMsg RxMessage;
-	int i=0;
+        can2_receive = 1;
         CAN_Receive(CAN2, 0, &RxMessage);
-	for(i=0;i<8;i++)
-	printf("rxbuf[%d]:%d\r\n",i,RxMessage.Data[i]);
 }
 #endif
 
@@ -305,7 +302,7 @@ void CAN2_RX0_IRQHandler(void)
 //msg:数据指针,最大为8个字节.
 //返回值:0,成功;
 //		 其他,失败;
-u8 Can_Send_Msg(CAN_TypeDef* CANx,u8* msg,u8 len)
+void Can_Send_Msg(CAN_TypeDef* CANx,u8* msg,u8 len)
 {	
 	u8 mbox;
 	u16 i=0;
@@ -318,12 +315,7 @@ u8 Can_Send_Msg(CAN_TypeDef* CANx,u8* msg,u8 len)
 	TxMessage.DLC=len;				// 要发送的数据长度
 	for(i=0;i<len;i++)
 	TxMessage.Data[i]=msg[i];			          
-	mbox= CAN_Transmit(CANx, &TxMessage);   
-	i=0; 
-        delay_us(500);
-	while((CAN_TransmitStatus(CANx, mbox)!=CAN_TxStatus_Ok)&&(i<0XFFF))i++;	//等待发送结束
-	if(i>=0XFFF)return 1;
-	return 0;	 
+	CAN_Transmit(CANx, &TxMessage);   	 
 }
 
 

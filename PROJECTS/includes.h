@@ -31,6 +31,7 @@
 #include "sys_task.h"
 #ifdef GEC_CB_MAIN
 #include "hw_test.h"
+#include "can.h"
 #include "freertos_lwip.h" 
 #include "modbusTask.h"
 #include "stm32f10x_STLlib.h"
