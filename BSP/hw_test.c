@@ -442,7 +442,7 @@ void Input_Check(void)
 *******************************************************************************/
 void input_test_task(void *arg)
 {	 
-       u8 comm_timeout = 0;
+        u8 comm_timeout = 0;
  	while(1)
 	{
                 if( can1_receive == 1 )
@@ -455,7 +455,7 @@ void input_test_task(void *arg)
                     /*  can communication timeout process */
                 }
                 Input_Check();                            
-                Can_Send_Msg(CAN1,canbuf_send,2);//发送2个字节                        
+                Can_Send_Msg(CAN1,0x3234,canbuf_send,2);//发送2个字节                        
                               
                 vTaskDelay( 45 );		   
 	}
