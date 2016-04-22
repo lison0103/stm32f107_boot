@@ -59,7 +59,7 @@
 
 #define MODBUS_TCP_TEST    0
 
-#define MODBUS_RTU_TEST    0
+#define MODBUS_RTU_TEST    1
 
 #define USB_HOST_MASS_STORAGE_TEST      0
 

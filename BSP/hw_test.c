@@ -18,6 +18,7 @@
 #include "can.h"
 #include "bsp_iocfg.h"
 #include "includes.h"
+#include "crc16.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -454,7 +455,19 @@ void input_test_task(void *arg)
                 {
                     /*  can communication timeout process */
                 }
-                Input_Check();                            
+//                Input_Check();   
+                if( can1_data_packet == 1 )
+                {
+                    if(!MB_CRC16(CAN1_TX_Data, can1_recv_len))
+                    {                    
+//                        printf("ok\r\n");
+                    }
+                    else
+                    {
+//                        printf("fail\r\n");
+                    }
+                    can1_data_packet = 0;
+                }
                 Can_Send_Msg(CAN1,0x3234,canbuf_send,2);//·¢ËÍ2¸ö×Ö½Ú                        
                               
                 vTaskDelay( 45 );		   

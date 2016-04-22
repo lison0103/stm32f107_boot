@@ -32,10 +32,23 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
- 
+
+/* CAN1 */
+u8 CAN1_TX_Buff[canbuffsize] = { 0 };
+u8 CAN1_RX_Buff[canbuffsize] = { 0 };
+u8 CAN1_TX_Data[canbuffsize] = { 0 };
+u8 CAN1_RX_Data[canbuffsize] = { 0 };
+/* CAN2 */
+u8 CAN2_TX_Buff[canbuffsize] = { 0 };
+u8 CAN2_RX_Buff[canbuffsize] = { 0 };
+u8 CAN2_TX_Data[canbuffsize] = { 0 };
+u8 CAN2_RX_Data[canbuffsize] = { 0 };
+
 u8 can1_receive = 0;
 u8 can2_receive = 0;
-
+u8 can1_data_packet = 0;
+u8 can1_recv_cnt = 0;
+u8 can1_recv_len = 0;
 
 /*******************************************************************************
 * Function Name  : CAN_Mode_Init
@@ -257,6 +270,7 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 }   
 
 
+
 /*******************************************************************************
 * Function Name  : CAN1_RX0_IRQHandler
 * Description    : 
@@ -291,17 +305,63 @@ void CAN1_RX0_IRQHandler(void)
             for( u8 i = 0; i < RxMessage.DLC; i++ )
             {
                 /* receive data */
-                printf("CAN1_RX0[%d]:%d\r\n",i,RxMessage.Data[i]);
+                /* urge data process */
+                
+//                printf("CAN1_RX0[%d]:%d\r\n",i,RxMessage.Data[i]);
             }
         }
         /** SF normal data RECEIVE **/
         else if( ( RxMessage.ExtId == 0x1314 ) && ( RxMessage.IDE == CAN_ID_EXT ) )
         {
             can1_receive = 1;        
-            for( u8 i = 0; i < RxMessage.DLC; i++ )
+            if( ( RxMessage.Data[0] == 0xfa ) && ( can1_recv_cnt == 0 ) )
+            {              
+                can1_recv_len = RxMessage.Data[1] + 4;
+                for( u8 i = 0; i < RxMessage.DLC; i++ )
+                {
+                    /* receive data */
+                    CAN1_TX_Buff[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
+                    
+                }
+                if( RxMessage.DLC == 8 && can1_recv_len > 8 )
+                {
+                    can1_recv_cnt++;
+                }
+            }
+            else if( can1_recv_cnt > 0 )
             {
-                /* receive data */
-                printf("CAN1_RX0[%d]:%d\r\n",i,RxMessage.Data[i]);
+                if( can1_recv_cnt < (can1_recv_len/8+1) )
+                {
+                    for( u8 i = 0; i < RxMessage.DLC; i++ )
+                    {
+                        /* receive data */
+                        CAN1_TX_Buff[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
+                        
+                    }    
+                    if( RxMessage.DLC == 8 )
+                    {
+                        can1_recv_cnt++;
+                    }  
+                    else if( RxMessage.DLC == can1_recv_len%8 )
+                    {
+                        if( ++can1_recv_cnt >= can1_recv_len/8 )
+                        {
+
+                            for( u8 j = 0; j < can1_recv_len; j++ )
+                            {
+                                CAN1_TX_Data[j] = CAN1_TX_Buff[j];
+                            }
+                            can1_data_packet = 1;                            
+                            can1_recv_cnt = 0;
+                        }                
+                    }
+                }
+                else
+                {
+                    can1_recv_cnt = 0;
+                }
+                
+
             }
         } 
     }
