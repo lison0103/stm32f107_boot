@@ -24,12 +24,13 @@
 #include "mbutils.h"
 
 #include "hw_test.h"
+#include "can.h"
 
 /* ----------------------- Defines ------------------------------------------*/
 // 输入寄存器起始地址
 #define REG_INPUT_START      1
  // 输入寄存器数量
-#define REG_INPUT_NREGS      16
+#define REG_INPUT_NREGS      120
 
 // 保持寄存器起始地址
 #define	REG_HOLD_START	      1
@@ -69,12 +70,14 @@ eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
         && ( usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS ) )
     {
         iRegIndex = ( int )( usAddress - usRegInputStart );
-        usRegInputBuf[0] = IN1;
-        usRegInputBuf[1] = IN2;
-        usRegInputBuf[2] = IN3;
-        usRegInputBuf[3] = IN4;
-        usRegInputBuf[4] = IN5;
-        usRegInputBuf[5] = IN6;
+        usRegInputBuf[0] = ( IN1 << 0 ) | ( IN2 << 1 ) | ( IN3 << 2 ) | ( IN4 << 3 ) |
+            ( IN5 << 4 ) | ( IN6 << 5 ) | ( IN7 << 6 ) | ( IN8 << 7 );
+        usRegInputBuf[1] = ( IN9 << 0 ) | ( IN10 << 1 ) | ( IN11 << 2 ) | ( IN12 << 3 ) |
+            ( IN13 << 4 ) | ( IN14 << 5 ) | ( IN15 << 6 ) | ( IN16 << 7 );
+        usRegInputBuf[2] = CAN1_TX_Data[2];
+        usRegInputBuf[3] = CAN1_TX_Data[3];
+        usRegInputBuf[4] = CAN1_TX_Data[4];
+        usRegInputBuf[5] = CAN1_TX_Data[5];
         usRegInputBuf[6] = IN7;
         usRegInputBuf[7] = IN8;
         usRegInputBuf[8] = IN9;

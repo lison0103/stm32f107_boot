@@ -48,10 +48,10 @@ typedef unsigned char UCHAR;
 typedef char    CHAR;
 
 typedef unsigned short USHORT;
-typedef short   SHORT;
+//typedef short   SHORT;
 
 typedef unsigned long ULONG;
-typedef long    LONG;
+//typedef long    LONG;
 
 #ifndef TRUE
 #define TRUE            1

@@ -17,8 +17,10 @@
 #define  USE_SYSTICK_DELAY   0
 
 /* Private variables ---------------------------------------------------------*/
+#if USE_SYSTICK_DELAY
 static u8  fac_us=0;
 static u16 fac_ms=0;
+#endif
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/	 

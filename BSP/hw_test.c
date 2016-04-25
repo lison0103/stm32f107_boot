@@ -465,6 +465,10 @@ void input_test_task(void *arg)
                     else
                     {
 //                        printf("fail\r\n");
+                        for( u8 i = 0; i < can1_recv_len; i++ )
+                        {
+                            CAN1_TX_Data[i] = 0;
+                        }
                     }
                     can1_data_packet = 0;
                 }

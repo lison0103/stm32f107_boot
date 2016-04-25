@@ -158,7 +158,7 @@ static void low_level_init(struct netif *netif)
 #endif
 
   /* create the task that handles the ETH_MAC */
-  xTaskCreate(ethernetif_input, (signed char*) "Eth_if", netifINTERFACE_TASK_STACK_SIZE, NULL,
+  xTaskCreate(ethernetif_input, /*(signed char*)*/ "Eth_if", netifINTERFACE_TASK_STACK_SIZE, NULL,
               netifINTERFACE_TASK_PRIORITY,NULL);
 
     /* Enable MAC and DMA transmission and reception */

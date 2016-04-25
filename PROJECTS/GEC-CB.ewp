@@ -2079,7 +2079,7 @@
         </option>
         <option>
           <name>CCDiagSuppress</name>
-          <state>Pa050</state>
+          <state>Pa050,Pe550</state>
         </option>
         <option>
           <name>CCDiagRemark</name>
@@ -3853,6 +3853,12 @@
   </group>
   <group>
     <name>ESC</name>
+    <excluded>
+      <configuration>GEC-CB-BL</configuration>
+    </excluded>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\esc_cmd_state.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\ESC\esc_eeprom_process.c</name>
       <excluded>
@@ -3861,12 +3867,18 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\ESC\esc_en_check.c</name>
+      <excluded>
+        <configuration>GEC-CB-A</configuration>
+      </excluded>
     </file>
     <file>
       <name>$PROJ_DIR$\..\ESC\esc_error.c</name>
       <excluded>
         <configuration>GEC-CB-BL</configuration>
       </excluded>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\esc_run_process.c</name>
     </file>
   </group>
   <group>
