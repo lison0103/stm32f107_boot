@@ -70,24 +70,13 @@ eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
         && ( usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS ) )
     {
         iRegIndex = ( int )( usAddress - usRegInputStart );
-        usRegInputBuf[0] = ( IN1 << 0 ) | ( IN2 << 1 ) | ( IN3 << 2 ) | ( IN4 << 3 ) |
-            ( IN5 << 4 ) | ( IN6 << 5 ) | ( IN7 << 6 ) | ( IN8 << 7 );
-        usRegInputBuf[1] = ( IN9 << 0 ) | ( IN10 << 1 ) | ( IN11 << 2 ) | ( IN12 << 3 ) |
-            ( IN13 << 4 ) | ( IN14 << 5 ) | ( IN15 << 6 ) | ( IN16 << 7 );
-        usRegInputBuf[2] = CAN1_TX_Data[2];
-        usRegInputBuf[3] = CAN1_TX_Data[3];
-        usRegInputBuf[4] = CAN1_TX_Data[4];
-        usRegInputBuf[5] = CAN1_TX_Data[5];
-        usRegInputBuf[6] = IN7;
-        usRegInputBuf[7] = IN8;
-        usRegInputBuf[8] = IN9;
-        usRegInputBuf[9] = IN10;
-        usRegInputBuf[10] = IN11;
-        usRegInputBuf[11] = IN12;        
-        usRegInputBuf[12] = IN13;
-        usRegInputBuf[13] = IN14; 
-        usRegInputBuf[14] = IN15;
-        usRegInputBuf[15] = IN16;        
+        usRegInputBuf[0] = CAN1_TX_Data[0];
+        usRegInputBuf[1] = CAN1_TX_Data[1];
+        for( u8 i = 2; i < 100; i++ )
+        {
+            usRegInputBuf[i] = CAN1_RX_Data[i];
+        }
+       
         while( usNRegs > 0 )
         {
             *pucRegBuffer++ = ( unsigned char )( usRegInputBuf[iRegIndex] >> 8 );

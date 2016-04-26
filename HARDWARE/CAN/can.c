@@ -320,7 +320,7 @@ void CAN1_RX0_IRQHandler(void)
                 for( u8 i = 0; i < RxMessage.DLC; i++ )
                 {
                     /* receive data */
-                    CAN1_TX_Buff[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
+                    CAN1_RX_Data[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
                     
                 }
                 if( RxMessage.DLC == 8 && can1_recv_len > 8 )
@@ -335,7 +335,7 @@ void CAN1_RX0_IRQHandler(void)
                     for( u8 i = 0; i < RxMessage.DLC; i++ )
                     {
                         /* receive data */
-                        CAN1_TX_Buff[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
+                        CAN1_RX_Data[ i + 8*can1_recv_cnt ] = RxMessage.Data[i];
                         
                     }    
                     if( RxMessage.DLC == 8 )
@@ -349,7 +349,7 @@ void CAN1_RX0_IRQHandler(void)
 
                             for( u8 j = 0; j < can1_recv_len; j++ )
                             {
-                                CAN1_TX_Data[j] = CAN1_TX_Buff[j];
+                                CAN1_RX_Data[j] = CAN1_RX_Data[j];
                             }
                             can1_data_packet = 1;                            
                             can1_recv_cnt = 0;

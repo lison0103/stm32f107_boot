@@ -29,7 +29,6 @@
 
 extern u8 dis_data[3];
 u8 sflag,t,inputnum = 0;
-u8 canbuf_send[8];
 u8 passflag = 1;
 
 
@@ -49,8 +48,8 @@ u8 passflag = 1;
 void Input_Check(void)
 {
     
-        canbuf_send[0] = 0;
-        canbuf_send[1] = 0;
+        CAN1_TX_Data[0] = 0;
+        CAN1_TX_Data[1] = 0;
     
 //        sflag = 0;
 //        inputnum = 0;
@@ -78,109 +77,109 @@ void Input_Check(void)
                 TRANS_CTRL1 = 1;
                 TRANS_CTRL2 = 1;
                 
-                canbuf_send[0] = 0xff;
-                canbuf_send[1] = 0xff;
+                CAN1_TX_Data[0] = 0xff;
+                CAN1_TX_Data[1] = 0xff;
           
         }
         else   
         {
                 passflag = 0;
                 
-                GRL1 = 0;
-                GRL2 = 0;
-                GRL3 = 0;
-                GRL4 = 0;
-                GRL5 = 0;
-                GRL6 = 0;
-                GRL7 = 0;
-                GRL8 = 0;
-                GRL9 = 0;
+//                GRL1 = 0;
+//                GRL2 = 0;
+//                GRL3 = 0;
+//                GRL4 = 0;
+//                GRL5 = 0;
+//                GRL6 = 0;
+//                GRL7 = 0;
+//                GRL8 = 0;
+//                GRL9 = 0;
+//                
+//                GSFR1 = 0;
+//                GSFR2 = 0;
+//                GSFR3 = 0;
+//                GSFR4 = 0;
+//                
+//                TRANS_CTRL1 = 0;
+//                TRANS_CTRL2 = 0;                
                 
-                GSFR1 = 0;
-                GSFR2 = 0;
-                GSFR3 = 0;
-                GSFR4 = 0;
-                
-                TRANS_CTRL1 = 0;
-                TRANS_CTRL2 = 0;                
-                
-//                canbuf_send[0] = 0xff;
-//                canbuf_send[1] = 0xfc;
+//                CAN1_TX_Data[0] = 0xff;
+//                CAN1_TX_Data[1] = 0xfc;
         
                 if ( IN1 )
                 {       
-                    canbuf_send[0] |= 1 << 0;
+                    CAN1_TX_Data[0] |= 1 << 0;
                 }
                 if ( IN2 ) 
                 {
-                    canbuf_send[0] |= 1 << 1;
+                    CAN1_TX_Data[0] |= 1 << 1;
                 }
                 if ( IN3 ) 
                 {           
-                    canbuf_send[0] |= 1 << 2;
+                    CAN1_TX_Data[0] |= 1 << 2;
 
                 }
                 if ( IN4 ) 
                 {
-                    canbuf_send[0] |= 1 << 3;
+                    CAN1_TX_Data[0] |= 1 << 3;
                 } 
                 if ( IN5 ) 
                 {         
-                    canbuf_send[0] |= 1 << 4;
+                    CAN1_TX_Data[0] |= 1 << 4;
                 }
                 if ( IN6 ) 
                 {        
-                    canbuf_send[0] |= 1 << 5;
+                    CAN1_TX_Data[0] |= 1 << 5;
 
                 }
                 if ( IN7 ) 
                 {      
-                    canbuf_send[0] |= 1 << 6;
+                    CAN1_TX_Data[0] |= 1 << 6;
 
                 }        
                 if ( IN8 ) 
                 {         
-                    canbuf_send[0] |= 1 << 7;
+                    CAN1_TX_Data[0] |= 1 << 7;
 
                 }
                 if ( IN9 ) 
                 {        
-                    canbuf_send[1] |= 1 << 0;
+                    CAN1_TX_Data[1] |= 1 << 0;
 
                 }
                 if ( IN10 ) 
                 {        
-                    canbuf_send[1] |= 1 << 1;
+                    CAN1_TX_Data[1] |= 1 << 1;
 
                 } 
                 if ( IN11 ) 
                 {         
-                    canbuf_send[1] |= 1 << 2;
+                    CAN1_TX_Data[1] |= 1 << 2;
 
                 }
                 if ( IN12 ) 
                 {         
-                    canbuf_send[1] |= 1 << 3;
+                    CAN1_TX_Data[1] |= 1 << 3;
 
                 }
                 if ( IN13 ) 
                 {           
-                    canbuf_send[1] |= 1 << 4;
+                    CAN1_TX_Data[1] |= 1 << 4;
 
                 }         
                 if ( IN14 ) 
                 {           
-                    canbuf_send[1] |= 1 << 5;
+                    CAN1_TX_Data[1] |= 1 << 5;
 
                 }
                 if ( IN15 ) 
                 {
-                    canbuf_send[1] |= 1 << 6;
+                    CAN1_TX_Data[1] |= 1 << 6;
 
                 }
                 if ( IN16 ) 
                 {               
-                    canbuf_send[1] |= 1 << 7;
+                    CAN1_TX_Data[1] |= 1 << 7;
 
                 }                   
                 
@@ -431,6 +430,96 @@ void Input_Check(void)
 }
 #endif
 
+
+/*******************************************************************************
+* Function Name  : CAN_Comm
+* Description    : 
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void CAN_Comm(void)
+{
+    static u8 can1_comm_timeout,can2_comm_timeout = 0;
+    static u8 can1_send_cnt = 0;
+    u8 * p_CanBuff;
+    u16 i = 0;
+    
+    if( can1_receive == 1 )
+    {
+        can1_receive = 0;
+        can1_comm_timeout = 0;
+    }
+    else if( ++can1_comm_timeout >= 3 )
+    {
+        /*  can communication timeout process */
+    }  
+    
+    if( can2_receive == 1 )
+    {
+        can2_receive = 0;
+        can2_comm_timeout = 0;
+    }
+    else if( ++can2_comm_timeout >= 3 )
+    {
+        /*  can communication timeout process */
+    }    
+
+    /** receive a data packet **/
+    if( can1_data_packet == 1 )
+    {
+        if(!MB_CRC16(CAN1_RX_Data, can1_recv_len))
+        {          
+            /* ok */
+            
+        }
+        else
+        {
+            /* fail */
+            for( u8 i = 0; i < can1_recv_len; i++ )
+            {
+                CAN1_RX_Data[i] = 0;
+            }
+        }
+        can1_data_packet = 0;
+    }     
+    
+    
+    /** packet the data pack **/
+    if( can1_send_cnt == 0)
+    {
+        CAN1_TX_Buff[0] = 0xfa;
+        CAN1_TX_Buff[1] = canbuffsize - 4;
+        for( u8 j = 0; j < canbuffsize - 4; j++ )
+        {
+            CAN1_TX_Buff[j+2] = CAN1_TX_Data[j];
+        }
+        i = MB_CRC16( CAN1_TX_Buff, canbuffsize - 2 );
+        CAN1_TX_Buff[canbuffsize - 2] = i;
+        CAN1_TX_Buff[canbuffsize - 1] = i>>8;    
+    }    
+    /** CAN1 send data **/
+    if( can1_send_cnt >= canbuffsize/24 )
+    {
+        p_CanBuff = &CAN1_TX_Buff[ 24*can1_send_cnt ];
+        Can_Send_Msg(CAN1,0x3234,p_CanBuff,canbuffsize%24); 
+        can1_send_cnt = 0;
+    }    
+    else
+    {
+        for( i = 0; i < 3; i++ )
+        {
+            p_CanBuff = &CAN1_TX_Buff[ (8*i) + (24*can1_send_cnt) ];
+            Can_Send_Msg(CAN1,0x3234,p_CanBuff,8); 
+        }
+        can1_send_cnt++;
+    }
+  
+}
+
+
 /*******************************************************************************
 * Function Name  : input_can_task
 * Description    : None
@@ -443,36 +532,12 @@ void Input_Check(void)
 *******************************************************************************/
 void input_test_task(void *arg)
 {	 
-        u8 comm_timeout = 0;
+    
  	while(1)
 	{
-                if( can1_receive == 1 )
-                {
-                    can1_receive = 0;
-                    comm_timeout = 0;
-                }
-                else if( ++comm_timeout >= 3 )
-                {
-                    /*  can communication timeout process */
-                }
-//                Input_Check();   
-                if( can1_data_packet == 1 )
-                {
-                    if(!MB_CRC16(CAN1_TX_Data, can1_recv_len))
-                    {                    
-//                        printf("ok\r\n");
-                    }
-                    else
-                    {
-//                        printf("fail\r\n");
-                        for( u8 i = 0; i < can1_recv_len; i++ )
-                        {
-                            CAN1_TX_Data[i] = 0;
-                        }
-                    }
-                    can1_data_packet = 0;
-                }
-                Can_Send_Msg(CAN1,0x3234,canbuf_send,2);//·¢ËÍ2¸ö×Ö½Ú                        
+
+                Input_Check();   
+                CAN_Comm();
                               
                 vTaskDelay( 45 );		   
 	}
