@@ -3794,6 +3794,9 @@
       </excluded>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\BSP\can_task.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\BSP\crc16.c</name>
       <excluded>
         <configuration>GEC-CB-BL</configuration>

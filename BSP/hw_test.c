@@ -443,9 +443,7 @@ void Input_Check(void)
 void CAN_Comm(void)
 {
     static u8 can1_comm_timeout,can2_comm_timeout = 0;
-    static u8 can1_send_cnt = 0;
-    u8 * p_CanBuff;
-    u16 i = 0;
+    u8 len = 0;
     
     if( can1_receive == 1 )
     {
@@ -467,55 +465,11 @@ void CAN_Comm(void)
         /*  can communication timeout process */
     }    
 
-    /** receive a data packet **/
-    if( can1_data_packet == 1 )
-    {
-        if(!MB_CRC16(CAN1_RX_Data, can1_recv_len))
-        {          
-            /* ok */
-            
-        }
-        else
-        {
-            /* fail */
-            for( u8 i = 0; i < can1_recv_len; i++ )
-            {
-                CAN1_RX_Data[i] = 0;
-            }
-        }
-        can1_data_packet = 0;
-    }     
     
+    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
+    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN2_RX_Data, 0);
     
-    /** packet the data pack **/
-    if( can1_send_cnt == 0)
-    {
-        CAN1_TX_Buff[0] = 0xfa;
-        CAN1_TX_Buff[1] = canbuffsize - 4;
-        for( u8 j = 0; j < canbuffsize - 4; j++ )
-        {
-            CAN1_TX_Buff[j+2] = CAN1_TX_Data[j];
-        }
-        i = MB_CRC16( CAN1_TX_Buff, canbuffsize - 2 );
-        CAN1_TX_Buff[canbuffsize - 2] = i;
-        CAN1_TX_Buff[canbuffsize - 1] = i>>8;    
-    }    
-    /** CAN1 send data **/
-    if( can1_send_cnt >= canbuffsize/24 )
-    {
-        p_CanBuff = &CAN1_TX_Buff[ 24*can1_send_cnt ];
-        Can_Send_Msg(CAN1,0x3234,p_CanBuff,canbuffsize%24); 
-        can1_send_cnt = 0;
-    }    
-    else
-    {
-        for( i = 0; i < 3; i++ )
-        {
-            p_CanBuff = &CAN1_TX_Buff[ (8*i) + (24*can1_send_cnt) ];
-            Can_Send_Msg(CAN1,0x3234,p_CanBuff,8); 
-        }
-        can1_send_cnt++;
-    }
+    BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1TX_NORMAL_ID, CAN1_TX_Data, 100);
   
 }
 

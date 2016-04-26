@@ -51,6 +51,7 @@
 #define DHCP_TASK_PRIO                  ( tskIDLE_PRIORITY + 8 ) 
 #define INPUT_TASK_PRIO                 ( tskIDLE_PRIORITY + 6 )
 #define SELFCHEK_TASK_PRIO              ( tskIDLE_PRIORITY + 8 )
+#define CAN_THREAD_PRIO                 ( tskIDLE_PRIORITY + 6 )
 
 /*************************  TEST    *******************************************/
 #define ETH_LWIP_TEST    0
