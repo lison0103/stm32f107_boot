@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains can functions.
 *                      
 *******************************************************************************/
 
@@ -26,9 +26,8 @@
 //#define CAN_BAUDRATE  10   /* 10kBps  */
 
 /* Private macro -------------------------------------------------------------*/
-//CAN接收RX0中断使能
-#define CAN1_RX0_INT_ENABLE	1		//0,不使能;1,使能.
-#define CAN2_RX0_INT_ENABLE	1		//0,不使能;1,使能.
+#define CAN1_RX0_INT_ENABLE	1		
+#define CAN2_RX0_INT_ENABLE	1		
 
 #define CAN_FRAME_LEN   8
 #define CAN_SEND_LEN    3*CAN_FRAME_LEN
@@ -58,24 +57,20 @@ CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Urge;
 
 
 /*******************************************************************************
-* Function Name  : CAN_Mode_Init
-* Description    : 
-*                  
+* Function Name  : CAN_Int_Init
+* Description    : Initialization can.
+* CAN_SJW: CAN_SJW_1tq~ CAN_SJW_4tq
+* CAN_BS2: CAN_BS2_1tq~CAN_BS2_8tq;
+* CAN_BS1: CAN_BS1_1tq ~CAN_BS1_16tq
+* CAN_Prescaler: 1~1024;  tq=(brp)*tpclk1
+* baud rate = Fpclk1/((tbs1+1+tbs2+1+1)*brp)
+* if Fpclk is 36M, baud rate:36M/((1+3+2)*24)=250Kbps               
 * Input          : None
 *                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-/** CAN init
-tsjw:CAN_SJW_1tq~ CAN_SJW_4tq
-tbs2:CAN_BS2_1tq~CAN_BS2_8tq;
-tbs1:CAN_BS1_1tq ~CAN_BS1_16tq
-brp:1~1024;  tq=(brp)*tpclk1
-baud rate=Fpclk1/((tbs1+1+tbs2+1+1)*brp);
-mode:CAN_Mode_Normal;CAN_Mode_LoopBack;
-if Fpclk is 36M,CAN_Mode_Init(CAN_SJW_1tq,CAN_BS2_8tq,CAN_BS1_9tq,4,CAN_Mode_LoopBack);
-baud rate:36M/((8+9+1)*4)=500Kbps **/
-u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
+u8 CAN_Int_Init(CAN_TypeDef* CANx)
 { 
 	GPIO_InitTypeDef 		GPIO_InitStructure; 
 	CAN_InitTypeDef        	CAN_InitStructure;
@@ -95,13 +90,13 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             /* Configure CAN1 TX pin */
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
             GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽
-            GPIO_Init(GPIOD, &GPIO_InitStructure);			//初始化IO
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+            GPIO_Init(GPIOD, &GPIO_InitStructure);			
 
             /* Configure CAN1 RX pin */
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	//上拉输入
-            GPIO_Init(GPIOD, &GPIO_InitStructure);			//初始化IO
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	
+            GPIO_Init(GPIOD, &GPIO_InitStructure);			
             
             /* CAN1 register init */
             CAN_DeInit(CANx);
@@ -109,15 +104,22 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             /* Struct init*/
             CAN_StructInit(&CAN_InitStructure);
             
-            /* CAN2 cell init */
-            CAN_InitStructure.CAN_TTCM=DISABLE;			//非时间触发通信模式  
-            CAN_InitStructure.CAN_ABOM=DISABLE;			//软件自动离线管理	 
-            CAN_InitStructure.CAN_AWUM=DISABLE;			//睡眠模式通过软件唤醒(清除CAN->MCR的SLEEP位)
-            CAN_InitStructure.CAN_NART=DISABLE;//ENABLE;			//禁止报文自动传送 
-            CAN_InitStructure.CAN_RFLM=DISABLE;		 	//报文不锁定,新的覆盖旧的  
-            CAN_InitStructure.CAN_TXFP=DISABLE;			//优先级由报文标识符决定 
-            CAN_InitStructure.CAN_Mode= mode;	        //模式设置： mode:0,普通模式;1,回环模式; 
+            /*  non-time-triggered communication mode */
+            CAN_InitStructure.CAN_TTCM=DISABLE;			
+            /* automatic offline management software */
+            CAN_InitStructure.CAN_ABOM=DISABLE;				 
+            /* wake-sleep mode via software (Clear CAN-> MCR's SLEEP bit) */
+            CAN_InitStructure.CAN_AWUM=DISABLE;			
+            /* message is automatically transferred, in accordance with the CAN standard, */
+            /* CAN hardware failure when sending packets would have been automatic retransmission until sent successfully */
+            CAN_InitStructure.CAN_NART=DISABLE;//ENABLE;	
+            /* message is not locked, the new over the old one */
+            CAN_InitStructure.CAN_RFLM=DISABLE;		 	
+            /* priority is determined by the packet identifier */
+            CAN_InitStructure.CAN_TXFP=DISABLE;			
+            CAN_InitStructure.CAN_Mode= CAN_Mode_Normal;
 	
+            /* set baud rate */
             CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;  
             CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
             CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;   
@@ -143,32 +145,32 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 #endif  /* CAN_BAUDRATE == 1000 */            
             
             /* Initializes the CAN1 */
-            CAN_Init(CANx, &CAN_InitStructure);        	//初始化CAN1 
+            CAN_Init(CANx, &CAN_InitStructure);        	
             
             /* CAN1 filter init */
-            CAN_FilterInitStructure.CAN_FilterNumber=0;	//过滤器0
-            CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask; 	//屏蔽位模式
-            CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	//32位宽  
+            CAN_FilterInitStructure.CAN_FilterNumber=0;	
+            CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask; 	
+            CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	
             
             //any id
-//            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	//32位ID
+//            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	//32-bit ID
 //            CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
-//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32位MASK
+//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32-bit MASK
 //            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;            
             
             //std id
-//            CAN_FilterInitStructure.CAN_FilterIdHigh=(0x12)<<5;	//32位ID
+//            CAN_FilterInitStructure.CAN_FilterIdHigh=(0x12)<<5;	//32-bit ID
 //            CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
-//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//0x0000;//32位MASK  
-//            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xfffc;//0x0000; // 标识符屏蔽位，位： 1：必须匹配，0：不用关心
+//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//0x0000;//32-bit MASK 
+//            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xfffc;//0x0000; 
             
             //ext id
             CAN_FilterInitStructure.CAN_FilterIdHigh=(((u32)0x1314<<3)&0xFFFF0000)>>16;	
             CAN_FilterInitStructure.CAN_FilterIdLow=(((u32)0x1314<<3)|CAN_ID_EXT|CAN_RTR_DATA)&0xFFFF;
-            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//32位MASK
+            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//32-bit MASK 
             CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xf00f;              
-            CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;//过滤器0关联到FIFO0
-            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;//激活过滤器0      
+            CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;
+            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;      
             
             CAN_FilterInit(&CAN_FilterInitStructure);	
              
@@ -194,13 +196,13 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             /* Configure CAN2 TX pin */
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
             GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽
-            GPIO_Init(GPIOB, &GPIO_InitStructure);			//初始化IO
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+            GPIO_Init(GPIOB, &GPIO_InitStructure);			
 
             /* Configure CAN2 RX pin */
             GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	//上拉输入
-            GPIO_Init(GPIOB, &GPIO_InitStructure);			//初始化IO
+            GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;	
+            GPIO_Init(GPIOB, &GPIO_InitStructure);			
 
             /* CAN2 register init */
             CAN_DeInit(CANx);
@@ -209,13 +211,13 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
             CAN_StructInit(&CAN_InitStructure);            
 
             /* CAN2 cell init */
-            CAN_InitStructure.CAN_TTCM=DISABLE;			//非时间触发通信模式  
-            CAN_InitStructure.CAN_ABOM=DISABLE;			//软件自动离线管理	 
-            CAN_InitStructure.CAN_AWUM=DISABLE;			//睡眠模式通过软件唤醒(清除CAN->MCR的SLEEP位)
-            CAN_InitStructure.CAN_NART=DISABLE;//ENABLE;			//禁止报文自动传送 
-            CAN_InitStructure.CAN_RFLM=DISABLE;		 	//报文不锁定,新的覆盖旧的  
-            CAN_InitStructure.CAN_TXFP=DISABLE;			//优先级由报文标识符决定 
-            CAN_InitStructure.CAN_Mode= mode;	        //模式设置： mode:0,普通模式;1,回环模式; 
+            CAN_InitStructure.CAN_TTCM=DISABLE;		  
+            CAN_InitStructure.CAN_ABOM=DISABLE;				 
+            CAN_InitStructure.CAN_AWUM=DISABLE;			
+            CAN_InitStructure.CAN_NART=DISABLE;			 
+            CAN_InitStructure.CAN_RFLM=DISABLE;		 	  
+            CAN_InitStructure.CAN_TXFP=DISABLE;			 
+            CAN_InitStructure.CAN_Mode= CAN_Mode_Normal;
 	
             CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;  
             CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
@@ -242,20 +244,20 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 #endif  /* CAN_BAUDRATE == 1000 */             
             
             /* Initializes the CAN2 */
-            CAN_Init(CANx, &CAN_InitStructure);        	//初始化CAN1 
+            CAN_Init(CANx, &CAN_InitStructure);        	
 
             /* CAN2 filter init */
-            CAN_FilterInitStructure.CAN_FilterNumber=14;	//过滤器0
-            CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask; 	//屏蔽位模式
-            CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	//32位宽 
-            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	//32位ID
+            CAN_FilterInitStructure.CAN_FilterNumber=14;	
+            CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask; 	
+            CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	 
+            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	
             CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
-            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32位MASK
+            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;
             CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;
-            CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;//过滤器0关联到FIFO0
-            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;//激活过滤器0
+            CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;
+            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
 
-            CAN_FilterInit(&CAN_FilterInitStructure);			//滤波器初始化
+            CAN_FilterInit(&CAN_FilterInitStructure);			
         
             
 #if CAN2_RX0_INT_ENABLE
@@ -277,11 +279,11 @@ u8 CAN_Mode_Init(CAN_TypeDef* CANx,u8 mode)
 }   
 
 /*******************************************************************************
-* Function Name  : CAN1_RX_Process
-* Description    : 
+* Function Name  : CAN_RX_Process
+* Description    : process the receive data.
 *                  
-* Input          : None
-*                  None
+* Input          : RxMessage: receive a CanRxMsg
+*                  CanRx: define a CAN_RX_DATA_PROCESS_TypeDef struct to receive a frame data
 * Output         : None
 * Return         : None
 *******************************************************************************/			    
@@ -327,14 +329,12 @@ void CAN1_RX_Process( CanRxMsg RxMessage, CAN_RX_DATA_PROCESS_TypeDef* CanRx )
 
 /*******************************************************************************
 * Function Name  : CAN1_RX0_IRQHandler
-* Description    : 
-*                  
+* Description    : This function handles CAN1 RX0 interrupt request.                
 * Input          : None
-*                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-#if CAN1_RX0_INT_ENABLE	//enable CAN1 RX0 interrupt
+#if CAN1_RX0_INT_ENABLE	
 			    
 void CAN1_RX0_IRQHandler(void)
 {
@@ -374,14 +374,12 @@ void CAN1_RX0_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : CAN2_RX0_IRQHandler
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : This function handles CAN2 RX0 interrupt request.                 
+* Input          : None             
 * Output         : None
 * Return         : None
 *******************************************************************************/
-#if CAN2_RX0_INT_ENABLE	//enable CAN2 RX0 interrupt
+#if CAN2_RX0_INT_ENABLE	
 			    
 void CAN2_RX0_IRQHandler(void)
 {
@@ -416,20 +414,24 @@ void CAN2_RX0_IRQHandler(void)
 
 
 /*******************************************************************************
-* Function Name  : CAN_Send_Process
-* Description    : 
+* Function Name  : BSP_CAN_Send
+* Description    : CAN send a frame data.
 *                  
-* Input          : None
-*                  None
+* Input          : CANx: CAN1 or CAN2
+*                  CanRx: define a CAN_TX_DATA_PROCESS_TypeDef struct to send a frame data
+*                  send_id: Extended identifier ID
+*                  buff: send data address
+*                  len: want to send data len
 * Output         : None
 * Return         : None
-*******************************************************************************/      
-void CAN_Send_Process(CAN_TypeDef* CANx,CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint32_t send_id,uint8_t *buff,uint32_t len)
+*******************************************************************************/     
+void BSP_CAN_Send(CAN_TypeDef* CANx,CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint32_t send_id,uint8_t *buff,uint32_t len)
 {
 	u32 i;
         u8  result = 0;
 			
-				
+	if( len > canbuffsize ) return;		
+	
         /** packet the data pack ------------------------**/
         if( CanTx->sending == 0 && len > 0 )
         {
@@ -513,47 +515,19 @@ void CAN_Send_Process(CAN_TypeDef* CANx,CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint
 }
 
 
-/*******************************************************************************
-* Function Name  : BSP_CAN_Send
-* Description    : 
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/  
-void BSP_CAN_Send(CAN_TypeDef* CANx, CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint32_t send_id, uint8_t *buff, uint32_t len)
-{
-
-	
-    if( len > canbuffsize ) return;
-    
-    switch (*(uint32_t*)&CANx)
-    {
-       case CAN1_BASE:
-        
-          CAN_Send_Process(CAN1, CanTx, send_id, buff, len);
-          
-          break;
-
-       case CAN2_BASE:
-       
-          CAN_Send_Process(CAN2, CanTx, send_id, buff, len);
-          break;	
-         
-    }			
-}
 
 
 /*******************************************************************************
 * Function Name  : BSP_CAN_Receive
-* Description    : 
+* Description    : CAN reveive a frame data.
 *                  
-* Input          : None
-*                  None
+* Input          : CANx: CAN1 or CAN2
+*                  CanRx: define a CAN_RX_DATA_PROCESS_TypeDef struct to receive a frame data
+*                  buff: receive data address
+*                  mlen: want to receive data len
 * Output         : None
-* Return         : None
-*******************************************************************************/   
+* Return         : Length of the received data
+*******************************************************************************/     
 uint32_t BSP_CAN_Receive(CAN_TypeDef* CANx,CAN_RX_DATA_PROCESS_TypeDef* CanRx, uint8_t *buff,uint32_t mlen)
 {
     uint8_t *pstr;
@@ -607,18 +581,16 @@ uint32_t BSP_CAN_Receive(CAN_TypeDef* CANx,CAN_RX_DATA_PROCESS_TypeDef* CanRx, u
 
 /*******************************************************************************
 * Function Name  : Can_Send_Msg
-* Description    : 
+* Description    : CAN send data
 *                  
-* Input          : None
-*                  None
+* Input          : len: data len(max len is 8)
+*                  msg: Data Pointer.
+*                  exid: Extended identifier ID.
+*                  CANx: CAN1 or CAN2
 * Output         : None
-* Return         : None
-*******************************************************************************/
-/** CAN send data
-len:data len(max len is 8)				     
-msg:Data Pointer.
-return:0,success;
-**/		 
+* Return         : 0: success
+*                  1: fail, no send mailbox 
+*******************************************************************************/		 
 u8 Can_Send_Msg(CAN_TypeDef* CANx,u32 exid,u8* msg,u8 len)
 {	
 	u16 i=0;
@@ -642,18 +614,12 @@ u8 Can_Send_Msg(CAN_TypeDef* CANx,u32 exid,u8* msg,u8 len)
 
 /*******************************************************************************
 * Function Name  : Can_Receive_Msg
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : CAN receive data                 
+* Input          : buf:data cache
 * Output         : None
-* Return         : None
+* Return         : 0: no data receive; 
+*                  other: Length of the received data;
 *******************************************************************************/
-/** CAN receive data
-buf:data cache;	 
-return:0,no data receive;
-other,Length of the received data;
-**/
 u8 Can_Receive_Msg(CAN_TypeDef* CANx,u8 *buf)
 {		   		   
       u32 i;

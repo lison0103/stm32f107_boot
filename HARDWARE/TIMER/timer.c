@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/22/2016
-* Description        : 
+* Description        : This file contains stm32 timer funcions.
 *                      
 *******************************************************************************/
 
@@ -29,7 +29,7 @@ u32 t_count = 0;
 
 /*******************************************************************************
 * Function Name  : TIM4_Int_Init
-* Description    : 
+* Description    : Intialization stm32 Timer4.
 *                  
 * Input          : arr: Automatic reload value
 *                  psc: Pre clock divisor
@@ -44,31 +44,31 @@ void TIM4_Int_Init(u16 arr,u16 psc)
         
         /** TIM2 **/
 
-	TIM_TimeBaseStructure.TIM_Period = arr; //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 计数到5000为500ms
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //设置用来作为TIMx时钟频率除数的预分频值  10Khz的计数频率  
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //设置时钟分割:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+	TIM_TimeBaseStructure.TIM_Period = arr; 
+	TIM_TimeBaseStructure.TIM_Prescaler =psc; 
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure); 
  
-	TIM_ITConfig(  //使能或者失能指定的TIM中断
-		TIM4, //TIM2
+	TIM_ITConfig(  
+		TIM4, 
 		TIM_IT_Update ,
-		ENABLE  //使能
+		ENABLE  
 		);
-	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;  //TIM3中断
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  //先占优先级
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;  //从优先级
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQ通道被使能
-	NVIC_Init(&NVIC_InitStructure);  //根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器
+	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn; 
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3; 
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;  
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
+	NVIC_Init(&NVIC_InitStructure);  
 
-	TIM_Cmd(TIM4, ENABLE);  //使能TIMx外设  
+	TIM_Cmd(TIM4, ENABLE);  
         
 }
 
 
 /*******************************************************************************
 * Function Name  : TIM3_Int_Init
-* Description    : 
+* Description    : Intialization stm32 Timer3.
 *                  
 * Input          : arr: Automatic reload value
 *                  psc: Pre clock divisor
@@ -77,41 +77,37 @@ void TIM4_Int_Init(u16 arr,u16 psc)
 *******************************************************************************/
 void TIM3_Int_Init(u16 arr,u16 psc)
 {
-#ifdef GEC_SF_MASTER
+
         TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 
         /** TIM3 **/
 
-	TIM_TimeBaseStructure.TIM_Period = arr; //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 计数到5000为500ms
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //设置用来作为TIMx时钟频率除数的预分频值  10Khz的计数频率  
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0; //设置时钟分割:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+	TIM_TimeBaseStructure.TIM_Period = arr; 
+	TIM_TimeBaseStructure.TIM_Prescaler =psc; 
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+	TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure); 
  
-	TIM_ITConfig(  //使能或者失能指定的TIM中断
-		TIM3, //TIM2
+	TIM_ITConfig(  
+		TIM3, 
 		TIM_IT_Update ,
-		ENABLE  //使能
+		ENABLE  
 		);
-	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;  //TIM3中断
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  //先占优先级
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;  //从优先级
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQ通道被使能
-	NVIC_Init(&NVIC_InitStructure);  //根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器
+	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;  
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;  
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
+	NVIC_Init(&NVIC_InitStructure);  
 
-	TIM_Cmd(TIM3, ENABLE);  //使能TIMx外设
-#endif
-        
-      
-        
+	TIM_Cmd(TIM3, ENABLE);          
 							 
 }
 
 /*******************************************************************************
 * Function Name  : TIM2_Int_Init
-* Description    : 
+* Description    : Intialization stm32 Timer2.
 *                  
 * Input          : arr: Automatic reload value
 *                  psc: Pre clock divisor
@@ -126,33 +122,40 @@ void TIM2_Int_Init(u16 arr,u16 psc)
         
         /** TIM2 **/
 
-	TIM_TimeBaseStructure.TIM_Period = arr; //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 计数到5000为500ms
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //设置用来作为TIMx时钟频率除数的预分频值  10Khz的计数频率  
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0; //设置时钟分割:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+	TIM_TimeBaseStructure.TIM_Period = arr; 
+	TIM_TimeBaseStructure.TIM_Prescaler =psc;   
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure); 
  
-	TIM_ITConfig(  //使能或者失能指定的TIM中断
-		TIM2, //TIM2
+	TIM_ITConfig(  
+		TIM2, 
 		TIM_IT_Update ,
-		ENABLE  //使能
+		ENABLE  
 		);
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;  //TIM3中断
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  //先占优先级
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;  //从优先级
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQ通道被使能
-	NVIC_Init(&NVIC_InitStructure);  //根据NVIC_InitStruct中指定的参数初始化外设NVIC寄存器
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;  
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;  
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
+	NVIC_Init(&NVIC_InitStructure);  
 
-	TIM_Cmd(TIM2, ENABLE);  //使能TIMx外设  
+	TIM_Cmd(TIM2, ENABLE);  
         
 }
 
-void TIM4_IRQHandler(void)   //TIM4中断
+/*******************************************************************************
+* Function Name  : TIM4_IRQHandler
+* Description    : This function handles TIM4 global interrupt request.                  
+* Input          : None  
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM4_IRQHandler(void)  
 {
-      if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET) //检查指定的TIM中断发生与否:TIM 中断源 
+      if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET) 
       {
         
-          TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  //清除TIMx的中断待处理位:TIM 中断源 
+          TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  
           
 //          PLUSE_OUT = !PLUSE_OUT;
 #if 1         
@@ -261,19 +264,23 @@ void TIM4_IRQHandler(void)   //TIM4中断
       }
 }
 
-
+/*******************************************************************************
+* Function Name  : TIM3_IRQHandler
+* Description    : This function handles TIM3 global interrupt request.                  
+* Input          : None  
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void TIM3_IRQHandler(void)  
 {
-      if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) //检查指定的TIM中断发生与否:TIM 中断源 
+      if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) 
       {
         
-          TIM_ClearITPendingBit(TIM3, TIM_IT_Update  );  //清除TIMx的中断待处理位:TIM 中断源 
-
+          TIM_ClearITPendingBit(TIM3, TIM_IT_Update  );  
 
         
       }
 }
-
 
 
 

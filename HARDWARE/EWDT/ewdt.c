@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains the external watchdog functions.
 *                      
 *******************************************************************************/
 
@@ -23,8 +23,8 @@
 
 /*******************************************************************************
 * Function Name  : EWDT_Drv_pin_config
-* Description    : min:1.12 typ:1.6 max:2.4
-*                  
+* Description    : Configure the pin.
+*                  the external watchdog reset  min:1.12 typ:1.6 max:2.4
 * Input          : None
 *                  None
 * Output         : None
@@ -44,10 +44,10 @@ void EWDT_Drv_pin_config(void)
 
 /*******************************************************************************
 * Function Name  : write_bkp
-* Description    : 
+* Description    : This function write the cpu backup register to store data.
 *                  
-* Input          : None
-*                  None
+* Input          : adr: the address of backup register
+*                  dat: data to be written
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -59,15 +59,15 @@ void write_bkp(u16 adr,u16 dat)
 }
 
 /*******************************************************************************
-* Function Name  : ext_WDT_check
-* Description    : 
+* Function Name  : ExtWdtCheck
+* Description    : Check the external watchdog.
 *                  
 * Input          : None
 *                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-u8 ext_WDT_check(void)
+void ExtWdtCheck(void)
 {
   u16 bkr_rst_flag=0;
 
@@ -81,12 +81,12 @@ u8 ext_WDT_check(void)
   bkr_rst_flag = BKP_ReadBackupRegister(BKP_DR1);
   if(bkr_rst_flag == 0xfa01)
   {
-    /** 软件复位 **/
+    /** soft reset **/
 //    if(RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET)
 //    {
 //        
 //    }
-    /** 引脚复位 **/
+    /** pin reset **/
     if(RCC_GetFlagStatus(RCC_FLAG_PINRST) != SET)
     {
       write_bkp(BKP_DR1, 0);  
@@ -112,23 +112,10 @@ u8 ext_WDT_check(void)
 //      ESC_EWDT_Error_Process();
 //  }
   
-  return(0);
+
 }  
 
-/*******************************************************************************
-* Function Name  : power_on_bsp_check
-* Description    : 
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void power_on_bsp_check(void)
-{
-  //外置看门狗检测，故障F81
-  ext_WDT_check();
-}
+
 
 
 /******************************  END OF FILE  *********************************/

@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains prototype of assembly functions.
 *			          
 *******************************************************************************/
 
@@ -64,12 +64,10 @@
 #define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  /** INPUT **/
 
 /* Exported functions ------------------------------------------------------- */
-u32 GetLockCode(void);		
-//以下为汇编函数
-void WFI_SET(void);	//执行WFI指令
-void INTX_DISABLE(void);//关闭所有中断
-void INTX_ENABLE(void);	//开启所有中断
-void MSR_MSP(u32 addr);	//设置堆栈地址
+void WFI_SET(void);	
+void INTX_DISABLE(void);
+void INTX_ENABLE(void);	
+void MSR_MSP(u32 addr);
 
 
 #endif  /* __LSYS_H */

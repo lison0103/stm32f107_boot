@@ -32,7 +32,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usb_core.h"
 #include "usb_conf.h"
-//#include "sys.h"
 
 /** @addtogroup USB_OTG_DRIVER
   * @{
@@ -79,7 +78,7 @@
   */ 
    
 
-void BSP_Init(void);
+
 
 void USB_OTG_BSP_Init (USB_OTG_CORE_HANDLE *pdev);
 void USB_OTG_BSP_uDelay (const uint32_t usec);

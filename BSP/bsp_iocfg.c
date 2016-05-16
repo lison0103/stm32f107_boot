@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : Contains input and output pin Initializes.
 *                      
 *******************************************************************************/
 
@@ -37,7 +37,7 @@ void Input_Output_PinInit(void)
   
       GPIO_InitTypeDef GPIO_InitStruct;
 
-      //input
+      /** input gpio **/
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4;             
       GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;   
       GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;       
@@ -53,7 +53,7 @@ void Input_Output_PinInit(void)
       GPIO_Init(GPIOE , &GPIO_InitStruct);   
       
       
-      //output
+      /** output gpio **/
       GPIO_InitStruct.GPIO_Pin = GPIO_Pin_15; 
       GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
       GPIO_ResetBits(GPIOA, GPIO_Pin_15);

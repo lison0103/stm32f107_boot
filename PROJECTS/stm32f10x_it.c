@@ -24,16 +24,34 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h" 
     
-#ifdef GEC_CB_MAIN
-    
+#ifdef GEC_CB_MAIN   
 #include "port.h"
-
 #endif
- 
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+
+/*******************************************************************************
+* Function Name  : NMIException
+* Description    : This function handles NMI exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void NMI_Handler(void)
 {
 }
- 
+
+/*******************************************************************************
+* Function Name  : HardFaultException
+* Description    : This function handles Hard Fault exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */
@@ -41,7 +59,14 @@ void HardFault_Handler(void)
   {
   }
 }
- 
+
+/*******************************************************************************
+* Function Name  : MemManageException
+* Description    : This function handles Memory Manage exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void MemManage_Handler(void)
 {
   /* Go to infinite loop when Memory Manage exception occurs */
@@ -50,7 +75,13 @@ void MemManage_Handler(void)
   }
 }
 
- 
+/*******************************************************************************
+* Function Name  : BusFaultException
+* Description    : This function handles Bus Fault exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
 void BusFault_Handler(void)
 {
   /* Go to infinite loop when Bus Fault exception occurs */
@@ -58,7 +89,14 @@ void BusFault_Handler(void)
   {
   }
 }
- 
+
+/*******************************************************************************
+* Function Name  : UsageFaultException
+* Description    : This function handles Usage Fault exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void UsageFault_Handler(void)
 {
   /* Go to infinite loop when Usage Fault exception occurs */
@@ -67,21 +105,20 @@ void UsageFault_Handler(void)
   }
 }
  
-//void SVC_Handler(void)
-//{
-//}
+
  
+/*******************************************************************************
+* Function Name  : DebugMonitor
+* Description    : This function handles Debug Monitor exception.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void DebugMon_Handler(void)
 {
 }
  
-//void PendSV_Handler(void)
-//{
-//}
-// 
-//void SysTick_Handler(void)
-//{
-//}
+
 #ifdef GEC_CB_MAIN
 /*******************************************************************************
 * Function Name  : TIM2_IRQHandler

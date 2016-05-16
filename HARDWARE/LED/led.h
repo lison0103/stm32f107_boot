@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : The file contains prototype of led functions.
 *			          
 *******************************************************************************/
 
@@ -18,8 +18,8 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /** LED Port **/
-#define LED0 PDout(11)	// PD11
-#define LED1 PBout(15)	// PB15	
+#define LED0 PDout(11)	
+#define LED1 PBout(15)	
 
 /* Exported functions ------------------------------------------------------- */
 void LED_Init(void); 

@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : Main program body.
 *                      
 *******************************************************************************/
 
@@ -91,13 +91,11 @@ u8 *const pcOMC_EscRTBuff = &McRxBuff[0];
 
 /*******************************************************************************
 * Function Name  : Task_Loop
-* Description    : None
-*                  
-* Input          : None
-*                  None
+* Description    : This function contains the task to be executed in a loop.               
+* Input          : None                
 * Output         : None
 * Return         : None
-*******************************************************************************/ 
+*******************************************************************************/
 void Task_Loop(void)
 {
         
@@ -196,13 +194,11 @@ void Task_Loop(void)
 
 /*******************************************************************************
 * Function Name  : main
-* Description    : None
-*                  
+* Description    : Main program.             
 * Input          : None
-*                  None
 * Output         : None
 * Return         : None
-*******************************************************************************/ 
+*******************************************************************************/
 int main(void)
 {        
  	        

@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : Contains some test function.
 *                      
 *******************************************************************************/
 
@@ -37,10 +37,9 @@ u8 passflag = 1;
 
 /*******************************************************************************
 * Function Name  : Input_Check
-* Description    : None
+* Description    : Monitor the input pin status test.
 *                  
 * Input          : None
-*                  None
 *                  None
 * Output         : None
 * Return         : None
@@ -433,7 +432,7 @@ void Input_Check(void)
 
 /*******************************************************************************
 * Function Name  : CAN_Comm
-* Description    : 
+* Description    : CAN Communication test.
 *                  
 * Input          : None
 *                  None
@@ -480,7 +479,6 @@ void CAN_Comm(void)
 *                  
 * Input          : None
 *                  None
-*                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -503,8 +501,7 @@ void input_test_task(void *arg)
 * Description    : None
 *                  
 * Input          : None
-*                  None
-*                  
+*                  None                 
 * Output         : None
 * Return         : None
 *******************************************************************************/ 

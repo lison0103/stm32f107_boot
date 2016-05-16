@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains prototype of the external watchdog functions.
 *			          
 *******************************************************************************/
 
@@ -21,7 +21,7 @@
 #define EWDT_ON       PCout(0)
 
 /* Exported functions ------------------------------------------------------- */
-void power_on_bsp_check(void);
+void ExtWdtCheck(void);
 void EWDT_Drv_pin_config(void);
 
 

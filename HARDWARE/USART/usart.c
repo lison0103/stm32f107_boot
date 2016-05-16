@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains usart functions.
 *                      
 *******************************************************************************/
 
@@ -19,98 +19,63 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
-#define EN_USART3_RX 			1		//使能（1）/禁止（0）串口1接收
+#define EN_USART3_RX 			1		
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 
-//串口1中断服务程序
-//注意,读取USARTx->SR能避免莫名其妙的错误   	
-u8 USART_RX_BUF[USART_REC_LEN];     //接收缓冲,最大USART_REC_LEN个字节.
-//接收状态
-//bit15，	接收完成标志
-//bit14，	接收到0x0d
-//bit13~0，	接收到的有效字节数目
-u16 USART_RX_STA=0;       //接收状态标记
-
-
-
-/*******************************************************************************
-* Function Name  : Delay_us
-* Description    : 
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-/*
-//72M
-//n=2000 T=392us
-//n=1000 T=196us
-//n=500  T=98us
-//n=100  T=20.6us
-*/ 
-void Delay_us(uint32_t n)
-{ 
-	uint32_t m=0;
-        m=n*50;
 	
-	while(m)
-	{
-            m--;
-	}	
-}
-	  
+u8 USART_RX_BUF[USART_REC_LEN];    
+// Receive state flag
+// Bit15, reception done flag
+// Bit14, received 0x0d
+// Bit13 ~ 0, the number of valid bytes received
+u16 USART_RX_STA=0;       
 
 
 
 /*******************************************************************************
 * Function Name  : USART3_Init
-* Description    : 
-*                  
+* Description    : Initialization usart3.                
 * Input          : None
-*                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-//初始化IO 串口1 
-//bound:波特率
 void USART3_Init(void)
 {
-    //GPIO端口设置
+
     GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);	//GPIOC AFIO时钟
-        RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);          //使能USART3
-        
-        GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
-        
-        
- 	USART_DeInit(USART3);  //复位串口3
-	 //USART3_TX   PB.10
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //PB.10
+    USART_InitTypeDef USART_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);	
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);         
+    
+    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+    
+    
+    USART_DeInit(USART3);  
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	//复用推挽输出
-    GPIO_Init(GPIOC, &GPIO_InitStructure); //初始化PB10
-   
-    //USART3_RX	  PB.11
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+    GPIO_Init(GPIOC, &GPIO_InitStructure); 
+    
+    
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//浮空输入
-    GPIO_Init(GPIOC, &GPIO_InitStructure);  //初始化PB11
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);  
     
 #if USART3_TRX_EN
     RCC_APB2PeriphClockCmd(USART3_TRX_RCC, ENABLE); 
     
     GPIO_InitStructure.GPIO_Pin = USART3_TRX_PIN;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(USART3_TRX_GPIO , &GPIO_InitStructure);
-
+    
 #if DEBUG_PRINTF
     USART3_TRX_CONTROL = 1;
 #else
@@ -119,50 +84,50 @@ void USART3_Init(void)
     
 #endif    
     
-
-   //Usart3 NVIC 配置
-
+    
+    
+    
     NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0 ;//抢占优先级3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		//子优先级3
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
-	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
-  
-   //USART 初始化设置
-
-	USART_InitStructure.USART_BaudRate = 115200;//一般设置为9600;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//字长为8位数据格式
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
-	USART_InitStructure.USART_Parity = USART_Parity_No;//无奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	//收发模式
-
-    USART_Init(USART3, &USART_InitStructure); //初始化串口
-    USART_ITConfig(USART3, USART_IT_RXNE , ENABLE);//开启中断
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0 ;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			
+    NVIC_Init(&NVIC_InitStructure);	
+    
+    
+    
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;	
+    
+    USART_Init(USART3, &USART_InitStructure); 
+    USART_ITConfig(USART3, USART_IT_RXNE , ENABLE);
     USART_ITConfig(USART3, USART_IT_TXE, DISABLE);
-    USART_Cmd(USART3, ENABLE);                    //使能串口 
+    USART_Cmd(USART3, ENABLE);                    
 
 }
 
 
 /*******************************************************************************
-* Function Name  : USART3_Init
-* Description    : 
+* Function Name  : USART3_SEND
+* Description    : usart3 send data
 *                  
-* Input          : None
-*                  None
+* Input          : str: the first address of send data 
+*                  len: the length of send data
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void USART3_SEND(u8 * str,int len)
 {
     USART3_TRX_CONTROL = 1;
-    Delay_us(4000);
+    delay_us(4000);
     
     for(int t = 0;t < len; t++)
     {      
       USART3->DR = (u8) str[t];
-      while((USART3->SR&0X40)==0);//循环发送,直到发送完毕   
+      while((USART3->SR&0X40)==0);
        
     }
     
@@ -175,34 +140,42 @@ void USART3_SEND(u8 * str,int len)
 
 #if RX485_TEST
 
-#if EN_USART3_RX   //如果使能了接收
-void USART3_IRQHandler(void)                	//串口3中断服务程序
+
+#if EN_USART3_RX   
+/*******************************************************************************
+* Function Name  : USART3_IRQHandler
+* Description    : This function handles USART3 global interrupt request.             
+* Input          : None                
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_IRQHandler(void)                	
 {
   u8 Res;
-  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+  if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)  // Receive interrupt (received data must be 0x0d 0x0a end)
   {
  
       Res =USART_ReceiveData(USART3);
-      if((USART_RX_STA&0x8000)==0)//接收未完成
+      if((USART_RX_STA&0x8000)==0)// Receive not complete
       {
-          if(USART_RX_STA&0x4000)//接收到了0x0d
+          if(USART_RX_STA&0x4000)//Receive 0x0d
           {
-              if(Res!=0x0a)USART_RX_STA=0;//接收错误,重新开始
+              if(Res!=0x0a)USART_RX_STA=0;//Receive error, restarts the reception
               else 
               {
-                  USART_RX_STA|=0x8000;	//接收完成了 
+                  USART_RX_STA|=0x8000;	//Receiving completed
 //                  USART_ITConfig(USART3, USART_IT_RXNE, DISABLE);
 //                  USART3_TRX_CONTROL = 1;
               }
           }
-          else //还没收到0X0D
+          else //Not received 0X0D
           {	
               if(Res==0x0d)USART_RX_STA|=0x4000;
               else
               {
                   USART_RX_BUF[USART_RX_STA&0X3FFF]=Res ;
                   USART_RX_STA++;
-                  if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//接收数据错误,重新开始接收	  
+                  if(USART_RX_STA>(USART_REC_LEN-1))USART_RX_STA=0;//Receive error, restarts the reception	  
               }		 
           }
       }      
@@ -213,6 +186,13 @@ void USART3_IRQHandler(void)                	//串口3中断服务程序
 #endif
 
 #if MODBUS_RTU_TEST
+/*******************************************************************************
+* Function Name  : USART3_IRQHandler
+* Description    : This function handles USART3 global interrupt request.             
+* Input          : None                
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void USART3_IRQHandler(void)
 {
 	if(USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
@@ -289,7 +269,7 @@ void USART3_IRQHandler(void)
 #define USART3_TX_DMA_CHANNEL       DMA1_Channel2
 #define USART3_RX_DMA_CHANNEL       DMA1_Channel3
 
-//条件选择  
+ 
 #ifdef USART1_EN 
 u8 uart1_rx_buff[512],uart1_rx_data[512],uart1_tx_buff[512];
 u16 uart1_rx_number=0,uart1_tx_number=0; 	//,uart1_rx_counter
@@ -306,19 +286,20 @@ u16 uart3_rx_number=0,uart3_tx_number=0;	//,uart3_rx_counter
 #endif
 
 /******************************************************************************* 
-*******************************************************************************/ //收发控制
+*******************************************************************************/ 
 
 
 /*******************************************************************************
 * Function Name  : DMA_Configuration_USART
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : Configuring usart dma                
+* Input          : DMA_Chx: the number of dma channel
+*                  DB: dma Peripheral base addr
+*                  buff: dma memory base addr
+*                  dir: dma Peripheral data direction
+*                  len: the lenth of buffer data
 * Output         : None
 * Return         : None
 *******************************************************************************/
-//DMA设置
 void DMA_Configuration_USART(DMA_Channel_TypeDef* DMA_Chx,uint32_t DB,uint8_t *buff,uint32_t dir,uint32_t len)
 {
   DMA_InitTypeDef     DMA_InitStructure;
@@ -328,30 +309,30 @@ void DMA_Configuration_USART(DMA_Channel_TypeDef* DMA_Chx,uint32_t DB,uint8_t *b
   DMA_DeInit(DMA_Chx);
   DMA_InitStructure.DMA_PeripheralBaseAddr = DB;
   DMA_InitStructure.DMA_MemoryBaseAddr = (u32)buff;
-  DMA_InitStructure.DMA_DIR = dir; //目的
-  DMA_InitStructure.DMA_BufferSize = len; //缓存长度
+  DMA_InitStructure.DMA_DIR = dir; 
+  DMA_InitStructure.DMA_BufferSize = len; 
   
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//一个外设
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//缓存地址增加
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; //字节传输
+  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; 
   DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; 
   DMA_InitStructure.DMA_Mode = DMA_Mode_Normal; 
   DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;
-  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;  //
-  DMA_Init(DMA_Chx, &DMA_InitStructure);  //
+  DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;  
+  DMA_Init(DMA_Chx, &DMA_InitStructure); 
 }
 
 
 /*******************************************************************************
 * Function Name  : BSP_USART_DMA_Init
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : Intialization usart dma.                 
+* Input          : USARTx: USART1,USART2 or USART3
+*                  txBuff: the first address of dma send data
+*                  rxBuff: the first address of dma receive data
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void BSP_USART_DMA_Init(USART_TypeDef* USARTx, uint8_t *txBuff, uint8_t *rxBuff) // 
+void BSP_USART_DMA_Init(USART_TypeDef* USARTx, uint8_t *txBuff, uint8_t *rxBuff)  
 {
   switch (*(uint32_t*)&USARTx)
   {
@@ -392,46 +373,51 @@ void BSP_USART_DMA_Init(USART_TypeDef* USARTx, uint8_t *txBuff, uint8_t *rxBuff)
 
 /*******************************************************************************
 * Function Name  : BSP_USART_Init
-* Description    : 
+* Description    : Initialization usart.
 *                  
-* Input          : None
-*                  None
+* Input          : USARTx: USART1,USART2 or USART3
+*                  baud: Baud rate
+*                  Parity: Parity check
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void BSP_USART_Init(USART_TypeDef* USARTx, uint32_t baud, uint16_t Parity) //, FunctionalState DMAState
+void BSP_USART_Init(USART_TypeDef* USARTx, uint32_t baud, uint16_t Parity)
 {
   USART_InitTypeDef   USART_InitStruct;
 
   switch (*(uint32_t*)&USARTx)
   {
     case USART1_BASE:
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 , ENABLE); //USART1 时钟使能
+      RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 , ENABLE); 
   		break;
     case USART2_BASE:
-      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 , ENABLE); //USART2 时钟使能
+      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2 , ENABLE); 
   		break;
     case USART3_BASE:
-      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3 , ENABLE); //USART3 时钟使能
+      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3 , ENABLE); 
   		break;
   }
 
-  USART_StructInit(&USART_InitStruct); //结构体参数初始化，默认值9600
+  USART_StructInit(&USART_InitStruct); 
   USART_InitStruct.USART_BaudRate = baud;
   USART_InitStruct.USART_WordLength = USART_WordLength_8b;
   USART_InitStruct.USART_StopBits = USART_StopBits_1;
   USART_InitStruct.USART_Parity = Parity;
   USART_InitStruct.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
   USART_InitStruct.USART_HardwareFlowControl =USART_HardwareFlowControl_None; 
-  USART_Init(USARTx , &USART_InitStruct); //USART1初始化
+  USART_Init(USARTx , &USART_InitStruct); 
   
   
-  //USART_Cmd(USARTx , ENABLE); //USART 使能
+  //USART_Cmd(USARTx , ENABLE); 
 } 
 
-/*************************************************************************************************** 
-***************************************************************************************************/  
-
+/*******************************************************************************
+* Function Name  : USART2_IRQHandler
+* Description    : This function handles USART2 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
 void USART2_IRQHandler(void)
 {
 #ifdef USART2_EN 
@@ -439,8 +425,8 @@ void USART2_IRQHandler(void)
 	
 	if(USART_GetITStatus(USART2, USART_IT_IDLE) == SET)
 	{
-		//接收空闲中断
-		//禁止再次接受
+                /* Receive interrupt idle */
+                /* Barred from receiving again */
 		DMA_Cmd(USART2_RX_DMA_CHANNEL, DISABLE);
 		
 		uart2_rx_number = 512-USART2_RX_DMA_CHANNEL->CNDTR;
@@ -452,7 +438,7 @@ void USART2_IRQHandler(void)
 		USART2_RX_DMA_CHANNEL->CNDTR = 512;		
 		DMA_Cmd(USART2_RX_DMA_CHANNEL, ENABLE);
 		
-		//清除标志
+		/* clear flag */
 		i = USART2->SR;
 		i = USART2->DR;
 	}		
@@ -467,10 +453,8 @@ void USART2_IRQHandler(void)
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration_Usart
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : Configuring usart interrupt group.                 
+* Input          : USARTx: USART1,USART2 or USART3
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -503,44 +487,41 @@ void NVIC_Configuration_Usart(USART_TypeDef* USARTx)
  
 /*******************************************************************************
 * Function Name  : USART2_Init
-* Description    : 
-*                  
+* Description    : Initialization usart2.                
 * Input          : None
-*                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/ 
 void USART2_Init(void)
 {
 #ifdef USART2_EN
-	GPIO_InitTypeDef GPIO_InitStruct;
-	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE); 
-        
-        GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);
-
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP; // 
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOD , &GPIO_InitStruct);
-	
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING; // 
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOD , &GPIO_InitStruct);
-
-	BSP_USART_Init(USART2, 19200, USART_Parity_No);//, ENABLE
-	
-  //if(DMAState==ENABLE)       
-	BSP_USART_DMA_Init(USART2,uart2_tx_buff,uart2_rx_buff);
-   
-	//中断 	
-  ///////////////////////////////////////////////////////////////////  
-	USART_ITConfig(USART2, USART_IT_TC, ENABLE);
-	USART_ITConfig(USART2, USART_IT_IDLE, ENABLE);
-	NVIC_Configuration_Usart(USART2);       	
-  	
-	USART_Cmd(USART2 , ENABLE);  
+    GPIO_InitTypeDef GPIO_InitStruct;
+    
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE); 
+    
+    GPIO_PinRemapConfig(GPIO_Remap_USART2, ENABLE);
+    
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP; 
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD , &GPIO_InitStruct);
+    
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING; 
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOD , &GPIO_InitStruct);
+    
+    BSP_USART_Init(USART2, 19200, USART_Parity_No);
+    
+    //if(DMAState==ENABLE)       
+    BSP_USART_DMA_Init(USART2,uart2_tx_buff,uart2_rx_buff);
+    
+    
+    USART_ITConfig(USART2, USART_IT_TC, ENABLE);
+    USART_ITConfig(USART2, USART_IT_IDLE, ENABLE);
+    NVIC_Configuration_Usart(USART2);       	
+    
+    USART_Cmd(USART2 , ENABLE);  
 				
 #endif
 }
@@ -548,13 +529,14 @@ void USART2_Init(void)
 
 /*******************************************************************************
 * Function Name  : BSP_USART_Send
-* Description    : 
+* Description    : usart send data
 *                  
-* Input          : None
-*                  None
+* Input          : USARTx: USART1,USART2 or USART3
+*                  buff: the first address of send data 
+*                  len: the length of send data
 * Output         : None
 * Return         : None
-*******************************************************************************/  
+*******************************************************************************/
 void BSP_USART_Send(USART_TypeDef* USARTx,uint8_t *buff,uint32_t len)
 {
 	u32 i;
@@ -620,13 +602,13 @@ void BSP_USART_Send(USART_TypeDef* USARTx,uint8_t *buff,uint32_t len)
 
 /*******************************************************************************
 * Function Name  : BSP_USART_Receive
-* Description    : 
-*                  
-* Input          : None
-*                  None
+* Description    : usart receive data.                 
+* Input          : USARTx: USART1,USART2 or USART3
+*                  buff: the first address of receive data 
+*                  mlen: want to receive the length of data
 * Output         : None
-* Return         : None
-*******************************************************************************/   
+* Return         : the length of receive data
+*******************************************************************************/    
 uint32_t BSP_USART_Receive(USART_TypeDef* USARTx,uint8_t *buff,uint32_t mlen)
 {
 	uint8_t *pstr;

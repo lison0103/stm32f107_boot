@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains prototype of digital led driver functions.
 *			          
 *******************************************************************************/
 

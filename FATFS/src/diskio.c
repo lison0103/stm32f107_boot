@@ -7,16 +7,27 @@
 /* storage control module to the FatFs module with a defined API.        */
 /*-----------------------------------------------------------------------*/
 
+
+/* Includes ------------------------------------------------------------------*/
 #include "diskio.h"		/* FatFs lower layer API */
 #include "malloc.h"		
-#include "usbh_usr.h" 
+#include "usbh_usr.h"
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/**  U disk, the volume label 0 **/
+#define USB_DISK 0
+
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
+ 
+
+	
 
 
-
-#define USB_DISK 0	//U盘,卷标为0
-
-
-//初始化磁盘
+/* Initialize Disk */
 DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber (0..) */
 )
@@ -24,17 +35,19 @@ DSTATUS disk_initialize (
 	u8 res=0;	    
 	switch(pdrv)
 	{
-		case USB_DISK://外部flash
-	  		if(USBH_UDISK_Status())return 0;	//U盘连接成功,则返回0.否则返回1	  
-			else return 1;	 
-		default:
-			res=1; 
+                
+           case USB_DISK:
+            /*  U disk is connected, it returns 0. Otherwise, it returns 1 */
+            if(USBH_UDISK_Status())return 0;	 
+            else return 1;	 
+           default:
+            res=1; 
 	}		 
 	if(res)return  STA_NOINIT;
-	else return 0; //初始化成功
+	else return 0; 
 }  
 
-//获得磁盘状态
+/* Obtaining state disk */
 DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber (0..) */
 )
@@ -42,11 +55,11 @@ DSTATUS disk_status (
 	return 0;
 } 
 
-//读扇区
-//drv:磁盘编号0~9
-//*buff:数据接收缓冲首地址
-//sector:扇区地址
-//count:需要读取的扇区数
+// Read Sector
+// Dev: disk numbers 0 to 9
+// * Buf: data buffer receiving the first address
+// Sector: sector address
+// Count: the number of sectors to be read
 DRESULT disk_read (
 	BYTE pdrv,		/* Physical drive nmuber (0..) */
 	BYTE *buff,		/* Data buffer to store read data */
@@ -54,26 +67,29 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read (1..128) */
 )
 {
-	u8 res=0; 
-    if (!count)return RES_PARERR;//count不能等于0，否则返回参数错误		 	 
-	switch(pdrv)
-	{
-		case USB_DISK://U盘 
-			res=USBH_UDISK_Read(buff,sector,count);	  
-			break;
-		default:
-			res=1; 
-	}
-   //处理返回值，将SPI_SD_driver.c的返回值转成ff.c的返回值
+    u8 res=0; 
+    
+    /* Count is not equal to 0, otherwise it returns an error parameter */
+    if (!count)return RES_PARERR;		 	 
+    switch(pdrv)
+    {
+       case USB_DISK: 
+        res=USBH_UDISK_Read(buff,sector,count);	  
+        break;
+       default:
+        res=1; 
+    }
+   
+    /* Process the return value, the return value SPI SD driver.c turn into ff.c return value */
     if(res==0x00)return RES_OK;	 
     else return RES_ERROR;	   
 }
 
-//写扇区
-//drv:磁盘编号0~9
-//*buff:发送数据首地址
-//sector:扇区地址
-//count:需要写入的扇区数
+// Write sector
+// Drv: disk numbers 0 to 9
+// * Buf: first address to send data
+// Sector: sector address
+// Count: the number of sectors to be written
 #if _USE_WRITE
 DRESULT disk_write (
 	BYTE pdrv,			/* Physical drive nmuber (0..) */
@@ -82,27 +98,30 @@ DRESULT disk_write (
 	UINT count			/* Number of sectors to write (1..128) */
 )
 {
-	u8 res=0;  
-    if (!count)return RES_PARERR;//count不能等于0，否则返回参数错误		 	 
-	switch(pdrv)
-	{
-		case USB_DISK://U盘
-			res=USBH_UDISK_Write((u8*)buff,sector,count); 
-			break;
-		default:
-			res=1; 
-	}
-    //处理返回值，将SPI_SD_driver.c的返回值转成ff.c的返回值
+    u8 res=0;  
+    
+    /* Count is not equal to 0, otherwise it returns an error parameter */
+    if (!count)return RES_PARERR;		 	 
+    switch(pdrv)
+    {
+       case USB_DISK:
+        res=USBH_UDISK_Write((u8*)buff,sector,count); 
+        break;
+       default:
+        res=1; 
+    }
+    
+    /* Process the return value, the return value SPI SD driver.c turn into ff.c return value */
     if(res == 0x00)return RES_OK;	 
     else return RES_ERROR;	
 }
 #endif
 
 
-//其他表参数的获得
- //drv:磁盘编号0~9
- //ctrl:控制代码
- //*buff:发送/接收缓冲区指针
+// Get the other table parameters
+// Drv: disk numbers 0 to 9
+// Ctrl: control code
+// * Buff: send / receive buffer pointer
 #if _USE_IOCTL
 DRESULT disk_ioctl (
 	BYTE pdrv,		/* Physical drive nmuber (0..) */
@@ -112,12 +131,12 @@ DRESULT disk_ioctl (
 {
 	DRESULT res;						  			     
 	
-	if(pdrv==USB_DISK)	//U盘
+	if(pdrv==USB_DISK)	
 	{
 	    switch(cmd)
 	    {
 		    case CTRL_SYNC:
-				res = RES_OK; 
+                     res = RES_OK; 
 		        break;	 
 		    case GET_SECTOR_SIZE:
 		        *(WORD*)buff=512;
@@ -135,27 +154,30 @@ DRESULT disk_ioctl (
 		        res = RES_PARERR;
 		        break;
 	    }		
-	}else res=RES_ERROR;//其他的不支持
+	}else res=RES_ERROR;//Does not support other
     return res;
 }
 #endif
-//获得时间
+
+//Get time
 //User defined function to give a current time to fatfs module      */
 //31-25: Year(0-127 org.1980), 24-21: Month(1-12), 20-16: Day(1-31) */                                                                                                                                                                                                                                          
 //15-11: Hour(0-23), 10-5: Minute(0-59), 4-0: Second(0-29 *2) */                                                                                                                                                                                                                                                
 DWORD get_fattime (void)
 {				 
 	return 0;
-}			 
-//动态分配内存
+}	
+
+/* Dynamic memory allocation */
 void *ff_memalloc (UINT size)			
 {
-	return (void*)mymalloc(size);
+    return (void*)mymalloc(size);
 }
-//释放内存
+
+/* Release memory */
 void ff_memfree (void* mf)		 
 {
-	myfree(mf);
+    myfree(mf);
 }
 
 

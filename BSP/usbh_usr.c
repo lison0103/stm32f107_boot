@@ -35,13 +35,22 @@
 static u8 AppState;
 extern USB_OTG_CORE_HANDLE  USB_OTG_Core;
 
-//USB OTG 中断服务函数
-//处理所有USB中断
+/**
+  * @brief  OTG_FS_IRQHandler
+  *          This function handles USB-On-The-Go FS global interrupt request.
+  *          requests.
+  * @param  None
+  * @retval None
+  */
 void OTG_FS_IRQHandler(void)
 {
   	USBH_OTG_ISR_Handler(&USB_OTG_Core);
 } 
-//USB HOST 用户回调函数.
+
+
+/*  Points to the DEVICE_PROP structure of current device */
+/*  The purpose of this register is to speed up the execution */
+
 USBH_Usr_cb_TypeDef USR_cb=
 {
 	USBH_USR_Init,
@@ -63,10 +72,15 @@ USBH_Usr_cb_TypeDef USR_cb=
 	USBH_USR_DeviceNotSupported,
 	USBH_USR_UnrecoveredError
 };
-/////////////////////////////////////////////////////////////////////////////////
-//以下为各回调函数实现.
 
-//USB HOST 初始化 
+
+
+/**
+* @brief  USBH_USR_Init 
+*         Host lib initialization
+* @param  None
+* @retval None
+*/
 void USBH_USR_Init(void)
 {
 	printf("USB OTG HS MSC Host\r\n");
@@ -74,46 +88,77 @@ void USBH_USR_Init(void)
 	printf("  USB Host Library v2.2.0\r\n\r\n");
 	
 }
-//检测到U盘插入
-void USBH_USR_DeviceAttached(void)//U盘插入
+
+
+/**
+* @brief  USBH_USR_DeviceAttached 
+*         Device attached
+* @param  None
+* @retval None
+*/
+void USBH_USR_DeviceAttached(void)
 {
 	LED1=0;
-	printf("检测到USB设备插入!\r\n");
+	printf("USB Device attached!\r\n");
 }
-//检测到U盘拔出
-void USBH_USR_DeviceDisconnected (void)//U盘移除
+
+
+/**
+* @brief  USBH_DisconnectEvent
+*         Device disconnect event
+* @param  None
+* @retval Status
+*/
+void USBH_USR_DeviceDisconnected (void)
 {
 	LED1=1;
-	printf("USB设备拔出!\r\n");
+	printf("USB Device disconnect!\r\n");
 }  
-//复位从机
+
+
+/**
+* @brief  USBH_USR_ResetUSBDevice 
+* @param  None
+* @retval None
+*/
 void USBH_USR_ResetDevice(void)
 {
-	printf("复位设备...\r\n");
+	printf("Reset device...\r\n");
 }
-//检测到从机速度
-//DeviceSpeed:从机速度(0,1,2 / 其他)
+
+
+/**
+* @brief  USBH_USR_DeviceSpeedDetected 
+*         
+* @param  Device speed
+* @retval None
+*/
 void USBH_USR_DeviceSpeedDetected(uint8_t DeviceSpeed)
 {
 	if(DeviceSpeed==HPRT0_PRTSPD_HIGH_SPEED)
 	{
-		printf("高速(HS)USB设备!\r\n");
+		printf("High speed device detected!\r\n");
  	}  
 	else if(DeviceSpeed==HPRT0_PRTSPD_FULL_SPEED)
 	{
-		printf("全速(FS)USB设备!\r\n"); 
+		printf("Full speed device detected!\r\n"); 
 	}
 	else if(DeviceSpeed==HPRT0_PRTSPD_LOW_SPEED)
 	{
-		printf("低速(LS)USB设备!\r\n");  
+		printf("Low speed device detected!\r\n");  
 	}
 	else
 	{
-		printf("设备错误!\r\n");  
+		printf("Device fault!\r\n");  
 	}
 }
-//检测到从机的描述符
-//DeviceDesc:设备描述符指针
+
+/**
+* @brief  USBH_USR_Device_DescAvailable 
+*         Displays the message for device descriptor
+* @param  device descriptor
+* @retval None
+*/
 void USBH_USR_Device_DescAvailable(void *DeviceDesc)
 { 
 	USBH_DevDesc_TypeDef *hs;
@@ -121,12 +166,25 @@ void USBH_USR_Device_DescAvailable(void *DeviceDesc)
 	printf("VID: %04Xh\r\n" , (uint32_t)(*hs).idVendor); 
 	printf("PID: %04Xh\r\n" , (uint32_t)(*hs).idProduct); 
 }
-//从机地址分配成功
+
+/**
+* @brief  USBH_USR_DeviceAddressAssigned 
+*         USB device is successfully assigned the Address 
+* @param  None
+* @retval None
+*/
 void USBH_USR_DeviceAddressAssigned(void)
 {
-	printf("从机地址分配成功!\r\n");   
+	printf("USB device is successfully assigned the Address!\r\n");   
 }
-//配置描述符获有效
+
+
+/**
+* @brief  USBH_USR_Conf_Desc 
+*         Displays the message for configuration descriptor
+* @param  Configuration descriptor
+* @retval None
+*/
 void USBH_USR_Configuration_DescAvailable(USBH_CfgDesc_TypeDef * cfgDesc,
                                           USBH_InterfaceDesc_TypeDef *itfDesc,
                                           USBH_EpDesc_TypeDef *epDesc)
@@ -135,64 +193,120 @@ void USBH_USR_Configuration_DescAvailable(USBH_CfgDesc_TypeDef * cfgDesc,
 	id = itfDesc;   
 	if((*id).bInterfaceClass==0x08)
 	{
-		printf("可移动存储器设备!\r\n"); 
+		printf("Mass storage device connected!\r\n"); 
 	}else if((*id).bInterfaceClass==0x03)
 	{
-		printf("HID 设备!\r\n"); 
+		printf("HID device connected!\r\n"); 
 	}    
 }
-//获取到设备Manufacturer String
+
+
+/**
+* @brief  USBH_USR_Manufacturer_String 
+*         Displays the message for Manufacturer String 
+* @param  Manufacturer String 
+* @retval None
+*/
 void USBH_USR_Manufacturer_String(void *ManufacturerString)
 {
 	printf("Manufacturer: %s\r\n",(char *)ManufacturerString);
 }
-//获取到设备Product String 
+
+
+/**
+* @brief  USBH_USR_Product_String 
+*         Displays the message for Product String
+* @param  Product String
+* @retval None
+*/
 void USBH_USR_Product_String(void *ProductString)
 {
 	printf("Product: %s\r\n",(char *)ProductString);  
 }
-//获取到设备SerialNum String 
+
+
+/**
+* @brief  USBH_USR_SerialNum_String 
+*         Displays the message for SerialNum_String 
+* @param  SerialNum_String 
+* @retval None
+*/
 void USBH_USR_SerialNum_String(void *SerialNumString)
 {
 	printf("Serial Number: %s\r\n",(char *)SerialNumString);    
 } 
-//设备USB枚举完成
+
+
+/**
+* @brief  EnumerationDone 
+*         User response request is displayed to ask application jump to class
+* @param  None
+* @retval None
+*/
 void USBH_USR_EnumerationDone(void)
 { 
-	printf("设备枚举完成!\r\n\r\n");    
-} 
-//无法识别的USB设备
-void USBH_USR_DeviceNotSupported(void)
-{
-	printf("无法识别的USB设备!\r\n\r\n");    
-}  
-//等待用户输入按键,执行下一步操作
-USBH_USR_Status USBH_USR_UserInput(void)
-{ 
-	printf("跳过用户确认步骤!\r\n");
-	return USBH_USR_RESP_OK;
-} 
-//USB接口电流过载
-void USBH_USR_OverCurrentDetected (void)
-{
-	printf("端口电流过大!!!\r\n");
+	printf("Enumeration completed!\r\n\r\n");    
 } 
 
-extern u8 USH_User_App(void);		//用户测试主程序
-//USB HOST MSC类用户应用程序
+
+/**
+* @brief  USBH_USR_DeviceNotSupported
+*         Device is not supported
+* @param  None
+* @retval None
+*/
+void USBH_USR_DeviceNotSupported(void)
+{
+	printf("No registered class for this device!\r\n\r\n");    
+}  
+
+/**
+* @brief  USBH_USR_UserInput
+*         User Action for application state entry
+* @param  None
+* @retval USBH_USR_Status : User response for key button
+*/
+USBH_USR_Status USBH_USR_UserInput(void)
+{ 
+
+	return USBH_USR_RESP_OK;
+} 
+
+
+/**
+* @brief  USBH_USR_OverCurrentDetected
+*         Over Current Detected on VBUS
+* @param  None
+* @retval Status
+*/
+void USBH_USR_OverCurrentDetected (void)
+{
+	printf("Overcurrent detected!!!\r\n");
+} 
+
+extern u8 USH_User_App(void);	
+
+
+/**
+* @brief  USBH_USR_MSC_Application 
+*         Application for mass storage
+* @param  None
+* @retval Status
+*/
 int USBH_USR_MSC_Application(void)
 {
 	u8 res=0;
   	switch(AppState)
   	{
-    	case USH_USR_FS_INIT://初始化文件系统 
-			printf("开始执行用户程序!!!\r\n");
+    	case USH_USR_FS_INIT:
+			printf("Start user program execution!!!\r\n");
 			AppState=USH_USR_FS_TEST;
-                        //挂载U盘  
+                        
+                        /* mount usb stick */ 
                         f_mount(fs[0],"0:",1); 
       		break;
-    	case USH_USR_FS_TEST:	//执行USB OTG 测试主程序
-			res=USH_User_App(); //用户主程序
+    	case USH_USR_FS_TEST:	
+			res=USH_User_App(); 
      		res=0;
 			if(res)AppState=USH_USR_FS_INIT;
       		break;
@@ -200,37 +314,60 @@ int USBH_USR_MSC_Application(void)
   	} 
 	return res;
 }
-//用户要求重新初始化设备
+
+
+/**
+* @brief  USBH_USR_DeInit
+*         Deinit User state and associated variables
+* @param  None
+* @retval None
+*/
 void USBH_USR_DeInit(void)
 {
   	AppState=USH_USR_FS_INIT;
 }
-//无法恢复的错误!!  
+
+
+/**
+* @brief  USBH_USR_UnrecoveredError
+* @param  None
+* @retval None
+*/
 void USBH_USR_UnrecoveredError (void)
 {
-	printf("无法恢复的错误!!!\r\n\r\n");	
+	printf("UNRECOVERED ERROR STATE!!!\r\n\r\n");	
 }
-////////////////////////////////////////////////////////////////////////////////////////
-//用户定义函数,实现fatfs diskio的接口函数 
+
+
+
+/* User-defined functions, interface functions to achieve fatfs diskio */
 extern USBH_HOST              USB_Host;
 
-//获取U盘状态
-//返回值:0,U盘未就绪
-//      1,就绪
+
+/**
+* @brief  USBH_UDISK_Status
+*         Get the U-disk state
+* @param  None
+* @retval Return value: 0, U disk not ready  1, ready
+*/
 u8 USBH_UDISK_Status(void)
 {
-	return HCD_IsDeviceConnected(&USB_OTG_Core);//返回U盘状态
+	return HCD_IsDeviceConnected(&USB_OTG_Core);
 }
 
-//读U盘
-//buf:读数据缓存区
-//sector:扇区地址
-//cnt:扇区个数	
-//返回值:错误状态;0,正常;其他,错误代码;		 
+	
+/**
+* @brief  USBH_UDISK_Read
+*         Read U disk
+* @param  Buf: read data buffer
+*         Sector: sector address
+*         Cnt: Number of sectors
+* @retval Return Value: Error status; 0, normal; the other, an error code;
+*/
 u8 USBH_UDISK_Read(u8* buf,u32 sector,u32 cnt)
 {
 	u8 res=1;
-	if(HCD_IsDeviceConnected(&USB_OTG_Core)&&AppState==USH_USR_FS_TEST)//连接还存在,且是APP测试状态
+	if(HCD_IsDeviceConnected(&USB_OTG_Core)&&AppState==USH_USR_FS_TEST)
 	{  		    
 		do
 		{
@@ -238,7 +375,8 @@ u8 USBH_UDISK_Read(u8* buf,u32 sector,u32 cnt)
 			USBH_MSC_HandleBOTXfer(&USB_OTG_Core ,&USB_Host);		      
 			if(!HCD_IsDeviceConnected(&USB_OTG_Core))
 			{
-				res=1;//读写错误
+                                /* read write error */
+				res=1;
 				break;
 			};   
 		}while(res==USBH_MSC_BUSY);
@@ -247,15 +385,19 @@ u8 USBH_UDISK_Read(u8* buf,u32 sector,u32 cnt)
 	return res;
 }
 
-//写U盘
-//buf:写数据缓存区
-//sector:扇区地址
-//cnt:扇区个数	
-//返回值:错误状态;0,正常;其他,错误代码;		 
+	
+/**
+* @brief  USBH_UDISK_Write
+*         Write U disk
+* @param  Buf: write data buffer
+*         Sector: sector address
+*         Cnt: Number of sectors
+* @retval Return Value: Error status; 0, normal; the other, an error code;
+*/
 u8 USBH_UDISK_Write(u8* buf,u32 sector,u32 cnt)
 {
 	u8 res=1;
-	if(HCD_IsDeviceConnected(&USB_OTG_Core)&&AppState==USH_USR_FS_TEST)//连接还存在,且是APP测试状态
+	if(HCD_IsDeviceConnected(&USB_OTG_Core)&&AppState==USH_USR_FS_TEST)
 	{  		    
 		do
 		{
@@ -263,7 +405,8 @@ u8 USBH_UDISK_Write(u8* buf,u32 sector,u32 cnt)
 			USBH_MSC_HandleBOTXfer(&USB_OTG_Core ,&USB_Host);		      
 			if(!HCD_IsDeviceConnected(&USB_OTG_Core))
 			{
-				res=1;//读写错误
+                                /* read write error */
+				res=1;
 				break;
 			};   
 		}while(res==USBH_MSC_BUSY);
@@ -274,7 +417,23 @@ u8 USBH_UDISK_Write(u8* buf,u32 sector,u32 cnt)
 
 
 
+/**
+* @}
+*/ 
 
+/**
+* @}
+*/ 
+
+/**
+* @}
+*/
+
+/**
+* @}
+*/
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 
 
 

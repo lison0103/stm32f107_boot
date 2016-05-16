@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains stm32 ethernet low level functions.
 *                      
 *******************************************************************************/
 
@@ -12,24 +12,13 @@
 #include "stm32f107_eth.h"
 #include "stm32_eth_bsp.h"
 
- 
-//	使用 RMII总线，注意线路板上的跳线
-#define RMII_MODE       /* RMII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
+     
 
 #define  ETH_DMARxDesc_FrameLengthShift           16
 /* ETHERNET errors */
 #define  ETH_ERROR              ((uint32_t)0)
 #define  ETH_SUCCESS            ((uint32_t)1)
 
-
-static void _delay_(int cnt)
-{
-    volatile unsigned int dl;
-    while(cnt--)
-    {
-        for(dl=0; dl<500; dl++);
-    }
-}
 
 /* Global pointers on Tx and Rx descriptor used to track transmit and receive descriptors */
 extern ETH_DMADESCTypeDef  *DMATxDescToSet;
@@ -43,6 +32,22 @@ static void ETH_NVIC_Config(void);
 static void ETH_MACDMA_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
+
+
+
+/**
+  * @brief  _delay_
+  * @param  cnt: Number of cnt want to delay
+  * @retval None
+  */
+static void _delay_(int cnt)
+{
+    volatile unsigned int dl;
+    while(cnt--)
+    {
+        for(dl=0; dl<500; dl++);
+    }
+}
 
 /**
   * @brief  ETH_BSP_Config
@@ -60,13 +65,13 @@ void ETH_BSP_Config(void)
 
 
 	/* MII/RMII Media interface selection ------------------------------------------*/
-#ifdef MII_MODE /* Mode MII with STM3210C-EVAL  */
+#ifdef MII_MODE 
 	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_MII);
 
 	/* Get HSE clock = 25MHz on PA8 pin (MCO) */
 	RCC_MCOConfig(RCC_MCO_HSE);
 
-#elif defined RMII_MODE  /* Mode RMII with STM3210C-EVAL */
+#elif defined RMII_MODE  
 	GPIO_ETH_MediaInterfaceConfig(GPIO_ETH_MediaInterface_RMII);
 
 #endif
@@ -121,7 +126,7 @@ static void ETH_MACDMA_Config(void)
 	else
 		ETH_InitStructure.ETH_Mode = ETH_Mode_HalfDuplex; 
 	
-	ETH_InitStructure.ETH_AutoNegotiation = ETH_AutoNegotiation_Disable ; //ETH_Init()对未插网线上电处理不好，！ETH_AutoNegotiation
+	ETH_InitStructure.ETH_AutoNegotiation = ETH_AutoNegotiation_Disable ; 
 	ETH_InitStructure.ETH_LoopbackMode = ETH_LoopbackMode_Disable;
 	ETH_InitStructure.ETH_RetryTransmission = ETH_RetryTransmission_Disable;
 	ETH_InitStructure.ETH_AutomaticPadCRCStrip = ETH_AutomaticPadCRCStrip_Disable;
@@ -153,7 +158,7 @@ static void ETH_MACDMA_Config(void)
   	/* Configure Ethernet */
 	EthInitStatus = ETH_Init(&ETH_InitStructure, PHY_ADDRESS);	
 	
-        if(EthInitStatus==ETH_SUCCESS)//配置成功
+        if(EthInitStatus==ETH_SUCCESS)
 	{
           /* Enable the Ethernet Rx Interrupt */
           ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
@@ -181,12 +186,12 @@ void ETH_GPIO_Config(void)
         
 	- ETH_MII_MDIO / ETH_RMII_MDIO: 			PA2
 	- ETH_MII_MDC / ETH_RMII_MDC: 				PC1
-	- ETH_MII_TXD2: 							PC2
+	- ETH_MII_TXD2: 					PC2
 	- ETH_MII_TX_EN / ETH_RMII_TX_EN: 			PB11
 	- ETH_MII_TXD0 / ETH_RMII_TXD0: 			PB12
 	- ETH_MII_TXD1 / ETH_RMII_TXD1: 			PB13
-	- ETH_MII_PPS_OUT / ETH_RMII_PPS_OUT:		PB5
-	- ETH_MII_TXD3: 							PB8
+	- ETH_MII_PPS_OUT / ETH_RMII_PPS_OUT:		        PB5
+	- ETH_MII_TXD3: 					PB8
 	*/
 
 	/* Configure PA2 as alternate function push-pull */

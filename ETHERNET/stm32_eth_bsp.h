@@ -7,10 +7,10 @@
  extern "C" {
 #endif
 
-//#define MII_MODE          /* MII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
-#define RMII_MODE       /* RMII mode for STM3210C-EVAL Board (MB784) (check jumpers setting) */
+//#define MII_MODE          /* MII mode  */
+#define RMII_MODE       /* RMII mode  */
 
-//¸´Î»Òý½Å   
+/* Reset pin */   
 #define KSZ8041NL_RST_ON() 		   GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_SET) 	
 #define KSZ8041NL_RST_OFF() 		   GPIO_WriteBit(GPIOA, GPIO_Pin_0, Bit_RESET) 
    

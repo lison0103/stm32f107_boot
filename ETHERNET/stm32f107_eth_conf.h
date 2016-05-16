@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    stm32f2x7_eth_conf.h
+  * @file    stm32f1x7_eth_conf.h
   * @author  MCD Application Team
   * @version V1.1.0
   * @date    07-October-2011
-  * @brief   Configuration file for the STM32F2x7 Ethernet driver.  
+  * @brief   Configuration file for the STM32F1x7 Ethernet driver.  
   ******************************************************************************
   * @attention
   *
@@ -20,8 +20,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F2x7_ETH_CONF_H
-#define __STM32F2x7_ETH_CONF_H
+#ifndef __STM32F1x7_ETH_CONF_H
+#define __STM32F1x7_ETH_CONF_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -79,7 +79,7 @@
 	 
 
 /* MAC ADDRESS*/
-	 //0X00,0x1F,0xD0,0x4C,0xF7,0xFA
+//0X00,0x1F,0xD0,0x4C,0xF7,0xFA
 #define MAC_ADDR0   0x00
 #define MAC_ADDR1   0x1F
 #define MAC_ADDR2   0xD0
@@ -113,7 +113,7 @@
 }
 #endif
 
-#endif /* __STM32F2x7_ETH_CONF_H */
+#endif /* __STM32F1x7_ETH_CONF_H */
 
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

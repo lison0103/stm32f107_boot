@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : Contains the devices initinal.
 *                      
 *******************************************************************************/
 
@@ -23,8 +23,8 @@ void RCC_Configuration(void);
 
 
 /*******************************************************************************
-* Function Name  : Input_Output_PinInit
-* Description    : Initializes the Input and Output GPIO
+* Function Name  : Bsp_Init
+* Description    : Initialize the CPU1,CPU2 and peripherals
 *                  
 * Input          : None
 *                  None
@@ -41,7 +41,7 @@ void Bsp_Init(void)
         RCC_Configuration(); 
         
         /** delay init **/
-	delay_init();  
+	Delay_Init();  
         
         /** LED init **/
 	LED_Init();     
@@ -58,7 +58,7 @@ void Bsp_Init(void)
         
         /** ewdt init **/
         EWDT_Drv_pin_config();
-        power_on_bsp_check();         
+        ExtWdtCheck();         
         
         /** input and relay output test init **/
         Input_Output_PinInit();
@@ -89,8 +89,8 @@ void Bsp_Init(void)
         }   
         
         /** CAN module init **/
-	CAN_Mode_Init(CAN1,CAN_Mode_Normal);    
-        CAN_Mode_Init(CAN2,CAN_Mode_Normal);      
+	CAN_Int_Init(CAN1);    
+        CAN_Int_Init(CAN2);      
         
         /* Self test routines initialization ---------------------------------*/
         STL_InitRunTimeChecks();
@@ -171,7 +171,7 @@ void RCC_Configuration(void)
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration
-* Description    : 
+* Description    : Configuring NVIC interrupt group.
 *                  
 * Input          : None
 *                 
@@ -187,7 +187,7 @@ void NVIC_Configuration(void)
     NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
 #endif
     
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	//设置NVIC中断分组2:2位抢占优先级，2位响应优先级
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
     
     INTX_ENABLE();
 
