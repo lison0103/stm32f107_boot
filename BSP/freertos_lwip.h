@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains prototype of lwip tcp demo.
 *			          
 *******************************************************************************/
 
@@ -23,7 +23,6 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void led_task(void *arg);
 void tcp_client_init(void);
 void tcp_server_init(void);
 void lwip_dhcp_init(void);

@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains some task funcitons.
 *                      
 *******************************************************************************/
 
@@ -26,10 +26,10 @@ void selfcheck_task(void *arg);
 
 /*******************************************************************************
 * Function Name  : selfcheck_task
-* Description    : None
+* Description    : Run self test task.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -47,10 +47,10 @@ void selfcheck_task(void *arg)
 
 /*******************************************************************************
 * Function Name  : led_ewdt_task
-* Description    : None
+* Description    : Led flashes and kick the dog.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -69,10 +69,10 @@ void led_ewdt_task(void *arg)
 
 /*******************************************************************************
 * Function Name  : rx485_task
-* Description    : None
+* Description    : Rx485 port test.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -87,7 +87,7 @@ void rx485_task(void *arg)
           
                 if(USART_RX_STA&0x8000)
                 {					   
-                    len=USART_RX_STA&0x3fff;//得到此次接收到的数据长度
+                    len=USART_RX_STA&0x3fff;
                     
                     USART3_SEND(USART_RX_BUF,len);
                     USART_RX_STA=0;
@@ -101,10 +101,10 @@ void rx485_task(void *arg)
 
 /*******************************************************************************
 * Function Name  : rtc_task
-* Description    : None
+* Description    : Rtc clock.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -180,10 +180,9 @@ void rtc_task(void *arg)
 
 /*******************************************************************************
 * Function Name  : rx485_test_init
-* Description    : None
+* Description    : Create Rx485 test task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -195,10 +194,9 @@ void rx485_test_init(void)
 
 /*******************************************************************************
 * Function Name  : rtc_clock_init
-* Description    : None
+* Description    : Create rtc clock task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -210,11 +208,10 @@ void rtc_clock_init(void)
 
 
 /*******************************************************************************
-* Function Name  : rtc_clock_init
-* Description    : None
+* Function Name  : led_ewdt_init
+* Description    : Create led and ewdt task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -227,10 +224,9 @@ void led_ewdt_init(void)
 
 /*******************************************************************************
 * Function Name  : self_check_init
-* Description    : None
+* Description    : Create self test task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None

@@ -275,3 +275,5 @@ void ETH_NVIC_Config(void)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 }
+
+/******************************  END OF FILE  *********************************/

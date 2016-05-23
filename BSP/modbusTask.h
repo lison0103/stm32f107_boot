@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains prototype of modbus task functions.
 *			          
 *******************************************************************************/
 

@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains app bin update functions.
 *                      
 *******************************************************************************/
 
@@ -24,19 +24,19 @@
 
 /*******************************************************************************
 * Function Name  : isFileExist
-* Description    : 判断文件是否存在
+* Description    : Checks whether a file exists
 *                  
-* Input          : 文件名字符串
+* Input          : filename: file name string
 *                  
 * Output         : None
-* Return         : 0 存在
+* Return         : 0 exist
 *******************************************************************************/
 u8 isFileExist(char *filename)
 {
   FIL* fp;
   FRESULT res = FR_NO_FILE;
   
-  fp = (FIL*)mymalloc(sizeof(FIL));	//分配内存
+  fp = (FIL*)mymalloc(sizeof(FIL));	
   if(fp != NULL)
   {
     
@@ -57,15 +57,16 @@ u8 isFileExist(char *filename)
 }
 
 /*******************************************************************************
-* Function Name  : CreateFile
-* Description    : 
+* Function Name  : CopyFile
+* Description    : Copy a new file.
 *                  
-* Input          : 文件名字符串
+* Input          : readfilename: Copied files name string
+                   newfilename: New file name string.
 *                  
 * Output         : None
 * Return         : 0 success
 *******************************************************************************/
-u8 CreateFile(char *readfilename, char *createfilename)
+u8 CopyFile(char *readfilename, char *newfilename)
 {
   FIL* fp1;
   FIL* fp2;
@@ -74,8 +75,8 @@ u8 CreateFile(char *readfilename, char *createfilename)
     u16 bread;
     u32 offx=0;
   
-  fp1 = (FIL*)mymalloc(sizeof(FIL));	//分配内存
-  fp2 = (FIL*)mymalloc(sizeof(FIL));	//分配内存
+  fp1 = (FIL*)mymalloc(sizeof(FIL));	
+  fp2 = (FIL*)mymalloc(sizeof(FIL));	
   tempbuf = mymalloc(1024);
   
   
@@ -84,16 +85,15 @@ u8 CreateFile(char *readfilename, char *createfilename)
     
       res = f_open(fp1,readfilename,FA_READ);
       
-      res = f_open(fp2,createfilename,FA_CREATE_NEW | FA_WRITE);  
+      res = f_open(fp2,newfilename,FA_CREATE_NEW | FA_WRITE);  
       printf("\r\n open res = %d \r\n",res);
       
-        while(res==FR_OK)//死循环执行
+        while(res==FR_OK)
         {
-          res = f_read(fp1,tempbuf,1024,(UINT *)&bread);		//读取数据	
-          if(res!=FR_OK)break;					//执行错误
-
+          res = f_read(fp1,tempbuf,1024,(UINT *)&bread);		
+          if(res!=FR_OK)break;					
           res = f_write(fp2,tempbuf,bread,&offx);
-//          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);//更新FLASH代码 	  
+//          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);	  
           offx+=bread;
           if(bread!=1024)
           {
@@ -111,7 +111,7 @@ u8 CreateFile(char *readfilename, char *createfilename)
 //                } 
                 
                 
-                break;					//读完了.
+                break;					
           }
         }       
       
@@ -134,12 +134,12 @@ u8 CreateFile(char *readfilename, char *createfilename)
 
 /*******************************************************************************
 * Function Name  : UpdateApp
-* Description    : 更新APP
+* Description    : Update app bin file.
 *                  
-* Input          : 文件名字符串
+* Input          : filename: new app bin file name string.
 *                  
 * Output         : None
-* Return         : 0 更新成功
+* Return         : 0 success
 *******************************************************************************/
 u8 UpdateApp(char *filename)
 {
@@ -150,20 +150,20 @@ u8 UpdateApp(char *filename)
     u32 offx=0;
     u8  flag = 0;
     
-    fp = (FIL*)mymalloc(sizeof(FIL));	//分配内存
-    tempbuf = mymalloc(4096);	//分配4096个字节空间
+    fp = (FIL*)mymalloc(sizeof(FIL));	
+    tempbuf = mymalloc(4096);	
     
     if(fp != NULL && tempbuf != NULL)
     {      
         res = f_open(fp,filename,FA_READ);    
         printf("\r\n open res = %d \r\n",res);
         
-//        INTX_DISABLE();//关闭所有中断
-        while(res==FR_OK)//死循环执行
+//        INTX_DISABLE();
+        while(res==FR_OK)
         {
           EWDT_TOOGLE();
-          res=f_read(fp,tempbuf,4096,(UINT *)&bread);		//读取数据	
-          if(res!=FR_OK)break;					//执行错误
+          res=f_read(fp,tempbuf,4096,(UINT *)&bread);			
+          if(res!=FR_OK)break;					
           if(0 == flag)
           {
               flag = 1;
@@ -173,11 +173,11 @@ u8 UpdateApp(char *filename)
                   break;             
               }
           }
-          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);//更新FLASH代码 	  
+          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);	  
           offx+=bread;
-          if(bread!=4096)break;					//读完了.
+          if(bread!=4096)break;					
         }      
-//        INTX_ENABLE();//打开所有中断
+//        INTX_ENABLE();
     }
     
     printf("\r\n update res = %d \r\n",res);
@@ -191,12 +191,12 @@ u8 UpdateApp(char *filename)
 
 /*******************************************************************************
 * Function Name  : DeleteFile
-* Description    : 删除升级固件
+* Description    : Delete a file.
 *                  
-* Input          : 文件名字符串
+* Input          : filename: deleted file name string.
 *                  
 * Output         : None
-* Return         : 0：删除成功
+* Return         : 0：success
 *******************************************************************************/
 u8 DeleteFile(char *filename)
 {
@@ -209,12 +209,12 @@ u8 DeleteFile(char *filename)
 
 /*******************************************************************************
 * Function Name  : ReadDir
-* Description    : 读取目录下的文件
+* Description    : Read a file directory
 *                  
-* Input          : path:目录  str:传入一个字符串，返回找到的升级文件名
+* Input          : path: directory  str: input a string
 *                  
-* Output         : None
-* Return         : 0 成功
+* Output         : str: return the name of the upgrade file found
+* Return         : 0 success
 *******************************************************************************/
 extern u8 App_Version[2];
 u8 ReadDir(u8 * path, char str[])
@@ -228,15 +228,15 @@ u8 ReadDir(u8 * path, char str[])
     fileinfo.lfsize = _MAX_LFN * 2 + 1;
     fileinfo.lfname = mymalloc(fileinfo.lfsize);
 #endif	
-    res = f_opendir(&dir,(const TCHAR*)path); //打开一个目录
+    res = f_opendir(&dir,(const TCHAR*)path); 
     if (res == FR_OK) 
     {	
 //      printf("\r\n"); 
       while(1)
       {
-        res = f_readdir(&dir, &fileinfo);                   //读取目录下的一个文件
-        if (res != FR_OK || fileinfo.fname[0] == 0) break;  //错误了/到末尾了,退出
-        //if (fileinfo.fname[0] == '.') continue;             //忽略上级目录
+        res = f_readdir(&dir, &fileinfo);                   
+        if (res != FR_OK || fileinfo.fname[0] == 0) break;  
+        //if (fileinfo.fname[0] == '.') continue;             
 #if _USE_LFN
         fn = *fileinfo.lfname ? fileinfo.lfname : fileinfo.fname;
 #else							   
@@ -266,7 +266,7 @@ u8 ReadDir(u8 * path, char str[])
                 }
             }
         }
-        if(flag == 2)//版本号升级
+        if(flag == 2)//version upgrade
         {
             flag = 0;
             if(App_Version[0] < fn[4] || (App_Version[0] <= fn[4] && App_Version[1] < fn[6]))
@@ -278,7 +278,7 @@ u8 ReadDir(u8 * path, char str[])
                 break;
             }
         }
-        else if(flag == 3)//强制升级，并把版本号记录为1.0
+        else if(flag == 3)//force upgrade
         {
                 App_Version[0] = '1';
                 App_Version[1] = '0';

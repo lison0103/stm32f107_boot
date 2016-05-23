@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains prototype of app bin update functions.
 *			          
 *******************************************************************************/
 
@@ -27,7 +27,7 @@ u8 isFileExist(char *filename);
 u8 UpdateApp(char *filename);
 u8 DeleteFile(char *filename);
 u8 ReadDir(u8 * path, char filestr[]);
-u8 CreateFile(char *readfilename, char *createfilename);
+u8 CopyFile(char *readfilename, char *newfilename);
 
 
 #endif /* __UPDATE_H */

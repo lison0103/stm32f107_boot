@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/24/2016
-* Description        : 
+* Description        : This file contains usb mass storage task funcitons.
 *                      
 *******************************************************************************/
 
@@ -29,18 +29,18 @@ u32 timecounter = 0;
 
 /*******************************************************************************
 * Function Name  : USH_User_App
-* Description    : 用户测试主程序
+* Description    : User test main program
 *                  
 * Input          : None
 *                  None
 * Output         : None
-* Return         : 0,正常 1,有问题
+* Return         : 0:ok  1:error
 *******************************************************************************/ 
 u8 USH_User_App(void)
 { 
 	u32 total,free;
 	u8 res=0;
-	printf("设备连接成功!.\n");	 
+	printf("Device connect success!.\n");	 
         
         LED0 = 1;
 
@@ -65,25 +65,25 @@ u8 USH_User_App(void)
                 total = total>>10;
                 free  = free>>10;
 		printf("FATFS OK!\n");	
-		printf("U Disk Total Size:  %d   MB\n",total);//显示U盘总容量 MB	 
+		printf("U Disk Total Size:  %d   MB\n",total);
 		printf("U Disk  Free Size:  %d   MB\n",free); 	    	
 	} 
 
        
         if(isFileExist("0:123.txt"))
         {
-            printf("文件不存在\n");
+            printf("File not exists\n");
         }
         else
         {
-              printf("文件存在\n");
+              printf("File exists\n");
               
               DeleteFile("0:abc.txt");
               
 //              if(isFileExist("0:abc.txt"))
 //              {
               
-                  CreateFile("0:123.txt", "0:abc.txt");
+                  CopyFile("0:123.txt", "0:abc.txt");
 //              }
               
 //              DeleteFile("0:123.txt");
@@ -92,7 +92,7 @@ u8 USH_User_App(void)
         }
 #endif        
         
-	while(HCD_IsDeviceConnected(&USB_OTG_Core))//设备连接成功
+	while(HCD_IsDeviceConnected(&USB_OTG_Core))
 	{	
 		LED1=!LED1;
 		delay_ms(200);
@@ -102,12 +102,12 @@ u8 USH_User_App(void)
                 if(res==0)
                 {	   
                   printf("FATFS OK!\n");	
-                  printf("U Disk Total Size:  %d   MB\n",total>>10);//显示U盘总容量 MB	 
+                  printf("U Disk Total Size:  %d   MB\n",total>>10); 
                   printf("U Disk  Free Size:  %d   MB\n",free>>10); 	    	
                 }
 	}
    
-	printf("设备连接中...\n");
+	printf("Device is connecting...\n");
 
 	return res;
 }
@@ -120,8 +120,8 @@ u8 USH_User_App(void)
 * Function Name  : usb_task
 * Description    : None
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -174,10 +174,9 @@ void usb_mass_storage_init(void)
 #ifdef GEC_CB_BOOTLOADER
 /*******************************************************************************
 * Function Name  : usb_process
-* Description    : None
+* Description    : Wait 3s to upgrade , overtime enter APP
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None

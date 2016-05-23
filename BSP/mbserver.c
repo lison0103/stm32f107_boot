@@ -27,37 +27,38 @@
 #include "can.h"
 
 /* ----------------------- Defines ------------------------------------------*/
-// 输入寄存器起始地址
+/* Input register start address */
 #define REG_INPUT_START      1
- // 输入寄存器数量
+/* Number of input register */
 #define REG_INPUT_NREGS      120
 
-// 保持寄存器起始地址
+/* Holding register start address */
 #define	REG_HOLD_START	      1
-// 保持寄存器数量
+/* Number of holding register */
 #define REG_HOLD_NREGS	      16
 
-// 线圈起始地址
+/* Coils register start address */
 #define REG_COILS_START       1    
-// 线圈数量
+/* Number of coils register */
 #define REG_COILS_SIZE        16                    
 
-// 开关寄存器起始地址
+/* Discrete register start address */
 #define REG_DISCRETE_START    1    
-// 开关寄存器数量
-#define REG_DISCRETE_SIZE     16                    
+/* Number of discrete register */
+#define REG_DISCRETE_SIZE     16       
+
 /* ----------------------- Static variables ---------------------------------*/
-// 寄存器起始地址
+
 static USHORT   usRegInputStart = REG_INPUT_START;
-// 输入寄存器内容
+
 static USHORT   usRegInputBuf[REG_INPUT_NREGS] = {0};//{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-// 保持寄存器起始地址
+
 static USHORT   usRegHoldStart =  REG_HOLD_START;
-// 保持寄存器内容
+
 static USHORT   usRegHoldBuf[REG_HOLD_NREGS]  = {0};//{16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1};
-// 线圈状态
+
 static UCHAR ucRegCoilsBuf[REG_COILS_SIZE / 8] = {0x00};//{0xFF, 0x55};
-// 开关状态
+
 static UCHAR ucRegDiscreteBuf[REG_DISCRETE_SIZE / 8] = {0x00};//{0xAA,0xFF};
 
 eMBErrorCode
@@ -293,3 +294,5 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
     }
     return eStatus;
 }
+
+/******************************  END OF FILE  *********************************/

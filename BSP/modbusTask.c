@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains modbus task functions.
 *                      
 *******************************************************************************/
 
@@ -45,10 +45,10 @@ int newconn;
 
 /*******************************************************************************
 * Function Name  : modbus_rtu_thread
-* Description    : None
+* Description    : modbus rtu task.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -69,10 +69,9 @@ void modbus_rtu_thread(void *arg)
 
 /*******************************************************************************
 * Function Name  : modbus_rtu_init
-* Description    : None
+* Description    : Create modbus rtu task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -89,10 +88,10 @@ void modbus_rtu_init(void)
 
 /*******************************************************************************
 * Function Name  : modbus_socket_thread
-* Description    : None
+* Description    : modbus tcp task demo.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -113,7 +112,6 @@ void modbus_socket_thread(void *arg)
 
       }  
       
-      //设为非阻塞  
       if (fcntl(sock_fd, F_SETFL, O_NONBLOCK) == -1) {  
          
       
@@ -132,7 +130,7 @@ void modbus_socket_thread(void *arg)
 
       }  
       
-      
+      /* listen for incoming connections (TCP listen backlog = 5) */
       if (listen(sock_fd, BACKLOG) == -1) {  
  
       }
@@ -276,7 +274,7 @@ void modbus_socket_thread(void *arg)
   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   bind(sock, (struct sockaddr *)&address, sizeof (address));
   
-  /* listen for incoming connections (TCP listen backlog = 5) */
+  /* listen for incoming connections (TCP listen backlog = 1) */
   listen(sock, 1);
   
   size = sizeof(remotehost);
@@ -289,21 +287,21 @@ void modbus_socket_thread(void *arg)
 	{
 		  /* Read in the request */
 	  	ret = recv(newconn, TmpBuf, sizeof(TmpBuf),0); 
-	  	if(ret == 0)	  //断开连接
+	  	if(ret == 0)	  //disconnect
 		{
 			close(newconn);
-			break;	  //跳出，去等待连接
+			break;	  //break the loop,wait for a connection
 		}
 		else if(ret>0)
 		{
 			mbFramBuflen  = ret;
-			( void )xMBPortEventPost( EV_FRAME_RECEIVED );  //告诉Mbpoll有新的数据帧
+			( void )xMBPortEventPost( EV_FRAME_RECEIVED );  //has new data
 		   	for(i=0;i<2;i++)
 			{
 				eMBPoll();
 			}	
 		}
-		else		 //无连接存在
+		else		 //No connection
 		{
 			break;
 		}
@@ -316,10 +314,9 @@ void modbus_socket_thread(void *arg)
 
 /*******************************************************************************
 * Function Name  : modbus_socket_init
-* Description    : None
+* Description    : Create modbus tcp task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None

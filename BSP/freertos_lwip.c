@@ -3,7 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 03/23/2016
-* Description        : 
+* Description        : This file contains lwip tcp demo.
 *                      
 *******************************************************************************/
 
@@ -17,12 +17,16 @@
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct _XTCPCLIENTSOCK{
-	int s;						/*socket 标识符 -1无效，>= 0 有效*/
-	int bconnect;				/*socket 是否连接成功，0 未连接，>= 1 连接*/
-	xSemaphoreHandle	sxMutex;/*互斥量，socket不是线程安全的，为了实现socket
-									在一个线程里接收数据，而在其他线程发送，
-									建立互斥量来做互斥操作*/
-}XTCPCLIENTSOCK;
+    
+        /* Socket identifier -1 invalid,> = 0 valid */
+	int s;						
+        /* Socket whether the connection is successful, 0 is not connected,> = 1 connection */
+	int bconnect;				
+        /* Mutex, socket not thread-safe, in order to achieve socket receiving 
+        data in a thread while another thread is sent to do build mutual exclusion mutex */
+	xSemaphoreHandle	sxMutex;
+}
+XTCPCLIENTSOCK;
 
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -45,10 +49,9 @@ void TCPClient(void *arg);
 
 /*******************************************************************************
 * Function Name  : tcp_client_init
-* Description    : None
+* Description    : Creat tcp client task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -61,10 +64,9 @@ void tcp_client_init(void)
 
 /*******************************************************************************
 * Function Name  : tcp_server_init
-* Description    : None
+* Description    : Creat tcp server task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -76,11 +78,10 @@ void tcp_server_init(void)
 
 
 /*******************************************************************************
-* Function Name  : tcp_server_init
-* Description    : None
+* Function Name  : lwip_dhcp_init
+* Description    : Creat lwip dhcp task.
 *                  
 * Input          : None
-*                  None
 *                  
 * Output         : None
 * Return         : None
@@ -98,10 +99,10 @@ void lwip_dhcp_init(void)
 
 /*******************************************************************************
 * Function Name  : TCPServer
-* Description    : None
+* Description    : Tcp server demo.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.  
 *                  
 * Output         : None
 * Return         : None
@@ -123,7 +124,7 @@ void TCPServer(void *arg)
 
       }  
       
-      //设为非阻塞  
+      //Unblocked
       if (fcntl(sock_fd, F_SETFL, O_NONBLOCK) == -1) {  
          
       
@@ -290,13 +291,13 @@ void TCPServer(void *arg)
         watch_fd_list[ci] = -1;  
   
     int server_sockfd;  
-    //建立socket，类型为TCP流  
+
     server_sockfd = socket(AF_INET, SOCK_STREAM, 0);  
     if (server_sockfd == -1) {  
   
     }  
   
-    //设为非阻塞  
+ 
     if (fcntl(server_sockfd, F_SETFL, O_NONBLOCK) == -1) {  
  
     }  
@@ -305,15 +306,15 @@ void TCPServer(void *arg)
     memset(&server_sockaddr, 0, sizeof(server_sockaddr));  
     server_sockaddr.sin_family = AF_INET;  
     server_sockaddr.sin_addr.s_addr = htonl(INADDR_ANY);  
-    //设置监听端口  
+
     server_sockaddr.sin_port = htons(MYPORT);  
     server_len = sizeof(server_sockaddr);  
-    //绑定  
+ 
     rcd = bind(server_sockfd, (struct sockaddr *) &server_sockaddr, server_len);  
     if (rcd == -1) {  
   
     }  
-    //监听  
+
     rcd = listen(server_sockfd, BACKLOG);  
     if (rcd == -1) {  
  
@@ -323,21 +324,21 @@ void TCPServer(void *arg)
     watch_fd_list[0] = server_sockfd;  
     maxfd = server_sockfd;  
   
-    //初始化监听集合  
+
     fd_set watchset;  
     FD_ZERO(&watchset);  
     FD_SET(server_sockfd, &watchset);  
   
-    struct timeval tv; /* 声明一个时间变量来保存时间 */  
+    struct timeval tv; 
     struct sockaddr_in cli_sockaddr;  
     while (1) {  
   
         tv.tv_sec = 20;  
-        tv.tv_usec = 0; /* 设置select等待的最大时间为20秒*/  
-        //每次都要重新设置集合才能激发事件  
+        tv.tv_usec = 0; 
+
         FD_ZERO(&watchset);  
         FD_SET(server_sockfd, &watchset);  
-        //对已存在到socket重新设置  
+
         for (ci = 0; ci <= BACKLOG; ci++)  
             if (watch_fd_list[ci] != -1) {  
                 FD_SET(watch_fd_list[ci], &watchset);  
@@ -349,18 +350,18 @@ void TCPServer(void *arg)
  
         case 0:  
   
-            //超时则清理掉所有集合元素并关闭所有与客户端的socket  
+
             FD_ZERO(&watchset);  
             for (ci = 1; ci <= BACKLOG; ci++){  
                 shutdown(watch_fd_list[ci],2);  
                 watch_fd_list[ci] = -1;  
             }  
-            //重新设置监听socket，等待链接  
+
             FD_CLR(server_sockfd, &watchset);  
             FD_SET(server_sockfd, &watchset);  
             continue;  
         default:  
-            //检测是否有新连接建立  
+
             if (FD_ISSET(server_sockfd, &watchset)) { //new connection  
                 socklen = sizeof(cli_sockaddr);  
                 new_cli_fd = accept(server_sockfd, (struct sockaddr *) &cli_sockaddr, &socklen);  
@@ -382,8 +383,7 @@ void TCPServer(void *arg)
                 }  
   
                 continue;  
-            } else {//已有连接的数据通信  
-                //遍历每个设置过的集合元素  
+            } else {  
                 for (ci = 1; ci <= BACKLOG; ci++) { //data  
                     if (watch_fd_list[ci] == -1)  
                         continue;  
@@ -391,21 +391,20 @@ void TCPServer(void *arg)
                         continue;  
                     }  
                     char buffer[128];  
-                    //接收  
+ 
                     int len = recv(watch_fd_list[ci], buffer, 128, 0);  
                     if (len < 0) {  
  
                     }  
                     buffer[len] = 0;  
   
-
-                    //发送接收到到数据  
+ 
                     len = send(watch_fd_list[ci], buffer, strlen(buffer), 0);  
                     if (len < 0) {  
  
                     }   
   
-                    //接收到的是关闭命令  
+
                     if (strcmp(buffer, "quit") == 0) {  
                         for (ci = 0; ci <= BACKLOG; ci++)  
                             if (watch_fd_list[ci] != -1) {  
@@ -423,10 +422,10 @@ void TCPServer(void *arg)
 
 /*******************************************************************************
 * Function Name  : TCPClient
-* Description    : None
+* Description    : Tcp client demo.
 *                  
-* Input          : None
-*                  None
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
 *                  
 * Output         : None
 * Return         : None
@@ -442,7 +441,7 @@ void TCPClient(void *arg)
 	
 	(void)arg;
 	xClientSocket.bconnect = 0;
-	//建立互斥量
+	//set mutex
 	xClientSocket.sxMutex = xSemaphoreCreateMutex();
 	
 	if(xClientSocket.sxMutex == NULL )
@@ -451,12 +450,12 @@ void TCPClient(void *arg)
 	}
 	while(1)
 	{
-		//创建客户端
+		//create a client
 		xClientSocket.s = lwip_socket( AF_INET,SOCK_STREAM,IPPROTO_TCP);
 		if(xClientSocket.s == -1 ){
 			continue;
 		}
-		//创建成功
+		//success
 		optval = 1;
 		
 		lwip_setsockopt(xClientSocket.s,SOL_SOCKET,SO_KEEPALIVE,&optval,sizeof(optval));
@@ -465,7 +464,7 @@ void TCPClient(void *arg)
 		ServerAddr.sin_port = htons(MYPORT);
 		
 		xClientSocket.bconnect = 0;
-		//连接服务器
+		//connect to server
 		if( lwip_connect(xClientSocket.s,(struct sockaddr*)&ServerAddr,sizeof(ServerAddr) ) == - 1)
 		{
 			//connect error!
@@ -474,7 +473,7 @@ void TCPClient(void *arg)
 		}
 		xClientSocket.bconnect = 1;
 		
-		//是否接收到数据
+		//Whether it has received data
 		while(1)
 		{
 			FD_ZERO(&fdsr);
@@ -489,7 +488,7 @@ void TCPClient(void *arg)
 			{
 				int datalen;
 				int ret;
-				//有数据，互斥操作
+				//Data, mutual exclusion
 				if( xSemaphoreTake( xClientSocket.sxMutex, portMAX_DELAY ) != pdTRUE ){
 					while(1);
 				}
@@ -497,7 +496,7 @@ void TCPClient(void *arg)
 				datalen = lwip_recv(xClientSocket.s,ClientRevBuf,BUF_SIZE,0);
 				if(datalen > 0)
 				{
-					//接收的数据,测试，回送给服务器
+					//The received data back to the server
 					ret = lwip_send(xClientSocket.s,ClientRevBuf,datalen,0);
                                         if(ret < 0)
                                         {
@@ -505,11 +504,11 @@ void TCPClient(void *arg)
                                         }
 					
 				}else{
-					//服务器关闭等异常
+					//close server error,reconnect to server
 					xClientSocket.bconnect = 0 ;
 					lwip_close(xClientSocket.s);
 					xSemaphoreGive( xClientSocket.sxMutex );
-					break;	//重新连接服务器	
+					break;	
 				}
 				xSemaphoreGive( xClientSocket.sxMutex );
 			}			

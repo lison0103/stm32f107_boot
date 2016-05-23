@@ -271,7 +271,8 @@ void LwIP_DHCP_task(void * pvParameters)
 
 
 
-//以太网接收中断处理函数，发送信号，由任务 ethernetif_input (ethernetif.c)来处理接收帧
+/* Ethernet receive interrupt handler, send a signal by the task 
+ethernetif_input (ethernetif.c) to process the received frame */
 extern xSemaphoreHandle s_xSemaphore;
 
 /**
@@ -301,3 +302,4 @@ void ETH_IRQHandler(void)
     portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
   }
 }
+/******************************  END OF FILE  *********************************/
