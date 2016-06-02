@@ -490,6 +490,16 @@ void input_test_task(void *arg)
 
                 Input_Check();   
                 CAN_Comm();
+                
+                /* for test ----------------------*/
+                if( CAN2_RX_Data[0] & ( 1 << 0 ))
+                {
+                    GRL3 = 0;
+                }
+                else
+                {
+                    GRL3 = 1;
+                }
                               
                 vTaskDelay( 45 );		   
 	}
