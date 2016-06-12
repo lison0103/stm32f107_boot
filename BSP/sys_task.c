@@ -10,7 +10,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "includes.h"
-#include "esc.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -117,22 +117,22 @@ void rtc_task(void *arg)
 	for( ; ; )
 	{
 
-            if(CMD_FLAG10 & 0x40)
-            {
-                RTC_SetTime( &Modbuff[50] );
-                CMD_FLAG10 &= ~0x40;
-            }  
-            else
-            {  
-                if( RTC_GetTime( &Modbuff[50] ) )
-                {
-                    CMD_FLAG10 |= 0x20;
-                }
-                else
-                {
-                    CMD_FLAG10 &= ~0x20;
-                }
-            }  
+//            if(CMD_FLAG10 & 0x40)
+//            {
+//                RTC_SetTime( &Modbuff[50] );
+//                CMD_FLAG10 &= ~0x40;
+//            }  
+//            else
+//            {  
+//                if( RTC_GetTime( &Modbuff[50] ) )
+//                {
+//                    CMD_FLAG10 |= 0x20;
+//                }
+//                else
+//                {
+//                    CMD_FLAG10 &= ~0x20;
+//                }
+//            }  
                
 #if DEBUG_PRINTF            
             if(t!=calendar.sec)
