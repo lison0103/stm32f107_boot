@@ -31,7 +31,7 @@
 #define SDA_IN()  {GPIOC->CRH&=0XFFFFFF0F;GPIOC->CRH|=8<<4;}
 #define SDA_OUT() {GPIOC->CRH&=0XFFFFFF0F;GPIOC->CRH|=3<<4;}
 
-	 
+
 #define IIC_SCL    PAout(8) 
 #define IIC_SDA    PCout(9) 
 #define READ_SDA   PCin(9)  
@@ -64,7 +64,7 @@ u8 IIC_Read_One_Byte(u8 daddr,u8 addr);
 *******************************************************************************/
 void AT24CXX_Init(void)
 {
-	IIC_Init();
+    IIC_Init();
 }
 
 
@@ -79,30 +79,29 @@ void AT24CXX_Init(void)
 *******************************************************************************/
 u8 AT24CXX_ReadOneByte(u16 ReadAddr, u8 *dat)
 {				  	
-        u8 err=0;
-        
-        IIC_Start();  
-	if(EE_TYPE>AT24C16)
-	{
-		IIC_Send_Byte(0XA0);	 
-		err = IIC_Wait_Ack();
-		IIC_Send_Byte(ReadAddr>>8);
-//		IIC_Wait_Ack();		 
-	}
-        else 
-        {   
-            IIC_Send_Byte(0XA0+((ReadAddr/256)<<1));   	 
-        }
-	err = IIC_Wait_Ack(); 
-        IIC_Send_Byte(ReadAddr%256);   
-	err = IIC_Wait_Ack();	    
-	IIC_Start();  	 	   
-	IIC_Send_Byte(0XA1);          			   
-	err = IIC_Wait_Ack();	 
-        *dat=IIC_Read_Byte(0);		   
-        IIC_Stop();  
-        
-	return (err);
+    u8 err=0;
+    
+    IIC_Start();  
+    if(EE_TYPE>AT24C16)
+    {
+        IIC_Send_Byte(0XA0);	 
+        err = IIC_Wait_Ack();
+        IIC_Send_Byte(ReadAddr>>8);	 
+    }
+    else 
+    {   
+        IIC_Send_Byte(0XA0+((ReadAddr/256)<<1));   	 
+    }
+    err = IIC_Wait_Ack(); 
+    IIC_Send_Byte(ReadAddr%256);   
+    err = IIC_Wait_Ack();	    
+    IIC_Start();  	 	   
+    IIC_Send_Byte(0XA1);          			   
+    err = IIC_Wait_Ack();	 
+    *dat=IIC_Read_Byte(0);		   
+    IIC_Stop();  
+    
+    return (err);
 }
 
 
@@ -117,27 +116,28 @@ u8 AT24CXX_ReadOneByte(u16 ReadAddr, u8 *dat)
 *******************************************************************************/
 u8 AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
 {		
-        u8 err=0;
-        
-        IIC_Start();  
-	if(EE_TYPE>AT24C16)
-	{
-		IIC_Send_Byte(0XA0);	    
-		err = IIC_Wait_Ack();
-		IIC_Send_Byte(WriteAddr>>8);
- 	}else
-	{
-		IIC_Send_Byte(0XA0+((WriteAddr/256)<<1));  
-	}	 
-	err = IIC_Wait_Ack();	   
-        IIC_Send_Byte(WriteAddr%256);   
-	err = IIC_Wait_Ack(); 	 										  		   
-	IIC_Send_Byte(DataToWrite);    							   
-	err = IIC_Wait_Ack();  		    	   
-        IIC_Stop(); 
-	delay_ms(10);	 
-        
-        return (err);
+    u8 err=0;
+    
+    IIC_Start();  
+    if(EE_TYPE>AT24C16)
+    {
+        IIC_Send_Byte(0XA0);	    
+        err = IIC_Wait_Ack();
+        IIC_Send_Byte(WriteAddr>>8);
+    }
+    else
+    {
+        IIC_Send_Byte(0XA0+((WriteAddr/256)<<1));  
+    }	 
+    err = IIC_Wait_Ack();	   
+    IIC_Send_Byte(WriteAddr%256);   
+    err = IIC_Wait_Ack(); 	 										  		   
+    IIC_Send_Byte(DataToWrite);    							   
+    err = IIC_Wait_Ack();  		    	   
+    IIC_Stop(); 
+    delay_ms(10);	 
+    
+    return (err);
 }
 
 
@@ -153,16 +153,16 @@ u8 AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
 *******************************************************************************/
 u8 AT24CXX_Check(void)
 {
-	u8 temp;
-	AT24CXX_ReadOneByte(32767,&temp);		   
-	if(temp==0X55)return 0;		   
-	else
-	{
-		AT24CXX_WriteOneByte(32767,0X55);
-                AT24CXX_ReadOneByte(32767,&temp);	  
-		if(temp==0X55)return 0;
-	}
-	return 1;											  
+    u8 temp;
+    AT24CXX_ReadOneByte(32767,&temp);		   
+    if(temp==0X55)return 0;		   
+    else
+    {
+        AT24CXX_WriteOneByte(32767,0X55);
+        AT24CXX_ReadOneByte(32767,&temp);	  
+        if(temp==0X55)return 0;
+    }
+    return 1;											  
 }
 
 
@@ -179,24 +179,26 @@ u8 AT24CXX_Check(void)
 *******************************************************************************/
 u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 {
-        u8 ucCounter=0,err=0;
+    u8 ucCounter=0,err=0;
+    
+    while(ucCounter < 3)
+    {
         
-        while(ucCounter<3)
-	{
-            
-            while(NumToRead)
-            {
-		err = AT24CXX_ReadOneByte(ReadAddr++, pBuffer++);
-                if(err) break;
-		NumToRead--;
-            }
-            if(!err) break;
-            
-            ucCounter++;
-            delay_ms( 50 );            
-            
+        while(NumToRead)
+        {
+            err = AT24CXX_ReadOneByte(ReadAddr, pBuffer);
+            if(err) break;
+            ReadAddr++;
+            pBuffer++;
+            NumToRead--;
         }
-        return(err);
+        if(!err) break;
+        
+        ucCounter++;
+        delay_ms( 50 );            
+        
+    }
+    return(err);
 }  
 
 
@@ -213,28 +215,29 @@ u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 *******************************************************************************/
 u8 AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 {
-        u8 ucCounter=0,err=0;
+    u8 ucCounter=0,err=0;
+    
+    while(ucCounter < 3)
+    {
         
-        while(ucCounter<3)
-	{
-            
-            while(NumToWrite--)
-            {
-		err = AT24CXX_WriteOneByte(WriteAddr, *pBuffer);
-                WriteAddr++;
-		pBuffer++;
-                if(err) break;
-            }
-            if(!err) break;
-            
-            ucCounter++;
-            delay_ms( 50 );            
-            
+        while(NumToWrite)
+        {
+            err = AT24CXX_WriteOneByte(WriteAddr, *pBuffer);
+            if(err) break;
+            WriteAddr++;
+            pBuffer++;
+            NumToWrite--;
         }
-        return(err);        
+        if(!err) break;
         
+        ucCounter++;
+        delay_ms( 50 );            
+        
+    }
+    return(err);        
+    
 }
- 
+
 
 
 
@@ -262,7 +265,7 @@ void IIC_Init(void)
     
     IIC_SCL=1;
     IIC_SDA=1;
-
+    
 }
 
 /*******************************************************************************
@@ -404,7 +407,7 @@ void IIC_Send_Byte(u8 txd)
         delay_us(2);
     }	 
 } 	    
-  
+
 /*******************************************************************************
 * Function Name  : IIC_Send_Byte
 * Description    : IIC read a byte.
@@ -416,23 +419,23 @@ void IIC_Send_Byte(u8 txd)
 *******************************************************************************/
 u8 IIC_Read_Byte(unsigned char ack)
 {
-	unsigned char i,receive=0;
-        
-	SDA_IN();
-        for(i=0;i<8;i++ )
-	{
-            IIC_SCL=0; 
-            delay_us(2);
-            IIC_SCL=1;
-            receive<<=1;
-            if(READ_SDA)receive++;   
-            delay_us(1); 
-        }					 
-        if (!ack)
-            IIC_NAck();
-        else
-            IIC_Ack();  
-        return receive;
+    unsigned char i,receive=0;
+    
+    SDA_IN();
+    for(i=0;i<8;i++ )
+    {
+        IIC_SCL=0; 
+        delay_us(2);
+        IIC_SCL=1;
+        receive<<=1;
+        if(READ_SDA)receive++;   
+        delay_us(1); 
+    }					 
+    if (!ack)
+        IIC_NAck();
+    else
+        IIC_Ack();  
+    return receive;
 }
 
 
