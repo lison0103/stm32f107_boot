@@ -19,6 +19,8 @@
 #include "bsp_iocfg.h"
 #include "includes.h"
 #include "crc16.h"
+#include "esc.h"
+#include "esc_eeprom_process.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -492,14 +494,22 @@ void input_test_task(void *arg)
                 CAN_Comm();
                 
                 /* for test ----------------------*/
-                if( CAN2_RX_Data[0] & ( 1 << 0 ))
+                ESC_STATE1 = CAN2_RX_Data[0];
+                ESC_ERROR_CODE[0] = CAN2_RX_Data[1];                
+                
+                if( ESC_STATE1 & ( 1 << 0 ))
                 {
                     GRL3 = 0;
+                    POWER_ON_TMS++;
                 }
                 else
                 {
                     GRL3 = 1;
+                    POWER_ON_TMS = 0;
                 }
+                
+                error_record_check();
+                write_error_record_to_eeprom();
                               
                 vTaskDelay( 45 );		   
 	}

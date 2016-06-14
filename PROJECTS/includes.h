@@ -68,12 +68,12 @@
 
 #define RX485_TEST      0
 
-#define RTC_CLOCK_TEST          0
+#define RTC_CLOCK_TEST          1
 /*************************  TEST    *******************************************/
 #if RTC_CLOCK_TEST
-#define DEBUG_PRINTF                1
+#define DEBUG_PRINTF                0
 #else
-#define DEBUG_PRINTF                1
+#define DEBUG_PRINTF                0
 #endif /* RTC_CLOCK_TEST */
 #endif /* GEC_CB_MAIN */
 

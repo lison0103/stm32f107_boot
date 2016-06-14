@@ -30,7 +30,7 @@
 /* Input register start address */
 #define REG_INPUT_START      1
 /* Number of input register */
-#define REG_INPUT_NREGS      120
+#define REG_INPUT_NREGS      200
 
 /* Holding register start address */
 #define	REG_HOLD_START	      1

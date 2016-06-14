@@ -10,6 +10,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "initial_devices.h"
+#ifdef GEC_CB_MAIN 
+#include "esc_eeprom_process.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -86,7 +89,11 @@ void Bsp_Init(void)
         {
             printf("AT24CXX_Check fail \n");
           
-        }   
+        } 
+        else
+        {
+            get_error_record_from_eeprom();
+        }
         
         /** CAN module init **/
 	CAN_Int_Init(CAN1);    

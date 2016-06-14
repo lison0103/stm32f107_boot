@@ -213,12 +213,6 @@ u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 *******************************************************************************/
 u8 AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 {
-	while(NumToWrite--)
-	{
-		AT24CXX_WriteOneByte(WriteAddr,*pBuffer);
-		WriteAddr++;
-		pBuffer++;
-	}
         u8 ucCounter=0,err=0;
         
         while(ucCounter<3)

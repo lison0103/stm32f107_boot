@@ -4236,6 +4236,12 @@
   </group>
   <group>
     <name>ESC</name>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\inc\esc.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\src\esc_eeprom_process.c</name>
+    </file>
   </group>
   <group>
     <name>FATFS</name>

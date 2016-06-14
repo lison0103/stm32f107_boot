@@ -11,7 +11,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "initial_devices.h"
 #include "includes.h"
-
+#ifdef GEC_CB_MAIN 
+#include "esc.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -20,7 +22,16 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-
+#ifdef GEC_CB_MAIN 
+u8 Modbuff[3000];
+u8 EscErrorBuff[EEP_ERROR_RECORD_NUM];
+u16 *const ptErrorRecordFirstItem = (u16*)&Modbuff[500];//2
+u16 *const ptErrorRecordCounter = (u16*)&Modbuff[502];//2
+u8 *const pcEscErrorCodeBuff = &Modbuff[504];//2
+u8 *const pcMbRtccBuff = &Modbuff[50];//6
+u8 *const pcStateBuff = &Modbuff[460];
+u32 *const plPowerOnTms = (u32*)&Modbuff[140];//4  
+#endif
 
 /*******************************************************************************
 * Function Name  : Task_Loop
@@ -134,7 +145,7 @@ void Task_Loop(void)
 *******************************************************************************/
 int main(void)
 {        
- 	        
+     
         Bsp_Init();
         Task_Loop();
         

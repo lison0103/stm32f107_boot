@@ -10,7 +10,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "includes.h"
-
+#include "esc.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -134,10 +134,19 @@ void rtc_task(void *arg)
 //                }
 //            }  
                
-#if DEBUG_PRINTF            
+           
             if(t!=calendar.sec)
             {
                 t=calendar.sec;
+                
+                pcMbRtccBuff[0] = (calendar.w_year)%100;
+                pcMbRtccBuff[1] = calendar.w_month;
+                pcMbRtccBuff[2] = calendar.w_date;
+                pcMbRtccBuff[3] = calendar.hour;
+                pcMbRtccBuff[4] = calendar.min;
+                pcMbRtccBuff[5] = calendar.sec;
+                    
+#if DEBUG_PRINTF 
                 printf("%d - %02d - %02d \n", calendar.w_year, calendar.w_month, calendar.w_date);
            
                 switch(calendar.week)
@@ -168,9 +177,9 @@ void rtc_task(void *arg)
                       break;
                 }
                 printf("%02d : %02d : %02d \n", calendar.hour, calendar.min, calendar.sec);
-
-            }
 #endif
+            }
+
             
             vTaskDelay( 100 );
 	}              
