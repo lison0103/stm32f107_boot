@@ -14,6 +14,7 @@
 #include "esc.h"
 #include "24cxx.h"
 #include "rtc.h"
+#include "crc16.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -60,7 +61,7 @@ void error_record_incode(void)
     
     for(j=0;j<8;j++)
     {	
-        EscErrorBuff[i+j] = pcCurrentRecordErrorBuff[j];
+        pcEscErrorBuff[i+j] = pcCurrentRecordErrorBuff[j];
     } 
 	
 }
@@ -131,6 +132,58 @@ void error_record_check(void)
 
 
 /*******************************************************************************
+* Function Name  : eep_read_data
+* Description    : Get error record from eeprom.
+* Input          : None
+*                 
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void eep_read_data(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
+{   
+
+    if( AT24CXX_Read(ReadAddr, NumToRead, pBuffer) )
+    {
+        /* error */
+        EN_ERROR1 |= 0x01;    
+    }
+
+    if(MB_CRC16(pBuffer, NumToRead))
+    {
+        /* error */
+        EN_ERROR1 |= 0x02;          
+    }
+    
+
+}
+
+/*******************************************************************************
+* Function Name  : eep_write_data
+* Description    : Get error record from eeprom.
+* Input          : None
+*                 
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void eep_write_data(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
+{
+
+    u16 i;
+        
+    i = MB_CRC16( pBuffer, NumToWrite - 2 );
+    pBuffer[NumToWrite - 2] = i;
+    pBuffer[NumToWrite - 1] = i>>8;    
+
+    if( AT24CXX_Write(WriteAddr, NumToWrite, pBuffer) )
+    {
+        /* error */
+        EN_ERROR1 |= 0x04;    
+    }
+    
+
+}
+
+/*******************************************************************************
 * Function Name  : get_error_fault_from_eeprom
 * Description    : Get error record from eeprom.
 * Input          : None
@@ -138,23 +191,30 @@ void error_record_check(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/ 
+//#define TESTNUM  200
+
 void get_error_record_from_eeprom(void)
 {
     /* error records */
+//    u8 writebuff[TESTNUM] = {0};
+//    u8 readbuff[TESTNUM] = {0};
+//    
+//    for(u16 a = 0; a < TESTNUM; a++)
+//    {
+//        writebuff[a] = 0x0a;
+//    }
 
-    if(AT24CXX_Read(EEP_ERROR_RECORD_ITEM_ADR, 4, &Modbuff[500])) 
-    {
-        /* error */
-        EN_ERROR1 |= 0x01;
-    } 	
+    
+    
+    eep_read_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
     
     errorRecordFirstItem_old = *ptErrorRecordFirstItem;
+
     
-    if(AT24CXX_Read(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, EscErrorBuff)) 
-    {
-        /* error */
-        EN_ERROR1 |= 0x01;
-    } 			  
+//    eep_write_data(EEP_ERROR_RECORD_ADR, TESTNUM, &writebuff[0]);
+//    eep_read_data(EEP_ERROR_RECORD_ADR, TESTNUM, readbuff);
+    
+        
 }
 
 /*******************************************************************************
@@ -167,25 +227,17 @@ void get_error_record_from_eeprom(void)
 *******************************************************************************/ 
 void write_error_record_to_eeprom(void)
 {
-    u16 i;
+//    u16 i;
     
     
     /* fault record */
 
     if((errorRecordFirstItem_old != *ptErrorRecordFirstItem) && (*ptErrorRecordFirstItem))
     {
-        i = ((*ptErrorRecordFirstItem)-1)*8;                          
-        if(AT24CXX_Write(EEP_ERROR_RECORD_ADR + i, 8, &EscErrorBuff[i]))
-        {
-            /* error */
-            EN_ERROR1 |= 0x01;        
-        }
-        
-        if(AT24CXX_Write(EEP_ERROR_RECORD_ITEM_ADR, 4, &Modbuff[500]))
-        {
-            /* error */
-            EN_ERROR1 |= 0x01;        
-        }        
+//        i = ((*ptErrorRecordFirstItem)-1)*8;                          
+//        eep_write_data(EEP_ERROR_RECORD_ADR + i, 8, &pcEscErrorBuff[i]);
+        eep_write_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
+      
     }
     
     errorRecordFirstItem_old = *ptErrorRecordFirstItem;	

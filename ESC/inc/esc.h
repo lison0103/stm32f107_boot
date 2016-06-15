@@ -18,14 +18,13 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#define EEP_ERROR_RECORD_ITEM_ADR  996
-#define EEP_ERROR_RECORD_ADR  1000
-#define EEP_ERROR_RECORD_NUM  2400  
+#define EEP_ERROR_RECORD_ADR  10
+#define EEP_ERROR_RECORD_NUM  2452  
 
 /* Exported functions ------------------------------------------------------- */
 
-extern u8 Modbuff[3000];
-extern u8 EscErrorBuff[EEP_ERROR_RECORD_NUM];
+extern u8 Modbuff[6000];
+extern u8 *const pcEscErrorBuff;
 extern u16 *const ptErrorRecordFirstItem;
 extern u16 *const ptErrorRecordCounter;
 extern u8 *const pcMbRtccBuff;

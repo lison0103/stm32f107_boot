@@ -42,6 +42,9 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 #ifdef GEC_CB_MAIN
+
+#define USE_FREERTOS_OS        1
+
 /* number is big, priority is big */
 #define LED_TASK_PRIO			( tskIDLE_PRIORITY + 9 )
 #define USB_THREAD_PRIO                 ( tskIDLE_PRIORITY + 7 )
