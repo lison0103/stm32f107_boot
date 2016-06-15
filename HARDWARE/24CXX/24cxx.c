@@ -11,6 +11,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "24cxx.h" 
 #include "delay.h"
+#include "includes.h"
+#if USE_FREERTOS_OS
+#include "FreeRTOS.h"
+#include "task.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -27,6 +32,11 @@
 
 #define EE_TYPE         AT24C256
 
+#if (EE_TYPE == AT24C256)
+#define PAGE_NUM        64
+#else
+#define PAGE_NUM        1
+#endif
 
 #define SDA_IN()  {GPIOC->CRH&=0XFFFFFF0F;GPIOC->CRH|=8<<4;}
 #define SDA_OUT() {GPIOC->CRH&=0XFFFFFF0F;GPIOC->CRH|=3<<4;}
@@ -69,74 +79,135 @@ void AT24CXX_Init(void)
 
 
 /*******************************************************************************
-* Function Name  : AT24CXX_ReadOneByte
+* Function Name  : AT24CXX_ReadByte
 * Description    : a read-out data in the specified address AT24CXX
 *                  
 * Input          : ReadAddr: Start reading address  
-*                  
+*                  dat: the first address of the data array 
+*                  len: the number of data to be read
 * Output         : None
 * Return         : 0: success  1: error
 *******************************************************************************/
-u8 AT24CXX_ReadOneByte(u16 ReadAddr, u8 *dat)
+u8 AT24CXX_ReadByte(u16 ReadAddr, u8 *dat, u16 len)
 {				  	
     u8 err=0;
-    
+
+#if USE_FREERTOS_OS    
+    taskENTER_CRITICAL();    
+#endif
     IIC_Start();  
     if(EE_TYPE>AT24C16)
     {
         IIC_Send_Byte(0XA0);	 
-        err = IIC_Wait_Ack();
+        if(IIC_Wait_Ack())
+        {
+            err = 1;
+            return (err);
+        }
         IIC_Send_Byte(ReadAddr>>8);	 
     }
     else 
     {   
         IIC_Send_Byte(0XA0+((ReadAddr/256)<<1));   	 
     }
-    err = IIC_Wait_Ack(); 
+    if(IIC_Wait_Ack())
+    {
+        err = 1;
+        return (err);
+    }
     IIC_Send_Byte(ReadAddr%256);   
-    err = IIC_Wait_Ack();	    
+    if(IIC_Wait_Ack())
+    {
+        err = 1;
+        return (err);
+    }
+    
     IIC_Start();  	 	   
     IIC_Send_Byte(0XA1);          			   
-    err = IIC_Wait_Ack();	 
-    *dat=IIC_Read_Byte(0);		   
-    IIC_Stop();  
+    if(IIC_Wait_Ack())
+    {
+        err = 1;
+        return (err);
+    }
     
+    for(u16 t = 0; t < (len - 1); t++)
+    {       
+        *dat=IIC_Read_Byte(1);	
+        dat++;
+    }
+    
+    *dat = IIC_Read_Byte(0);
+    
+    IIC_Stop();  
+
+#if USE_FREERTOS_OS    
+    taskEXIT_CRITICAL();    
+#endif
     return (err);
 }
 
 
 /*******************************************************************************
-* Function Name  : AT24CXX_WriteOneByte
+* Function Name  : AT24CXX_WriteByte
 * Description    : Data written to a specified address in AT24CXX
 *                  
 * Input          : WriteAddr : writing data to the destination address
 *                  DataToWrite: data to be written
+*                  len: the number of data to be written
 * Output         : None
 * Return         : 0: success  1: error
 *******************************************************************************/
-u8 AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
+u8 AT24CXX_WriteByte(u16 WriteAddr,u8 *DataToWrite,u8 len)
 {		
     u8 err=0;
-    
+
+#if USE_FREERTOS_OS    
+    taskENTER_CRITICAL();  
+#endif
     IIC_Start();  
     if(EE_TYPE>AT24C16)
     {
         IIC_Send_Byte(0XA0);	    
-        err = IIC_Wait_Ack();
+        if(IIC_Wait_Ack())
+        {
+            err = 1;
+            return (err);
+        }
         IIC_Send_Byte(WriteAddr>>8);
     }
     else
     {
         IIC_Send_Byte(0XA0+((WriteAddr/256)<<1));  
     }	 
-    err = IIC_Wait_Ack();	   
+    if(IIC_Wait_Ack())
+    {
+        err = 1;
+        return (err);
+    }	   
     IIC_Send_Byte(WriteAddr%256);   
-    err = IIC_Wait_Ack(); 	 										  		   
-    IIC_Send_Byte(DataToWrite);    							   
-    err = IIC_Wait_Ack();  		    	   
-    IIC_Stop(); 
-    delay_ms(10);	 
+    if(IIC_Wait_Ack())
+    {
+        err = 1;
+        return (err);
+    }
     
+    for(u8 t=0; t < len; t++)
+    {    
+        IIC_Send_Byte(*DataToWrite);    							   
+        if(IIC_Wait_Ack())
+        {
+            err = 1;
+            break;
+        }
+        DataToWrite++;
+    }
+    
+    IIC_Stop(); 
+    delay_ms(5);
+
+#if USE_FREERTOS_OS    
+    taskEXIT_CRITICAL();  
+#endif
     return (err);
 }
 
@@ -154,13 +225,14 @@ u8 AT24CXX_WriteOneByte(u16 WriteAddr,u8 DataToWrite)
 u8 AT24CXX_Check(void)
 {
     u8 temp;
-    AT24CXX_ReadOneByte(32767,&temp);		   
-    if(temp==0X55)return 0;		   
+    u8 temp1 = 0x55;
+    AT24CXX_ReadByte(32767,&temp,1);		   
+    if(temp == 0x55)return 0;		   
     else
     {
-        AT24CXX_WriteOneByte(32767,0X55);
-        AT24CXX_ReadOneByte(32767,&temp);	  
-        if(temp==0X55)return 0;
+        AT24CXX_WriteByte(32767,&temp1,1);
+        AT24CXX_ReadByte(32767,&temp,1);	  
+        if(temp == 0X55)return 0;
     }
     return 1;											  
 }
@@ -184,14 +256,8 @@ u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
     while(ucCounter < 3)
     {
         
-        while(NumToRead)
-        {
-            err = AT24CXX_ReadOneByte(ReadAddr, pBuffer);
-            if(err) break;
-            ReadAddr++;
-            pBuffer++;
-            NumToRead--;
-        }
+        err = AT24CXX_ReadByte(ReadAddr, pBuffer, NumToRead);
+        
         if(!err) break;
         
         ucCounter++;
@@ -216,18 +282,43 @@ u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
 u8 AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
 {
     u8 ucCounter=0,err=0;
+    u16 pageremain;	 
+    
+    pageremain = PAGE_NUM - ( WriteAddr % PAGE_NUM ); 	 	    
+    if( NumToWrite <= pageremain ) 
+    {
+        pageremain = NumToWrite;
+    }
     
     while(ucCounter < 3)
     {
-        
-        while(NumToWrite)
-        {
-            err = AT24CXX_WriteOneByte(WriteAddr, *pBuffer);
+
+	while(1)
+	{	   
+            err = AT24CXX_WriteByte(WriteAddr, pBuffer, pageremain);
             if(err) break;
-            WriteAddr++;
-            pBuffer++;
-            NumToWrite--;
-        }
+            
+            if( NumToWrite == pageremain )
+            {
+                break;
+            }
+            else 
+            {
+                pBuffer += pageremain;
+                WriteAddr += pageremain;	
+                NumToWrite -= pageremain;			  
+                
+                if(NumToWrite > PAGE_NUM)
+                {
+                    pageremain = PAGE_NUM; 
+                }
+                else 
+                {
+                    pageremain = NumToWrite; 	 
+                }
+            }
+	}	    
+               
         if(!err) break;
         
         ucCounter++;
@@ -282,9 +373,9 @@ void IIC_Start(void)
     SDA_OUT();     
     IIC_SDA=1;	  	  
     IIC_SCL=1;
-    delay_us(4);
+    delay_us(6);
     IIC_SDA=0;
-    delay_us(4);
+    delay_us(6);
     IIC_SCL=0;
 }	  
 
@@ -303,10 +394,11 @@ void IIC_Stop(void)
     SDA_OUT();
     IIC_SCL=0;
     IIC_SDA=0;
-    delay_us(4);
+    delay_us(6);
     IIC_SCL=1; 
+    delay_us(10);
     IIC_SDA=1;
-    delay_us(4);							   	
+//    delay_us(4);							   	
 }
 
 
