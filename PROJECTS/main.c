@@ -23,7 +23,8 @@
 /* Private functions ---------------------------------------------------------*/
 
 #ifdef GEC_CB_MAIN 
-u8 Modbuff[6000];
+u8 Modbuff[5000];
+u8 EscRTBuff[200];
 u8 *const pcEscErrorBuff = &Modbuff[3000];
 u16 *const ptErrorRecordFirstItem = (u16*)&Modbuff[2950];//2
 u16 *const ptErrorRecordCounter = (u16*)&Modbuff[2952];//2

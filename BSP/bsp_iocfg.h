@@ -52,12 +52,22 @@
 #define GSFR3     PDout(3)
 #define GSFR4     PDout(2)
 
+#define UP_RELAY_ON()      	GPIO_WriteBit(GPIOD, GPIO_Pin_7, Bit_SET)
+#define UP_RELAY_OFF()     	GPIO_WriteBit(GPIOD, GPIO_Pin_7, Bit_RESET)
+#define DOWN_RELAY_ON()    	GPIO_WriteBit(GPIOD, GPIO_Pin_4, Bit_SET)
+#define DOWN_RELAY_OFF()  	GPIO_WriteBit(GPIOD, GPIO_Pin_4, Bit_RESET)
+
+#define Y_RELAY_ON()     	GPIO_WriteBit(GPIOD, GPIO_Pin_3, Bit_SET)
+#define Y_RELAY_OFF()    	GPIO_WriteBit(GPIOD, GPIO_Pin_3, Bit_RESET)
+#define D_RELAY_ON()		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET)			
+#define D_RELAY_OFF()		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET)
+
 #define TRANS_CTRL1     PAout(15)
 #define TRANS_CTRL2     PCout(12)
 
 /* Exported functions ------------------------------------------------------- */
 void Input_Output_PinInit(void);
-
+void Get_GpioInput(u8 inBuff[]);
 
 
 #endif /* __BSP_IOCFG_H */

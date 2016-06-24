@@ -23,7 +23,8 @@
 
 /* Exported functions ------------------------------------------------------- */
 
-extern u8 Modbuff[6000];
+extern u8 Modbuff[5000];
+extern u8 EscRTBuff[200];
 extern u8 *const pcEscErrorBuff;
 extern u16 *const ptErrorRecordFirstItem;
 extern u16 *const ptErrorRecordCounter;
@@ -36,6 +37,28 @@ extern u32 *const plPowerOnTms;
 #define ESC_STATE1      pcStateBuff[0]
 #define POWER_ON_TMS    plPowerOnTms[0]
 #define EN_ERROR1       Modbuff[600]
+
+
+#define INPUT_PORT1_8       EscRTBuff[4]
+#define INPUT_PORT9_16      EscRTBuff[5]
+
+#define INPUT_PORT1_MASK        ( 1 << 0 )
+#define INPUT_PORT2_MASK        ( 1 << 1 )
+#define INPUT_PORT3_MASK        ( 1 << 2 )
+#define INPUT_PORT4_MASK        ( 1 << 3 )
+#define INPUT_PORT5_MASK        ( 1 << 4 )
+#define INPUT_PORT6_MASK        ( 1 << 5 )
+#define INPUT_PORT7_MASK        ( 1 << 6 )
+#define INPUT_PORT8_MASK        ( 1 << 7 )
+
+#define INPUT_PORT9_MASK        ( 1 << 0 )
+#define INPUT_PORT10_MASK        ( 1 << 1 )
+#define INPUT_PORT11_MASK        ( 1 << 2 )
+#define INPUT_PORT12_MASK        ( 1 << 3 )
+#define INPUT_PORT13_MASK        ( 1 << 4 )
+#define INPUT_PORT14_MASK        ( 1 << 5 )
+#define INPUT_PORT15_MASK        ( 1 << 6 )
+#define INPUT_PORT16_MASK        ( 1 << 7 )
 
 #endif  /* __ESC_H */
 

@@ -466,6 +466,8 @@ void CAN_Comm(void)
         /*  can communication timeout process */
     }    
 
+    CAN1_TX_Data[0] = EscRTBuff[4];
+    CAN1_TX_Data[1] = EscRTBuff[5];
     
     len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
     len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN2_RX_Data, 0);
@@ -490,14 +492,14 @@ void input_test_task(void *arg)
  	while(1)
 	{
 
-                Input_Check();   
+                Get_GpioInput(&EscRTBuff[4]);
                 CAN_Comm();
                 
                 /* for test ----------------------*/
                 ESC_STATE1 = CAN2_RX_Data[0];
                 ESC_ERROR_CODE[0] = CAN2_RX_Data[1];                
                 
-                if( ESC_STATE1 & ( 1 << 0 ))
+                if( ESC_STATE1 & ( 1 << 1 ))
                 {
                     GRL3 = 0;
                     POWER_ON_TMS++;
