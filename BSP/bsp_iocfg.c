@@ -81,6 +81,36 @@ void Get_GpioInput(u8 inBuff[])
     
 }
 
+
+/*******************************************************************************
+* Function Name  : output_driver
+* Description    : Enable or disable relay output.
+*                  
+* Input          : out_buff: set the gpio pin value of data
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void output_driver(u8 out_buff[])
+{
+	if(out_buff[0] & 0x01) 		GRL1 = 1; 		else GRL1 = 0; 					  
+	if(out_buff[0] & 0x02) 		GRL2 = 1; 		else GRL2 = 0; 	 					  
+	if(out_buff[0] & 0x04) 		GRL3 = 1; 		else GRL3 = 0;	 					  
+	if(out_buff[0] & 0x08)  	GRL4 = 1; 		else GRL4 = 0; 						  
+	if(out_buff[0] & 0x10)  	GRL5 = 1; 		else GRL5 = 0; 					  
+	if(out_buff[0] & 0x20)  	GRL6 = 1; 		else GRL6 = 0;				  
+	if(out_buff[0] & 0x40)  	GRL7 = 1; 		else GRL7 = 0;				  
+	if(out_buff[0] & 0x80)		GRL8 = 1; 		else GRL8 = 0; 	
+
+	if(out_buff[1] & 0x01) 	        GRL9 = 1; 		else GRL9 = 0; 	
+	if(out_buff[1] & 0x02) 		UP_RELAY_ON(); 		else UP_RELAY_OFF(); 	 					  
+	if(out_buff[1] & 0x04) 		DOWN_RELAY_ON(); 	else DOWN_RELAY_OFF();	 					  
+	if(out_buff[1] & 0x08)  	Y_RELAY_ON(); 		else Y_RELAY_OFF(); 						  
+	if(out_buff[1] & 0x10)  	D_RELAY_ON(); 		else D_RELAY_OFF(); 					  
+	if(out_buff[1] & 0x20)  	TRANS_CTRL1 = 1; 	else TRANS_CTRL1 = 0;				  
+	if(out_buff[1] & 0x40)  	TRANS_CTRL2 = 1; 	else TRANS_CTRL2 = 0;	 
+}
+
 /*******************************************************************************
 * Function Name  : Input_Output_PinInit
 * Description    : Initializes the Input and Output GPIO

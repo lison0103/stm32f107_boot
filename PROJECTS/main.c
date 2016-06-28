@@ -104,7 +104,8 @@ void Task_Loop(void)
               
 #if   INPUT_RELAY_OUTPUT_AND_CAN_TEST       
       /* input output and can communication test */
-        input_test_init();               
+        input_test_init();   
+        can_comm_test_init();
 #endif        
         
            

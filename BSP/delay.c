@@ -10,13 +10,19 @@
 /* Includes ------------------------------------------------------------------*/
 #include "delay.h"
 #include "lsys.h"
+#ifdef GEC_CB_MAIN
 #include "timer.h"
+#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 #define  USE_SYSTICK_DELAY   0
+#ifdef GEC_CB_MAIN
 #define  USE_TIM_DELAY       1
+#else
+#define  USE_TIM_DELAY       0
+#endif
 
 /* Private variables ---------------------------------------------------------*/
 #if USE_SYSTICK_DELAY

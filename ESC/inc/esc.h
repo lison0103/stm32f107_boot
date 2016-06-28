@@ -51,7 +51,7 @@ extern u32 *const plPowerOnTms;
 #define INPUT_PORT7_MASK        ( 1 << 6 )
 #define INPUT_PORT8_MASK        ( 1 << 7 )
 
-#define INPUT_PORT9_MASK        ( 1 << 0 )
+#define INPUT_PORT9_MASK         ( 1 << 0 )
 #define INPUT_PORT10_MASK        ( 1 << 1 )
 #define INPUT_PORT11_MASK        ( 1 << 2 )
 #define INPUT_PORT12_MASK        ( 1 << 3 )
@@ -59,6 +59,9 @@ extern u32 *const plPowerOnTms;
 #define INPUT_PORT14_MASK        ( 1 << 5 )
 #define INPUT_PORT15_MASK        ( 1 << 6 )
 #define INPUT_PORT16_MASK        ( 1 << 7 )
+
+
+#define CMD_OUTPUT_PORT         EscRTBuff[30]
 
 #endif  /* __ESC_H */
 

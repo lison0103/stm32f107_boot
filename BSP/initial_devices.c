@@ -163,7 +163,7 @@ void RCC_Configuration(void)
                            |RCC_APB2Periph_GPIOE ,
                            ENABLE); 
      
-  
+      RCC_APB2PeriphClockCmd( RCC_APB2Periph_TIM1 , ENABLE);   
     #ifdef GEC_CB_MAIN
       /* Enable GPIO and Peripherals clocks */   
       RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 | RCC_AHBPeriph_CRC, ENABLE);

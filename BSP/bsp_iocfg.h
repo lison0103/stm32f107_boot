@@ -68,7 +68,7 @@
 /* Exported functions ------------------------------------------------------- */
 void Input_Output_PinInit(void);
 void Get_GpioInput(u8 inBuff[]);
-
+void output_driver(u8 out_buff[]);
 
 #endif /* __BSP_IOCFG_H */
 
