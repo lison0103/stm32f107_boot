@@ -25,6 +25,7 @@
 
 #include "hw_test.h"
 #include "can.h"
+#include "esc.h"
 
 /* ----------------------- Defines ------------------------------------------*/
 /* Input register start address */
@@ -130,21 +131,21 @@ eMBRegHoldingCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegi
                             usNRegs--;	
 			}
                         {
-                            GRL1 = usRegHoldBuf[0];
-                            GRL2 = usRegHoldBuf[1];
-                            GRL3 = usRegHoldBuf[2];
-                            GRL4 = usRegHoldBuf[3];
-                            GRL5 = usRegHoldBuf[4];
-                            GRL6 = usRegHoldBuf[5];
-                            GRL7 = usRegHoldBuf[6];
-                            GRL8 = usRegHoldBuf[7];
-                            GRL9 = usRegHoldBuf[8];
-                            GSFR1 = usRegHoldBuf[9];       
-                            GSFR2 = usRegHoldBuf[10];
-                            GSFR3 = usRegHoldBuf[11];
-                            GSFR4 = usRegHoldBuf[12];
-                            TRANS_CTRL1 = usRegHoldBuf[13];
-                            TRANS_CTRL2 = usRegHoldBuf[14];
+                            
+                            u16 *pc_Output = (u16*)&EscRTBuff[30];
+                            
+                            for( u8 i = 0; i < 15; i++ )
+                            {
+                                if( usRegHoldBuf[i] )
+                                {
+                                    *pc_Output |= ( 1 << i );
+                                }
+                                else
+                                {
+                                    *pc_Output &= ~( 1 << i );
+                                }
+                            }
+                            
                         }
 			break;
 		}
@@ -217,21 +218,20 @@ eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils,
             }
             {
               
-                GRL1 = (ucRegCoilsBuf[0]&0x01) >> 0;
-                GRL2 = (ucRegCoilsBuf[0]&0x02) >> 1;
-                GRL3 = (ucRegCoilsBuf[0]&0x04) >> 2;
-                GRL4 = (ucRegCoilsBuf[0]&0x08) >> 3;
-                GRL5 = (ucRegCoilsBuf[0]&0x10) >> 4;
-                GRL6 = (ucRegCoilsBuf[0]&0x20) >> 5;
-                GRL7 = (ucRegCoilsBuf[0]&0x40) >> 6;
-                GRL8 = (ucRegCoilsBuf[0]&0x80) >> 7;
-                GRL9 = (ucRegCoilsBuf[1]&0x01) >> 0;
-                GSFR1 = (ucRegCoilsBuf[1]&0x02) >> 1;
-                GSFR2 = (ucRegCoilsBuf[1]&0x04) >> 2;
-                GSFR3 = (ucRegCoilsBuf[1]&0x08) >> 3;
-                GSFR4 = (ucRegCoilsBuf[1]&0x10) >> 4;
-                TRANS_CTRL1 = (ucRegCoilsBuf[1]&0x20) >> 5;
-                TRANS_CTRL2 = (ucRegCoilsBuf[1]&0x40) >> 6;
+                u16 *pc_Output = (u16*)&EscRTBuff[30];
+                u16 *pc_RegCoils = (u16*)&ucRegCoilsBuf[0];
+                
+                for( u8 i = 0; i < 15; i++ )
+                {
+                    if( *pc_RegCoils & ( 1 << i ) )
+                    {
+                        *pc_Output |= ( 1 << i );
+                    }
+                    else
+                    {
+                        *pc_Output &= ~( 1 << i );
+                    }
+                }
 
             }              
             break;
@@ -262,23 +262,17 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
           ucRegDiscreteBuf[0] = 0x00;
           ucRegDiscreteBuf[1] = 0x00;
           
-          ucRegDiscreteBuf[0] |= IN1 << 0;
-          ucRegDiscreteBuf[0] |= IN2 << 1;
-          ucRegDiscreteBuf[0] |= IN3 << 2;
-          ucRegDiscreteBuf[0] |= IN4 << 3;
-          ucRegDiscreteBuf[0] |= IN5 << 4;
-          ucRegDiscreteBuf[0] |= IN6 << 5;
-          ucRegDiscreteBuf[0] |= IN7 << 6;
-          ucRegDiscreteBuf[0] |= IN8 << 7;
+          u16 *pc_Input = (u16*)&EscRTBuff[4];
+          u16 *pc_RegDiscrete = (u16*)&ucRegDiscreteBuf[0];
           
-          ucRegDiscreteBuf[1] |= IN9  << 0;
-          ucRegDiscreteBuf[1] |= IN10 << 1;
-          ucRegDiscreteBuf[1] |= IN11 << 2;
-          ucRegDiscreteBuf[1] |= IN12 << 3;       
-          ucRegDiscreteBuf[1] |= IN13 << 4;
-          ucRegDiscreteBuf[1] |= IN14 << 5; 
-          ucRegDiscreteBuf[1] |= IN15 << 6;
-          ucRegDiscreteBuf[1] |= IN16 << 7; 
+          for( u8 i = 0; i < 16; i++ )
+          {
+              if( *pc_Input & ( 1 << i ) )
+              {
+                  *pc_RegDiscrete |= 1 << i;
+              }
+          }
+
         }
         while( iNDiscrete > 0 )
         {

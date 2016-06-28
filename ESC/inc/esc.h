@@ -62,6 +62,7 @@ extern u32 *const plPowerOnTms;
 
 
 #define CMD_OUTPUT_PORT         EscRTBuff[30]
+#define CMD_OUTPUT_PORT2        EscRTBuff[31]
 
 #endif  /* __ESC_H */
 

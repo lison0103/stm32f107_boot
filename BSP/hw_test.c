@@ -217,12 +217,12 @@ void can_task(void *arg)
                 
                 if( ESC_STATE1 & ( 1 << 1 ))
                 {
-                    GRL3 = 0;
+                    CMD_OUTPUT_PORT &= ~0x04;
                     POWER_ON_TMS++;
                 }
                 else
                 {
-                    GRL3 = 1;
+                    CMD_OUTPUT_PORT |= 0x04;
                     POWER_ON_TMS = 0;
                 }
                 
