@@ -64,22 +64,14 @@ void Input_Check(void)
                         IN9 && IN10 && IN11 && IN12 && IN13 && IN14 && IN15 && IN16 ))
         {
             
-                for( u8 i = 0; i < 15; i++ )
-                {
-                    ulPt_Output[i] = 1;
-                }  
+                *ulPt_Output = 0xffff;
                     
                 CAN1_TX_Data[0] = 0xff;
-                CAN1_TX_Data[1] = 0xff;
-          
+                CAN1_TX_Data[1] = 0xff;        
         }
         else   
-        {
-                
-                for( u8 i = 0; i < 15; i++ )
-                {
-                    ulPt_Output[i] = 0;
-                }               
+        {                
+                *ulPt_Output = 0;              
                 
                 for( i = 0; i < 16; i++ )
                 {
@@ -87,8 +79,7 @@ void Input_Check(void)
                     {
                        *pc_can_tx |= 1 << i;
                     }
-                }         
-  
+                }           
         }
                     
     
@@ -118,10 +109,7 @@ void Input_Check(void)
     if(( inputnum == 0 ) || ( sflag > 1 ))
     {
         
-        for( i = 0; i < 15; i++ )
-        {
-            ulPt_Output[i] = 0;
-        }         
+        *ulPt_Output = 0;       
         
         dis_data[0] = 0;
         dis_data[1] = 0;

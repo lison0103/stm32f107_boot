@@ -57,13 +57,13 @@
 #define CAN_THREAD_PRIO                 ( tskIDLE_PRIORITY + 6 )
 
 /*************************  TEST    *******************************************/
-#define ETH_LWIP_TEST    0
+#define ETH_LWIP_TEST    1
 
 #define TCP_SERVER_TEST    0
 
-#define MODBUS_TCP_TEST    0
+#define MODBUS_TCP_TEST    1
 
-#define MODBUS_RTU_TEST    1
+#define MODBUS_RTU_TEST    0
 
 #define USB_HOST_MASS_STORAGE_TEST      0
 
