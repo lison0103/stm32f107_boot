@@ -217,7 +217,7 @@ void can_task(void *arg)
                 error_record_check();
                 write_error_record_to_eeprom();
                               
-                vTaskDelay( 45 );		   
+                vTaskDelay( 20 );		   
 	}
 }
 
