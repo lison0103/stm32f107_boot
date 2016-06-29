@@ -24,6 +24,7 @@
 #include "stm32f107_eth.h"
 #include "stm32f10x_rcc.h"
 #include <string.h>
+#include "ewdt.h"
 
 /** @addtogroup STM32F2x7_ETH_Driver
   * @brief ETH driver modules
@@ -442,8 +443,13 @@ uint32_t ETH_Init(ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress)
       /* Return ERROR in case of write timeout */
       return ETH_ERROR;
     }
+
     /* Delay to assure PHY configuration */
-    _eth_delay_(PHY_CONFIG_DELAY);
+    for( u8 i = 0; i < 15; i++ )
+    {
+      _eth_delay_(PHY_CONFIG_DELAY);
+      EWDT_TOOGLE();
+    }
     
   }
   /*------------------------ ETHERNET MACCR Configuration --------------------*/
