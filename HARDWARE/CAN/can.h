@@ -37,9 +37,11 @@ typedef struct  {
 /* Exported macro ------------------------------------------------------------*/
 #define canbuffsize 100
 
-#define CAN1TX_NORMAL_ID  0x3234
-#define CAN1RX_NORMAL_ID  0x1314
-#define CAN1RX_URGE_ID    0x1234
+/* SAFETY TO CONTROL  Speed: 500kbps  Message ID 100: transmitted every 20ms */
+/* CONTROL TO SAFETY  Speed: 500kbps  Message ID 200: transmitted every 20ms */
+#define CAN1TX_NORMAL_ID  0x00C8
+#define CAN1RX_NORMAL_ID  0x0064
+#define CAN1RX_URGE_ID    0x0062
 
 /* Exported functions ------------------------------------------------------- */
 u8 CAN_Int_Init(CAN_TypeDef* CANx); 
@@ -49,13 +51,11 @@ void BSP_CAN_Send(CAN_TypeDef* CANx, CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint32_
 uint32_t BSP_CAN_Receive(CAN_TypeDef* CANx,CAN_RX_DATA_PROCESS_TypeDef* CanRx, uint8_t *buff,uint32_t mlen);
 
 /* CAN1 */
-extern u8 CAN1_TX_Buff[canbuffsize];
-extern u8 CAN1_RX_Buff[canbuffsize];
 extern u8 CAN1_TX_Data[canbuffsize];
 extern u8 CAN1_RX_Data[canbuffsize];
+extern u8 CAN1_TX2_Data[canbuffsize];
+extern u8 CAN1_RX2_Data[canbuffsize];
 /* CAN2 */
-extern u8 CAN2_TX_Buff[canbuffsize];
-extern u8 CAN2_RX_Buff[canbuffsize];
 extern u8 CAN2_TX_Data[canbuffsize];
 extern u8 CAN2_RX_Data[canbuffsize];
 

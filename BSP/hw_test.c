@@ -176,7 +176,7 @@ void CAN_Comm(void)
     CAN1_TX_Data[1] = EscRTBuff[5];
     
     len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
-    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN2_RX_Data, 0);
+    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN1_RX2_Data, 0);
     
     BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1TX_NORMAL_ID, CAN1_TX_Data, 100);
   
@@ -200,8 +200,8 @@ void can_task(void *arg)
                 CAN_Comm();
                 
                 /* for test ----------------------*/
-                ESC_STATE1 = CAN2_RX_Data[0];
-                ESC_ERROR_CODE[0] = CAN2_RX_Data[1];                
+                ESC_STATE1 = CAN1_RX2_Data[0];
+                ESC_ERROR_CODE[0] = CAN1_RX2_Data[1];                
                 
                 if( ESC_STATE1 & ( 1 << 1 ))
                 {
