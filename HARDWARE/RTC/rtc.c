@@ -65,7 +65,7 @@ u8 RTC_Init(void)
 	
 	u8 temp=0;
  
-	if (BKP_ReadBackupRegister(BKP_DR42) != 0x5150)		
+	if (BKP_ReadBackupRegister(BKP_DR42) != 0x5050)		
         {	 			
             RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);	
             PWR_BackupAccessCmd(ENABLE);	
@@ -86,9 +86,9 @@ u8 RTC_Init(void)
             RTC_EnterConfigMode();
             RTC_SetPrescaler(32767); 
             RTC_WaitForLastTask();	
-            RTC_Set(2016,6,14,10,25,20); 
+            RTC_Set(2016,7,4,16,00,00); 
             RTC_ExitConfigMode();  
-            BKP_WriteBackupRegister(BKP_DR42, 0x5150);
+            BKP_WriteBackupRegister(BKP_DR42, 0x5050);
         }
 	else
         {

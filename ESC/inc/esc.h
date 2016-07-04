@@ -32,6 +32,7 @@ extern u8 *const pcMbRtccBuff;
 extern u8 *const pcEscErrorCodeBuff;
 extern u16 *const pcStateBuff;
 extern u32 *const plPowerOnTms;
+extern u8 *const pcCurrentRecordErrorBuff;
 
 #define ESC_ERROR_CODE pcEscErrorCodeBuff
 #define SF_ESC_STATE      pcStateBuff[0]

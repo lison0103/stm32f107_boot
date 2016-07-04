@@ -132,7 +132,7 @@ void Input_Check(void)
         dis_data[2] = inputnum%10;
     }
     
-    led_display();
+//    led_display();
  
 }
 #endif
@@ -201,6 +201,7 @@ void input_can_task(void *arg)
             
                 Get_GpioInput(&EscRTBuff[4]);
 //                Input_Check();
+                led_display();
                 output_driver(&EscRTBuff[30]);            
             
                 if( ++can_comm_tms >= 4 )
@@ -223,6 +224,10 @@ void input_can_task(void *arg)
                             CMD_OUTPUT_PORT |= 0x04;
                             POWER_ON_TMS = 0;
                         }
+                        
+                        dis_data[0] = 0;
+                        dis_data[1] = ESC_ERROR_CODE[0]/10;
+                        dis_data[2] = ESC_ERROR_CODE[0]%10;
                         
                         error_record_check();
                         write_error_record_to_eeprom();               

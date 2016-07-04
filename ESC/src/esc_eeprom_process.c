@@ -206,7 +206,8 @@ void get_error_record_from_eeprom(void)
 
     
     
-    eep_read_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
+//    eep_read_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
+    AT24CXX_Read(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
     
     errorRecordFirstItem_old = *ptErrorRecordFirstItem;
 
@@ -227,16 +228,16 @@ void get_error_record_from_eeprom(void)
 *******************************************************************************/ 
 void write_error_record_to_eeprom(void)
 {
-//    u16 i;
+    u16 i;
     
     
     /* fault record */
 
     if((errorRecordFirstItem_old != *ptErrorRecordFirstItem) && (*ptErrorRecordFirstItem))
     {
-//        i = ((*ptErrorRecordFirstItem)-1)*8;                          
-//        eep_write_data(EEP_ERROR_RECORD_ADR + i, 8, &pcEscErrorBuff[i]);
-        eep_write_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
+        i = ((*ptErrorRecordFirstItem)-1)*8;                          
+        eep_write_data(EEP_ERROR_RECORD_ADR + i, 8, &pcEscErrorBuff[i]);
+//        eep_write_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
       
     }
     
