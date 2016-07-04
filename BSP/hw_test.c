@@ -200,10 +200,10 @@ void can_task(void *arg)
                 CAN_Comm();
                 
                 /* for test ----------------------*/
-                ESC_STATE1 = CAN1_RX2_Data[0];
-                ESC_ERROR_CODE[0] = CAN1_RX2_Data[1];                
+                SF_ESC_STATE = CAN1_RX2_Data[0];
+                ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
                 
-                if( ESC_STATE1 & ( 1 << 1 ))
+                if( SF_ESC_STATE & ( 1 << 2 ))
                 {
                     CMD_OUTPUT_PORT &= ~0x04;
                     POWER_ON_TMS++;

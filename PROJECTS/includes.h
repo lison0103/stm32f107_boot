@@ -59,6 +59,8 @@
 /*************************  TEST    *******************************************/
 #define ETH_LWIP_TEST    1
 
+#define TCP_CLIENT_TEST    0
+
 #define TCP_SERVER_TEST    0
 
 #define MODBUS_TCP_TEST    1

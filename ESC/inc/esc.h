@@ -30,11 +30,11 @@ extern u16 *const ptErrorRecordFirstItem;
 extern u16 *const ptErrorRecordCounter;
 extern u8 *const pcMbRtccBuff;
 extern u8 *const pcEscErrorCodeBuff;
-extern u8 *const pcStateBuff;
+extern u16 *const pcStateBuff;
 extern u32 *const plPowerOnTms;
 
 #define ESC_ERROR_CODE pcEscErrorCodeBuff
-#define ESC_STATE1      pcStateBuff[0]
+#define SF_ESC_STATE      pcStateBuff[0]
 #define POWER_ON_TMS    plPowerOnTms[0]
 #define EN_ERROR1       Modbuff[600]
 

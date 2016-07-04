@@ -30,7 +30,7 @@ u16 *const ptErrorRecordFirstItem = (u16*)&Modbuff[2950];//2
 u16 *const ptErrorRecordCounter = (u16*)&Modbuff[2952];//2
 u8 *const pcEscErrorCodeBuff = &Modbuff[504];//2
 u8 *const pcMbRtccBuff = &Modbuff[50];//6
-u8 *const pcStateBuff = &Modbuff[460];
+u16 *const pcStateBuff = (u16*)&Modbuff[460];
 u32 *const plPowerOnTms = (u32*)&Modbuff[140];//4  
 #endif
 

@@ -80,7 +80,7 @@ void error_record_check(void)
     static u8 esc_error_code_old=0;
     
     /* escalator running*/
-    if(ESC_STATE1&0x01) 
+    if( SF_ESC_STATE & 0x04 ) 
     {
         esc_stop_record_en = 1;
         esc_run_to_stop_tms = 0; 
@@ -103,11 +103,11 @@ void error_record_check(void)
         //”–π ’œ
         if(ESC_ERROR_CODE[0])            
         {
-            if(error_tms<200) error_tms++;
+            if(error_tms < 200) error_tms++;
         }
         else
         {
-            error_tms=0;
+            error_tms = 0;
         }
         
         if((ESC_ERROR_CODE[0]) && (ESC_ERROR_CODE[0]!=esc_error_code_old))
@@ -115,9 +115,9 @@ void error_record_check(void)
             error_tms = 0;	
         }			
         
-        if((error_tms==5) && (esc_run_to_stop_tms>200))   		
+        if((error_tms == 5) && (esc_run_to_stop_tms > 200))   		
         {
-            if(((ESC_STATE1&0x01)) && (POWER_ON_TMS>500)) error_record_en = 1; // && (!(CMD_FLAG4&0x80))             	
+            if((( SF_ESC_STATE & 0x04 )) && (POWER_ON_TMS > 500)) error_record_en = 1; // && (!(CMD_FLAG4&0x80))             	
         }	          
 //    }		        
     
