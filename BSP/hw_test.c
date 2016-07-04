@@ -182,62 +182,51 @@ void CAN_Comm(void)
   
 }
 
-/*******************************************************************************
-* Function Name  : can_task
-* Description    : None
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void can_task(void *arg)
-{	 
-    
- 	while(1)
-	{
-
-                CAN_Comm();
-                
-                /* for test ----------------------*/
-                SF_ESC_STATE = CAN1_RX2_Data[0];
-                ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
-                
-                if( SF_ESC_STATE & ( 1 << 2 ))
-                {
-                    CMD_OUTPUT_PORT &= ~0x04;
-                    POWER_ON_TMS++;
-                }
-                else
-                {
-                    CMD_OUTPUT_PORT |= 0x04;
-                    POWER_ON_TMS = 0;
-                }
-                
-                error_record_check();
-                write_error_record_to_eeprom();
-                              
-                vTaskDelay( 20 );		   
-	}
-}
 
 /*******************************************************************************
 * Function Name  : input_can_task
-* Description    : None
+* Description    : input output and can communication.
 *                  
 * Input          : None
 *                  None
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void input_test_task(void *arg)
+void input_can_task(void *arg)
 {	 
+        static u8 can_comm_tms = 0;
     
  	while(1)
 	{
+            
                 Get_GpioInput(&EscRTBuff[4]);
 //                Input_Check();
-                output_driver(&EscRTBuff[30]);
+                output_driver(&EscRTBuff[30]);            
+            
+                if( ++can_comm_tms >= 4 )
+                {                   
+                        can_comm_tms = 0;
+                        
+                        CAN_Comm();
+                        
+                        /* for test ----------------------*/
+                        SF_ESC_STATE = CAN1_RX2_Data[0];
+                        ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
+                        
+                        if( SF_ESC_STATE & ( 1 << 2 ))
+                        {
+                            CMD_OUTPUT_PORT &= ~0x04;
+                            POWER_ON_TMS++;
+                        }
+                        else
+                        {
+                            CMD_OUTPUT_PORT |= 0x04;
+                            POWER_ON_TMS = 0;
+                        }
+                        
+                        error_record_check();
+                        write_error_record_to_eeprom();               
+                }               
                               
                 vTaskDelay( 5 );		   
 	}
@@ -255,22 +244,10 @@ void input_test_task(void *arg)
 *******************************************************************************/ 
 void input_test_init(void)
 {
-	xTaskCreate(input_test_task, "INPUT_TEST", configMINIMAL_STACK_SIZE * 2, NULL, INPUT_TASK_PRIO, NULL);
+	xTaskCreate(input_can_task, "INPUT_TEST", configMINIMAL_STACK_SIZE * 2, NULL, INPUT_TASK_PRIO, NULL);
 }
 
-/*******************************************************************************
-* Function Name  : can_comm_test_init
-* Description    : None
-*                  
-* Input          : None
-*                  None                 
-* Output         : None
-* Return         : None
-*******************************************************************************/ 
-void can_comm_test_init(void)
-{
-	xTaskCreate(can_task, "CAN_COMM", configMINIMAL_STACK_SIZE * 2, NULL, INPUT_TASK_PRIO, NULL);
-}
+
 
 /******************************  END OF FILE  *********************************/
 
