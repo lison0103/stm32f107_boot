@@ -258,55 +258,59 @@ void modbus_socket_thread(void *arg)
 
 void modbus_socket_thread(void *arg)
 {
-  int sock, size,ret,opt,i;
-  struct sockaddr_in address, remotehost;
-
- /* create a TCP socket */
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
-  {
-    return;
-  }
-  
-  /* bind to port 80 at any interface */
-  address.sin_family = AF_INET;
-  address.sin_port = htons(502);
-  address.sin_addr.s_addr = INADDR_ANY;
-  setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-  bind(sock, (struct sockaddr *)&address, sizeof (address));
-  
-  /* listen for incoming connections (TCP listen backlog = 1) */
-  listen(sock, 1);
-  
-  size = sizeof(remotehost);
-  eMBTCPInit(502);
-  eMBEnable();
-  while (1) 
-  {
-    newconn = accept(sock, (struct sockaddr *)&remotehost, (socklen_t *)&size);
-    while(1)
-	{
-		  /* Read in the request */
-	  	ret = recv(newconn, TmpBuf, sizeof(TmpBuf),0); 
-	  	if(ret == 0)	  //disconnect
-		{
-			close(newconn);
-			break;	  //break the loop,wait for a connection
-		}
-		else if(ret>0)
-		{
-			mbFramBuflen  = ret;
-			( void )xMBPortEventPost( EV_FRAME_RECEIVED );  //has new data
-		   	for(i=0;i<2;i++)
-			{
-				eMBPoll();
-			}	
-		}
-		else		 //No connection
-		{
-			break;
-		}
-	 }
-  }		
+    int sock, size,ret,opt,i;
+    struct sockaddr_in address, remotehost;
+    
+    /* create a TCP socket */
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
+    {
+        return;
+    }
+    
+    /* bind to port 80 at any interface */
+    address.sin_family = AF_INET;
+    address.sin_port = htons(502);
+    address.sin_addr.s_addr = INADDR_ANY;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    bind(sock, (struct sockaddr *)&address, sizeof (address));
+    
+    /* listen for incoming connections (TCP listen backlog = 1) */
+    listen(sock, 1);
+    
+    size = sizeof(remotehost);
+    eMBTCPInit(502);
+    eMBEnable();
+    while(1) 
+    {
+        newconn = accept(sock, (struct sockaddr *)&remotehost, (socklen_t *)&size);
+        while(1)
+        {
+            /* Read in the request */
+            ret = recv(newconn, TmpBuf, sizeof(TmpBuf),0); 
+            if( ret == 0 )	  //disconnect
+            {
+                close(newconn);
+                break;	  //break the loop,wait for a connection
+            }
+            else if( ret > 0 )
+            {
+                mbFramBuflen  = ret;
+                ( void )xMBPortEventPost( EV_FRAME_RECEIVED );  //has new data
+                for( i = 0; i < 2; i++ )
+                {
+                    eMBPoll();
+                }	
+            }
+            else		 //No connection
+            {
+                break;
+            }
+            
+            vTaskDelay( 100 );
+        }
+        
+        vTaskDelay( 500 );
+    }		
 }
 
 #endif
