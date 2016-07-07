@@ -84,9 +84,9 @@ u8 RTC_Init(void)
             RTC_ITConfig(RTC_IT_SEC, ENABLE);		
             RTC_WaitForLastTask();	
             RTC_EnterConfigMode();
-            RTC_SetPrescaler(32767); 
+            RTC_SetPrescaler(32776);//32767
             RTC_WaitForLastTask();	
-            RTC_Set(2016,7,4,16,00,00); 
+            RTC_Set(2016,7,7,9,10,00); 
             RTC_ExitConfigMode();  
             BKP_WriteBackupRegister(BKP_DR42, 0x5050);
         }
