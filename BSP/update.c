@@ -38,10 +38,7 @@ u8 isFileExist(char *filename)
   
   fp = (FIL*)mymalloc(sizeof(FIL));	
   if(fp != NULL)
-  {
-    
-//      res = f_open(fp,"0:DU.bin",FA_READ);
-      
+  {      
       res = f_open(fp,filename,FA_READ);  
       printf("\r\n open res = %d \r\n",res);
       
@@ -92,40 +89,20 @@ u8 CopyFile(char *readfilename, char *newfilename)
         {
           res = f_read(fp1,tempbuf,1024,(UINT *)&bread);		
           if(res!=FR_OK)break;					
-          res = f_write(fp2,tempbuf,bread,&offx);
-//          iap_write_appbin(FLASH_APP1_ADDR + offx,tempbuf,4096);	  
+          res = f_write(fp2,tempbuf,bread,&offx);	  
           offx+=bread;
           if(bread!=1024)
-          {
-//            	u32 total,free;
-//                u8 res=0;
-//	 
-//                res=exf_getfree("0:",&total,&free);
-//        	if(res==0)
-//                {	   
-//                        total = total>>10;
-//                        free  = free>>10;
-//
-//                        f_write(fp2,tempbuf,bread,&offx);
-//	    	
-//                } 
-                
-                
+          {           
                 break;					
           }
-        }       
-      
-      
-//      if(res==FR_OK)
-//      {         
-//	 f_close(fp);						
-//      }
+        }            
         
        f_close(fp1); 
        f_close(fp2); 
         
       myfree(fp1);    
       myfree(fp2);
+      myfree(tempbuf);
   }  
     
   return res;

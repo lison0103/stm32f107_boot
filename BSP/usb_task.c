@@ -38,7 +38,7 @@ u32 timecounter = 0;
 *******************************************************************************/ 
 u8 USH_User_App(void)
 { 
-	u32 total,free;
+	
 	u8 res=0;
 	printf("Device connect success!.\n");	 
         
@@ -48,9 +48,9 @@ u8 USH_User_App(void)
 
         timecounter = 0;
         
-        if(!isFileExist("0:GEC-CB.bin"))
+        if(!isFileExist("0:GEC-CB-A.bin"))
         {
-            UpdateApp("0:GEC-CB.bin");
+            UpdateApp("0:GEC-CB-A.bin");
         }
         
 //        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_OTG_FS, DISABLE);
@@ -58,6 +58,7 @@ u8 USH_User_App(void)
         iap_load_app(FLASH_APP1_ADDR);
         
 #else 
+        u32 total,free;
         
 	res=exf_getfree("0:",&total,&free);
 	if(res==0)
@@ -90,14 +91,13 @@ u8 USH_User_App(void)
               
 
         }
-#endif        
+        
         
 	while(HCD_IsDeviceConnected(&USB_OTG_Core))
 	{	
 		LED1=!LED1;
-		delay_ms(200);
+		vTaskDelay(200);
                 
-                EWDT_TOOGLE();
                 res=exf_getfree("0:",&total,&free);
                 if(res==0)
                 {	   
@@ -108,7 +108,8 @@ u8 USH_User_App(void)
 	}
    
 	printf("Device is connecting...\n");
-
+        
+#endif
 	return res;
 }
 
