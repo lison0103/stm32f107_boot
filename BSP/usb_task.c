@@ -24,6 +24,7 @@ USB_OTG_CORE_HANDLE  USB_OTG_Core;
 #ifdef GEC_CB_BOOTLOADER
 u16 t = 0;
 u32 timecounter = 0;
+u8 AppUpdateFinsh = 0;
 #endif
 
 
@@ -51,11 +52,22 @@ u8 USH_User_App(void)
         if(!isFileExist("0:GEC-CB-A.bin"))
         {
             UpdateApp("0:GEC-CB-A.bin");
+            AppUpdateFinsh = 1;
         }
-        
-//        RCC_AHBPeriphClockCmd(RCC_AHBPeriph_OTG_FS, DISABLE);
-        LED1 = 1;
-        iap_load_app(FLASH_APP1_ADDR);
+
+        while(HCD_IsDeviceConnected(&USB_OTG_Core))
+	{	
+            if( AppUpdateFinsh == 1 )
+            {
+                LED1=!LED1;
+                delay_ms(200); 
+            }
+            else
+            {
+                LED1 = 0;
+            }
+	}
+//        iap_load_app(FLASH_APP1_ADDR);
         
 #else 
         u32 total,free;
@@ -80,15 +92,8 @@ u8 USH_User_App(void)
               printf("File exists\n");
               
               DeleteFile("0:abc.txt");
-              
-//              if(isFileExist("0:abc.txt"))
-//              {
-              
-                  CopyFile("0:123.txt", "0:abc.txt");
-//              }
-              
-//              DeleteFile("0:123.txt");
-              
+         
+              CopyFile("0:123.txt", "0:abc.txt");
 
         }
         
@@ -207,18 +212,26 @@ void usb_process(void)
 		t++;
                 timecounter++;
                 
-                if(timecounter == 3000)
+                
+                if( AppUpdateFinsh == 1 )
+                {
+                    while(1)
+                    {
+                        NVIC_SystemReset();
+                    }
+                }
+                else if( timecounter == 1000 )
                 {
                     LED0 = 1;
                     LED1 = 1;
                     iap_load_app(FLASH_APP1_ADDR);                               
                 }
  
-		if(t==200)
+		if( t == 200 )
 		{
 
 			LED0=!LED0;
-			t=0;
+			t = 0;
                         
                         EWDT_TOOGLE();
 		}
