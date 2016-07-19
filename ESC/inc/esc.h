@@ -18,7 +18,9 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#define EEP_ERROR_RECORD_ADR  10
+#define EEP_PARA_RECORD_ADR  10
+#define EEP_PARA_RECORD_NUM  200  
+#define EEP_ERROR_RECORD_ADR  3000
 #define EEP_ERROR_RECORD_NUM  2452  
 
 /* Exported functions ------------------------------------------------------- */
@@ -33,6 +35,7 @@ extern u8 *const pcEscErrorCodeBuff;
 extern u16 *const pcStateBuff;
 extern u32 *const plPowerOnTms;
 extern u8 *const pcCurrentRecordErrorBuff;
+extern u16 *const pt_SysBuff;
 
 #define ESC_ERROR_CODE pcEscErrorCodeBuff
 #define SF_ESC_STATE      pcStateBuff[0]
@@ -64,6 +67,11 @@ extern u8 *const pcCurrentRecordErrorBuff;
 
 #define CMD_OUTPUT_PORT         EscRTBuff[30]
 #define CMD_OUTPUT_PORT2        EscRTBuff[31]
+
+
+/* parameters */
+#define LANGUAGE                        pt_SysBuff[0]
+
 
 #endif  /* __ESC_H */
 

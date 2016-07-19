@@ -88,38 +88,36 @@ void error_record_check(void)
     /* escalator stop */
     else
     {
-        if(esc_run_to_stop_tms<250) esc_run_to_stop_tms++;
+        if(esc_run_to_stop_tms < 250) esc_run_to_stop_tms++;
         
-        if((esc_run_to_stop_tms<100) && (ESC_ERROR_CODE[0]) && (esc_stop_record_en))
+        if((esc_run_to_stop_tms < 100) && (ESC_ERROR_CODE[0]) && (esc_stop_record_en))
         {
             esc_stop_record_en = 0;	
-            error_record_en=1;	   					
+            error_record_en = 1;	   					
         }
     }
     
-    //记录所有故障模式，同时非检修
-//    if( !(ESC_STATE1&0x01))   
-//    {
-        //有故障
-        if(ESC_ERROR_CODE[0])            
-        {
-            if(error_tms < 200) error_tms++;
-        }
-        else
-        {
-            error_tms = 0;
-        }
-        
-        if((ESC_ERROR_CODE[0]) && (ESC_ERROR_CODE[0]!=esc_error_code_old))
-        {
-            error_tms = 0;	
-        }			
-        
-        if((error_tms == 5) && (esc_run_to_stop_tms > 200))   		
-        {
-            if((( SF_ESC_STATE & 0x04 )) && (POWER_ON_TMS > 500)) error_record_en = 1; // && (!(CMD_FLAG4&0x80))             	
-        }	          
-//    }		        
+
+    /* A fault */
+    if(ESC_ERROR_CODE[0])            
+    {
+        if(error_tms < 200) error_tms++;
+    }
+    else
+    {
+        error_tms = 0;
+    }
+    
+    if((ESC_ERROR_CODE[0]) && (ESC_ERROR_CODE[0]!=esc_error_code_old))
+    {
+        error_tms = 0;	
+    }			
+    
+    if((error_tms == 5) && (esc_run_to_stop_tms > 200))   		
+    {
+        if((( SF_ESC_STATE & 0x04 )) && (POWER_ON_TMS > 500)) error_record_en = 1;     	
+    }	          
+	        
     
     if(error_record_en)	 			
     {
@@ -235,8 +233,9 @@ void write_error_record_to_eeprom(void)
 
     if((errorRecordFirstItem_old != *ptErrorRecordFirstItem) && (*ptErrorRecordFirstItem))
     {
-        i = ((*ptErrorRecordFirstItem)-1)*8;                          
-        eep_write_data(EEP_ERROR_RECORD_ADR + i, 8, &pcEscErrorBuff[i]);
+        i = ((*ptErrorRecordFirstItem)-1)*8;      
+        AT24CXX_Write(EEP_ERROR_RECORD_ADR, 50, (u8*)&ptErrorRecordFirstItem[0]);
+        AT24CXX_Write(EEP_ERROR_RECORD_ADR + 50 + i, 8, &pcEscErrorBuff[i]);
 //        eep_write_data(EEP_ERROR_RECORD_ADR, EEP_ERROR_RECORD_NUM, (u8*)&ptErrorRecordFirstItem[0]);
       
     }

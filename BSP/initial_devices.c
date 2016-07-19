@@ -12,6 +12,7 @@
 #include "initial_devices.h"
 #ifdef GEC_CB_MAIN 
 #include "esc_eeprom_process.h"
+#include "esc_parameter_process.h"
 #endif
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,6 +99,11 @@ void Bsp_Init(void)
         /** CAN module init **/
 	CAN_Int_Init(CAN1);    
         CAN_Int_Init(CAN2);      
+        
+        
+        /* Parameters Loading */
+        ParametersLoading();        
+        
         
         /* Self test routines initialization ---------------------------------*/
         STL_InitRunTimeChecks();

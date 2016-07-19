@@ -4242,6 +4242,9 @@
     <file>
       <name>$PROJ_DIR$\..\ESC\src\esc_eeprom_process.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\ESC\src\esc_parameter_process.c</name>
+    </file>
   </group>
   <group>
     <name>FATFS</name>

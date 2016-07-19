@@ -32,6 +32,7 @@ u8 *const pcEscErrorCodeBuff = &Modbuff[504];//2
 u8 *const pcMbRtccBuff = &Modbuff[50];//6
 u16 *const pcStateBuff = (u16*)&Modbuff[460];
 u32 *const plPowerOnTms = (u32*)&Modbuff[140];//4  
+u16 *const pt_SysBuff = (u16*)&Modbuff[1100];
 #endif
 
 /*******************************************************************************
