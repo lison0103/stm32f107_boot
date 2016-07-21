@@ -23,6 +23,10 @@
 /* Private functions ---------------------------------------------------------*/
 
 #ifdef GEC_CB_MAIN 
+
+u8 testmode = 0;
+
+/* ESC */
 u8 Modbuff[5000];
 u8 EscRTBuff[200];
 u8 *const pcEscErrorBuff = &Modbuff[3000];
@@ -131,7 +135,7 @@ void Task_Loop(void)
         
 #else
           /* in GEC-CB bootloader, enter usb mass storage host mode */
-          /* wait 3s to update , overtime enter APP */
+          /* wait 1s to update , overtime enter APP */
           usb_process();
           
 #endif

@@ -84,8 +84,9 @@
 
 /* Exported functions ------------------------------------------------------- */
 
-
-
+#ifdef GEC_CB_MAIN
+extern u8 testmode;
+#endif
 
 #endif /* __INCLUDES_H */
 

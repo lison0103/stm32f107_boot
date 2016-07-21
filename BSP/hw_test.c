@@ -92,48 +92,50 @@ void Input_Check(void)
     u8 i,sflag,inputnum;    
     u16 *ulPt_Input,*ulPt_Output;
     
-    sflag = 0;
-    inputnum = 0;
-    ulPt_Input = (u16*)&EscRTBuff[4];
-    ulPt_Output = (u16*)&EscRTBuff[30];
-    
-    for( i = 0; i < 16; i++ )
+    if( testmode == 1 )
     {
-        if( ulPt_Input[0] & ((u16)( 1 << i )))
+        sflag = 0;
+        inputnum = 0;
+        ulPt_Input = (u16*)&EscRTBuff[4];
+        ulPt_Output = (u16*)&EscRTBuff[30];
+        
+        for( i = 0; i < 16; i++ )
         {
-            sflag++;
-            inputnum = i + 1;
-        }
-    }    
-    
-    if(( inputnum == 0 ) || ( sflag > 1 ))
-    {
+            if( ulPt_Input[0] & ((u16)( 1 << i )))
+            {
+                sflag++;
+                inputnum = i + 1;
+            }
+        }    
         
-        *ulPt_Output = 0;       
-        
-        dis_data[0] = 0;
-        dis_data[1] = 0;
-        dis_data[2] = 0;        
-        
-    }
-    else
-    {
-        if( inputnum == 16 )
+        if(( inputnum == 0 ) || ( sflag > 1 ))
         {
-            *ulPt_Output |= ((u16)( 1 << ( inputnum - 16 )));
+            
+            *ulPt_Output = 0;       
+            
+            dis_data[0] = 0;
+            dis_data[1] = 0;
+            dis_data[2] = 0;        
+            
         }
         else
         {
-            *ulPt_Output |= ((u16)( 1 << ( inputnum - 1 )));
+            if( inputnum == 16 )
+            {
+                *ulPt_Output |= 0x6000;
+            }
+            else
+            {
+                *ulPt_Output |= ((u16)( 1 << ( inputnum - 1 )));
+            }
+            
+            dis_data[0] = 0;
+            dis_data[1] = inputnum/10;
+            dis_data[2] = inputnum%10;
         }
         
-        dis_data[0] = 0;
-        dis_data[1] = inputnum/10;
-        dis_data[2] = inputnum%10;
+        //    led_display();
     }
-    
-//    led_display();
- 
 }
 #endif
 
@@ -200,7 +202,7 @@ void input_can_task(void *arg)
 	{
             
                 Get_GpioInput(&EscRTBuff[4]);
-//                Input_Check();
+                Input_Check();
                 led_display();
                 output_driver(&EscRTBuff[30]);            
             
@@ -214,15 +216,18 @@ void input_can_task(void *arg)
                         SF_ESC_STATE = CAN1_RX2_Data[0];
                         ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
                         
-                        if( SF_ESC_STATE & ( 1 << 2 ))
+                        if( testmode != 1 )
                         {
-                            CMD_OUTPUT_PORT &= ~0x04;
-                            POWER_ON_TMS++;
-                        }
-                        else
-                        {
-                            CMD_OUTPUT_PORT |= 0x04;
-                            POWER_ON_TMS = 0;
+                            if( SF_ESC_STATE & ( 1 << 2 ))
+                            {
+                                CMD_OUTPUT_PORT &= ~0x04;
+                                POWER_ON_TMS++;
+                            }
+                            else
+                            {
+                                CMD_OUTPUT_PORT |= 0x04;
+                                POWER_ON_TMS = 0;
+                            }
                         }
                         
                         dis_data[0] = 0;
@@ -253,6 +258,104 @@ void input_test_init(void)
 }
 
 
+/*******************************************************************************
+* Function Name  : HardwareTEST
+* Description    : Test the board.
+*                  
+* Input          : None
+*                  None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void HardwareTEST(void)
+{
+    u8 testdata[10];
+    u8 testerror = 0;
+    u8 len = 0;
+    u16 waittms = 0;
+    CAN1_TX_Data[0] = 0xf1;
+    testdata[0] = 0xf1;
+    for( u8 i = 1; i < 10 ; i++ )
+    {
+        CAN1_TX_Data[i] = i + 0xb0;
+        testdata[i] = i + 0xb0;
+    }
+    BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1_TEST_ID, CAN1_TX_Data, 10);
+    
+    do
+    {
+        len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
+        delay_ms(1);
+        EWDT_TOOGLE();
+        waittms++;
+        if( waittms > 2000 )
+        {
+            waittms = 0;
+            break;
+        }
+    }
+    while( len != 10 || CAN1_RX_Data[0] != 0xf1 );     
+    
+    if( len == 10 && CAN1_RX_Data[0] == 0xf1 )
+    {
+        waittms = 0;
+        for( u8 i = 1; i < 10 ; i++ )
+        {
+            CAN1_TX_Data[i] = CAN1_RX_Data[i];
+        }
+        BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1_TEST_ID, CAN1_TX_Data, 10);
+        
+        do
+        {
+            len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
+            delay_ms(1);
+            EWDT_TOOGLE();
+            waittms++;
+            if( waittms > 2000 )
+            {
+                waittms = 0;
+                break;
+            }
+        }
+        while( len != 10 || CAN1_RX_Data[0] != 0xf1 ); 
+        
+        if( len == 10 && CAN1_RX_Data[0] == 0xf1 )
+        {
+            for( u8 i = 1; i < 10 ; i++ )
+            {
+                if( CAN1_RX_Data[i] != testdata[i] )
+                {
+                    testerror = 1;
+                    break;
+                }
+            }
+            
+            if( testerror == 0 )
+            {
+                testmode = 1;
+            }
+        } 
+        
+        
+    }
+    else
+    {
+        CAN_FilterInitTypeDef  	        CAN_FilterInitStructure;
+        /* CAN1 filter init */
+        CAN_FilterInitStructure.CAN_FilterNumber=0;	
+        CAN_FilterInitStructure.CAN_FilterMode=CAN_FilterMode_IdMask; 	
+        CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	
+        
+        CAN_FilterInitStructure.CAN_FilterIdHigh=(((u32)0x0064<<3)&0xFFFF0000)>>16;	
+        CAN_FilterInitStructure.CAN_FilterIdLow=(((u32)0x0064<<3)|CAN_ID_EXT|CAN_RTR_DATA)&0xFFFF;
+        CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//32-bit MASK 
+        CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xff87; 
+        
+        CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
+        CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
+        CAN_FilterInit(&CAN_FilterInitStructure);          
+    }
+}
 
 /******************************  END OF FILE  *********************************/
 

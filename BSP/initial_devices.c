@@ -100,6 +100,8 @@ void Bsp_Init(void)
 	CAN_Int_Init(CAN1);    
         CAN_Int_Init(CAN2);      
         
+        /* HardwareTest */
+        HardwareTEST();
         
         /* Parameters Loading */
         ParametersLoading();        

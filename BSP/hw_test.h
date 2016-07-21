@@ -21,6 +21,7 @@
 /* Exported functions ------------------------------------------------------- */
 void Input_Check(void);
 void input_test_init(void);
+void HardwareTEST(void);
 
 extern u8 canbuf_send[8];
 

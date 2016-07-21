@@ -15,6 +15,7 @@
 #include "can.h"
 #include "24cxx.h"
 #include "ewdt.h"
+#include "includes.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -66,11 +67,10 @@ void get_para_from_usb(void)
             break;
         }
     }
-    while( len != 2 && paradata[0] != 0x22 );
+    while( len != 2 || paradata[0] != 0x22 );
         
 
-    
-    if( paradata[1] == 0x01 )
+    if( len == 2 && paradata[0] == 0x22 && paradata[1] == 0x01 )
     {
         /* 2. wait sf load usb-stick, recv para from sf CPU1 */
         do
@@ -135,8 +135,10 @@ void get_para_from_usb(void)
 *******************************************************************************/
 void ParametersLoading(void)
 {
-      get_para_from_usb();
-      
+    if( testmode != 1 )
+    {
+        get_para_from_usb();
+    }
 }
 
 

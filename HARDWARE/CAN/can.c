@@ -153,10 +153,10 @@ u8 CAN_Int_Init(CAN_TypeDef* CANx)
             CAN_FilterInitStructure.CAN_FilterScale=CAN_FilterScale_32bit; 	
             
             //any id
-//            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	//32-bit ID
-//            CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
-//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32-bit MASK
-//            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;            
+            CAN_FilterInitStructure.CAN_FilterIdHigh=0x0000;	//32-bit ID
+            CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
+            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32-bit MASK
+            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;            
             
             //std id
 //            CAN_FilterInitStructure.CAN_FilterIdHigh=(0x12)<<5;	//32-bit ID
@@ -165,12 +165,13 @@ u8 CAN_Int_Init(CAN_TypeDef* CANx)
 //            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xfffc;//0x0000; 
             
             //ext id
-            CAN_FilterInitStructure.CAN_FilterIdHigh=(((u32)0x0064<<3)&0xFFFF0000)>>16;	
-            CAN_FilterInitStructure.CAN_FilterIdLow=(((u32)0x0064<<3)|CAN_ID_EXT|CAN_RTR_DATA)&0xFFFF;
-            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//32-bit MASK 
-            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xff87;    
-            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;      
+//            CAN_FilterInitStructure.CAN_FilterIdHigh=(((u32)0x0064<<3)&0xFFFF0000)>>16;	
+//            CAN_FilterInitStructure.CAN_FilterIdLow=(((u32)0x0064<<3)|CAN_ID_EXT|CAN_RTR_DATA)&0xFFFF;
+//            CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0xffff;//32-bit MASK 
+//            CAN_FilterInitStructure.CAN_FilterMaskIdLow=0xff87;   
             
+            CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;
+            CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;                 
             CAN_FilterInit(&CAN_FilterInitStructure);	
              
 #if CAN1_RX0_INT_ENABLE 
@@ -255,9 +256,9 @@ u8 CAN_Int_Init(CAN_TypeDef* CANx)
             CAN_FilterInitStructure.CAN_FilterIdLow=0x0000;
             CAN_FilterInitStructure.CAN_FilterMaskIdHigh=0x0000;//32-bit MASK
             CAN_FilterInitStructure.CAN_FilterMaskIdLow=0x0000;  
+            
             CAN_FilterInitStructure.CAN_FilterFIFOAssignment=CAN_Filter_FIFO0;
             CAN_FilterInitStructure.CAN_FilterActivation=ENABLE;
-
             CAN_FilterInit(&CAN_FilterInitStructure);			
         
             
@@ -368,6 +369,13 @@ void CAN1_RX0_IRQHandler(void)
 
             CAN1_RX_Process( RxMessage, &CAN1_RX_Normal );
         } 
+        /* Test Mode */        
+        else if( ( RxMessage.ExtId == CAN1_TEST_ID ) && ( RxMessage.IDE == CAN_ID_EXT ) )
+        {
+            can1_receive = 1;        
+            
+            CAN1_RX_Process( RxMessage, &CAN1_RX_Normal );
+        }      
     }
 }
 #endif
