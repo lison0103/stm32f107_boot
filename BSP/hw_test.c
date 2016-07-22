@@ -181,6 +181,11 @@ void CAN_Comm(void)
     len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN1_RX2_Data, 0);
     
     BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1TX_NORMAL_ID, CAN1_TX_Data, 100);
+    
+    if( testmode == 1 )
+    {
+        BSP_CAN_Send(CAN2, &CAN2_TX_Normal, CAN1_TEST_ID, CAN2_TX_Data, 10);
+    }
   
 }
 
@@ -269,22 +274,28 @@ void input_test_init(void)
 *******************************************************************************/
 void HardwareTEST(void)
 {
-    u8 testdata[10];
+    u8 testdata1[10],testdata2[10];
     u8 testerror = 0;
-    u8 len = 0;
+    u8 len1 = 0, len2 = 0;
     u16 waittms = 0;
+    
     CAN1_TX_Data[0] = 0xf1;
-    testdata[0] = 0xf1;
+    CAN2_TX_Data[0] = 0xf1;
+    testdata1[0] = 0xf1;
+    testdata2[0] = 0xf1;
     for( u8 i = 1; i < 10 ; i++ )
     {
         CAN1_TX_Data[i] = i + 0xb0;
-        testdata[i] = i + 0xb0;
+        testdata1[i] = i + 0xb0;
+        CAN2_TX_Data[i] = i + 0xc0;
+        testdata2[i] = i + 0xc0;        
     }
     BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1_TEST_ID, CAN1_TX_Data, 10);
+    BSP_CAN_Send(CAN2, &CAN2_TX_Normal, CAN1_TEST_ID, CAN2_TX_Data, 10);
     
     do
     {
-        len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
+        len1 = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
         delay_ms(1);
         EWDT_TOOGLE();
         waittms++;
@@ -294,9 +305,24 @@ void HardwareTEST(void)
             break;
         }
     }
-    while( len != 10 || CAN1_RX_Data[0] != 0xf1 );     
+    while( len1 != 10 || CAN1_RX_Data[0] != 0xf1 );     
+
+    waittms = 0;
+    do
+    {
+        len2 = BSP_CAN_Receive(CAN2, &CAN2_RX_Normal, CAN2_RX_Data, 0);
+        delay_ms(1);
+        EWDT_TOOGLE();
+        waittms++;
+        if( waittms > 100 )
+        {
+            waittms = 0;
+            break;
+        }
+    }
+    while( len2 != 10 || CAN2_RX_Data[0] != 0xf1 );   
     
-    if( len == 10 && CAN1_RX_Data[0] == 0xf1 )
+    if( len1 == 10 && CAN1_RX_Data[0] == 0xf1 )
     {
         waittms = 0;
         for( u8 i = 1; i < 10 ; i++ )
@@ -305,9 +331,20 @@ void HardwareTEST(void)
         }
         BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1_TEST_ID, CAN1_TX_Data, 10);
         
+        if( len2 == 10 && CAN2_RX_Data[0] == 0xf1 )
+        {
+            waittms = 0;
+            for( u8 i = 1; i < 10 ; i++ )
+            {
+                CAN2_TX_Data[i] = CAN2_RX_Data[i];
+            }
+            BSP_CAN_Send(CAN2, &CAN2_TX_Normal, CAN1_TEST_ID, CAN2_TX_Data, 10);
+        }        
+        
+        waittms = 0;
         do
         {
-            len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
+            len1 = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
             delay_ms(1);
             EWDT_TOOGLE();
             waittms++;
@@ -317,18 +354,46 @@ void HardwareTEST(void)
                 break;
             }
         }
-        while( len != 10 || CAN1_RX_Data[0] != 0xf1 ); 
+        while( len1 != 10 || CAN1_RX_Data[0] != 0xf1 ); 
         
-        if( len == 10 && CAN1_RX_Data[0] == 0xf1 )
+        waittms = 0;
+        do
+        {
+            len2 = BSP_CAN_Receive(CAN2, &CAN2_RX_Normal, CAN2_RX_Data, 0);
+            delay_ms(1);
+            EWDT_TOOGLE();
+            waittms++;
+            if( waittms > 100 )
+            {
+                waittms = 0;
+                break;
+            }
+        }
+        while( len2 != 10 || CAN2_RX_Data[0] != 0xf1 );         
+        
+        
+        if( len1 == 10 && CAN1_RX_Data[0] == 0xf1 )
         {
             for( u8 i = 1; i < 10 ; i++ )
             {
-                if( CAN1_RX_Data[i] != testdata[i] )
+                if( CAN1_RX_Data[i] != testdata1[i] )
                 {
-                    testerror = 1;
+                    testerror++;
                     break;
                 }
             }
+
+            if( len2 == 10 && CAN2_RX_Data[0] == 0xf1 )
+            {
+                for( u8 i = 1; i < 10 ; i++ )
+                {
+                    if( CAN2_RX_Data[i] != testdata2[i] )
+                    {
+                        testerror++;
+                        break;
+                    }
+                }
+            }  
             
             if( testerror == 0 )
             {

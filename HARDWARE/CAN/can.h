@@ -68,6 +68,9 @@ extern CAN_TX_DATA_PROCESS_TypeDef  CAN1_TX_Normal;
 extern CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Normal;
 extern CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Urge;
 
+extern CAN_TX_DATA_PROCESS_TypeDef  CAN2_TX_Normal;
+extern CAN_RX_DATA_PROCESS_TypeDef  CAN2_RX_Normal;
+
 #endif /* __CAN_H */
 
 

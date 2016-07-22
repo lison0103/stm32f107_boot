@@ -53,6 +53,8 @@ CAN_TX_DATA_PROCESS_TypeDef  CAN1_TX_Normal;
 CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Normal;
 CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Urge;
 
+CAN_TX_DATA_PROCESS_TypeDef  CAN2_TX_Normal;
+CAN_RX_DATA_PROCESS_TypeDef  CAN2_RX_Normal;
 
 /*******************************************************************************
 * Function Name  : CAN_Int_Init
@@ -264,7 +266,7 @@ u8 CAN_Int_Init(CAN_TypeDef* CANx)
             
 #if CAN2_RX0_INT_ENABLE
             /* IT Configuration for CAN2 */ 
-            CAN_ITConfig(CAN1,CAN_IT_FMP0 | CAN_IT_FF0 | CAN_IT_FOV0, ENABLE); 						    
+            CAN_ITConfig(CAN2,CAN_IT_FMP0 | CAN_IT_FF0 | CAN_IT_FOV0, ENABLE); 						    
 
             NVIC_InitStructure.NVIC_IRQChannel = CAN2_RX0_IRQn;
             NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;     
@@ -289,7 +291,7 @@ u8 CAN_Int_Init(CAN_TypeDef* CANx)
 * Output         : None
 * Return         : None
 *******************************************************************************/			    
-void CAN1_RX_Process( CanRxMsg RxMessage, CAN_RX_DATA_PROCESS_TypeDef* CanRx )
+void CAN_RX_Process( CanRxMsg RxMessage, CAN_RX_DATA_PROCESS_TypeDef* CanRx )
 {
     
     u8 i;        
@@ -359,7 +361,7 @@ void CAN1_RX0_IRQHandler(void)
         {
             can1_receive = 1;        
   
-            CAN1_RX_Process( RxMessage, &CAN1_RX_Urge );
+            CAN_RX_Process( RxMessage, &CAN1_RX_Urge );
             
         }
         /** SF normal data RECEIVE **/
@@ -367,14 +369,14 @@ void CAN1_RX0_IRQHandler(void)
         {
             can1_receive = 1;        
 
-            CAN1_RX_Process( RxMessage, &CAN1_RX_Normal );
+            CAN_RX_Process( RxMessage, &CAN1_RX_Normal );
         } 
         /* Test Mode */        
         else if( ( RxMessage.ExtId == CAN1_TEST_ID ) && ( RxMessage.IDE == CAN_ID_EXT ) )
         {
-            can1_receive = 1;        
+            can2_receive = 1;        
             
-            CAN1_RX_Process( RxMessage, &CAN1_RX_Normal );
+            CAN_RX_Process( RxMessage, &CAN1_RX_Normal );
         }      
     }
 }
@@ -402,9 +404,8 @@ void CAN2_RX0_IRQHandler(void)
     {
         CAN_ClearITPendingBit(CAN2,CAN_IT_FOV0);
     }
-    else if( CAN_GetITStatus(CAN2,CAN_FLAG_FMP0) != RESET )
+    else
     {
-        CAN_ClearITPendingBit(CAN2,CAN_FLAG_FMP0);
         
         CAN_Receive(CAN2, CAN_FIFO0, &RxMessage);
         if( ( RxMessage.ExtId == 0x3234 ) && ( RxMessage.IDE == CAN_ID_EXT ) )
@@ -416,6 +417,13 @@ void CAN2_RX0_IRQHandler(void)
                 printf("CAN1_RX0[%d]:%d\r\n",i,RxMessage.Data[i]);
             }
         }
+        /* Test Mode */        
+        else if( ( RxMessage.ExtId == CAN1_TEST_ID ) && ( RxMessage.IDE == CAN_ID_EXT ) )
+        {
+            can2_receive = 1;        
+            
+            CAN_RX_Process( RxMessage, &CAN2_RX_Normal );
+        }         
     }        
 }
 #endif
@@ -566,9 +574,30 @@ uint32_t BSP_CAN_Receive(CAN_TypeDef* CANx,CAN_RX_DATA_PROCESS_TypeDef* CanRx, u
             }
             CanRx->data_packet = 0;
         }                         
-        break;			
+        break;		
+	
        case CAN2_BASE: 
-
+        
+        /** receive a data packet **/
+        if( CanRx->data_packet == 1 )
+        {
+            if(!MB_CRC16(CanRx->rx_buff, CanRx->recv_len))
+            {          
+                /* ok */
+                pstr = &CanRx->rx_buff[2];					
+                len = CanRx->recv_len - 4;
+                CanRx->recv_len = 0;
+            }
+            else
+            {
+                /* fail */
+                for( u8 i = 0; i < CanRx->recv_len; i++ )
+                {
+                    CanRx->rx_buff[i] = 0;
+                }
+            }
+            CanRx->data_packet = 0;
+        } 
         break;					
     }	   
     
