@@ -135,7 +135,7 @@ void get_para_from_usb(void)
 *******************************************************************************/
 void ParametersLoading(void)
 {
-    if( testmode != 1 )
+    if( testmode == 0 )
     {
         get_para_from_usb();
     }

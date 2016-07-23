@@ -62,7 +62,7 @@ void led_ewdt_task(void *arg)
 	for( ; ; )
 	{
                 LED0 =!LED0;
-                if( testmode == 1 )
+                if( testmode != 0 )
                 {
                   LED1 =!LED1;
                 }

@@ -136,6 +136,44 @@ void Input_Check(void)
         
         //    led_display();
     }
+    else if( testmode == 2 )
+    {
+        
+        inputnum = CAN1_RX_Data[0];
+        sflag = CAN1_RX_Data[1];
+        ulPt_Output = (u16*)&EscRTBuff[30];
+        
+   
+        
+        if(( inputnum == 0 ) || ( sflag > 1 ))
+        {
+            
+            *ulPt_Output = 0;       
+            
+            dis_data[0] = 0;
+            dis_data[1] = 0;
+            dis_data[2] = 0;        
+            
+        }
+        else
+        {
+            if( inputnum >= 16 && inputnum <= 46 )
+            {
+                if( inputnum & 0x10 )
+                {
+                    *ulPt_Output |= 0x0001;
+                }
+                else if( inputnum & 0x20 ) 
+                {
+                    *ulPt_Output |= 0x0002;;
+                }
+            }
+            dis_data[0] = 0;
+            dis_data[1] = inputnum/10;
+            dis_data[2] = inputnum%10;
+        }        
+    
+    }
 }
 #endif
 
@@ -182,7 +220,7 @@ void CAN_Comm(void)
     
     BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1TX_NORMAL_ID, CAN1_TX_Data, 100);
     
-    if( testmode == 1 )
+    if( testmode != 0 )
     {
         BSP_CAN_Send(CAN2, &CAN2_TX_Normal, CAN1_TEST_ID, CAN2_TX_Data, 10);
     }
@@ -221,7 +259,7 @@ void input_can_task(void *arg)
                         SF_ESC_STATE = CAN1_RX2_Data[0];
                         ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
                         
-                        if( testmode != 1 )
+                        if( testmode == 0 )
                         {
                             if( SF_ESC_STATE & ( 1 << 2 ))
                             {
@@ -299,7 +337,7 @@ void HardwareTEST(void)
         delay_ms(1);
         EWDT_TOOGLE();
         waittms++;
-        if( waittms > 2000 )
+        if( waittms > 8000 )
         {
             waittms = 0;
             break;
@@ -325,7 +363,7 @@ void HardwareTEST(void)
     if( len1 == 10 && CAN1_RX_Data[0] == 0xf1 )
     {
         waittms = 0;
-        for( u8 i = 1; i < 10 ; i++ )
+        for( u8 i = 2; i < 10 ; i++ )
         {
             CAN1_TX_Data[i] = CAN1_RX_Data[i];
         }
@@ -334,7 +372,7 @@ void HardwareTEST(void)
         if( len2 == 10 && CAN2_RX_Data[0] == 0xf1 )
         {
             waittms = 0;
-            for( u8 i = 1; i < 10 ; i++ )
+            for( u8 i = 2; i < 10 ; i++ )
             {
                 CAN2_TX_Data[i] = CAN2_RX_Data[i];
             }
@@ -374,7 +412,7 @@ void HardwareTEST(void)
         
         if( len1 == 10 && CAN1_RX_Data[0] == 0xf1 )
         {
-            for( u8 i = 1; i < 10 ; i++ )
+            for( u8 i = 2; i < 10 ; i++ )
             {
                 if( CAN1_RX_Data[i] != testdata1[i] )
                 {
@@ -385,7 +423,7 @@ void HardwareTEST(void)
 
             if( len2 == 10 && CAN2_RX_Data[0] == 0xf1 )
             {
-                for( u8 i = 1; i < 10 ; i++ )
+                for( u8 i = 2; i < 10 ; i++ )
                 {
                     if( CAN2_RX_Data[i] != testdata2[i] )
                     {
@@ -397,7 +435,14 @@ void HardwareTEST(void)
             
             if( testerror == 0 )
             {
-                testmode = 1;
+                if( CAN1_RX_Data[1] == 0xe1 )
+                {
+                    testmode = 2;
+                }
+                else if( CAN1_RX_Data[1] == 0xa1 || CAN1_RX_Data[1] == 0xc1 )
+                {
+                    testmode = 1;
+                }
             }
         } 
         
