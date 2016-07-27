@@ -39,15 +39,15 @@ _calendar_obj calendar;
 * Output         : None
 * Return         : None
 *******************************************************************************/
-static void RTC_NVIC_Config(void)
-{	
-        NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;		
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;	
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
-	NVIC_Init(&NVIC_InitStructure);		
-}
+//static void RTC_NVIC_Config(void)
+//{	
+//        NVIC_InitTypeDef NVIC_InitStructure;
+//	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;		
+//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;	
+//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;	
+//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;		
+//	NVIC_Init(&NVIC_InitStructure);		
+//}
 
 
 /*******************************************************************************
@@ -81,8 +81,8 @@ u8 RTC_Init(void)
             RCC_RTCCLKCmd(ENABLE);	 
             RTC_WaitForLastTask();	
             RTC_WaitForSynchro();		
-            RTC_ITConfig(RTC_IT_SEC, ENABLE);		
-            RTC_WaitForLastTask();	
+//            RTC_ITConfig(RTC_IT_SEC, ENABLE);		
+//            RTC_WaitForLastTask();	
             RTC_EnterConfigMode();
             RTC_SetPrescaler(32776);//32767
             RTC_WaitForLastTask();	
@@ -94,10 +94,10 @@ u8 RTC_Init(void)
         {
           
             RTC_WaitForSynchro();	
-            RTC_ITConfig(RTC_IT_SEC, ENABLE);	
-            RTC_WaitForLastTask();	
+//            RTC_ITConfig(RTC_IT_SEC, ENABLE);	
+//            RTC_WaitForLastTask();	
         }
-	RTC_NVIC_Config();	    				     
+//	RTC_NVIC_Config();	    				     
 	RTC_Get();	
         
 	return 0; 
@@ -334,8 +334,8 @@ u8 RTC_GetTime( unsigned char *pcBuff )
 * Return         : None
 *******************************************************************************/
 void RTC_SetTime( unsigned char *pcBuff )
-{
-    RTC_Set( pcBuff[0], pcBuff[1], pcBuff[2], pcBuff[3], pcBuff[4], pcBuff[5] );    
+{   
+    RTC_Set( 2000 + pcBuff[0], pcBuff[1], pcBuff[2], pcBuff[3], pcBuff[4], pcBuff[5] );    
 }
 
 /******************************  END OF FILE  *********************************/

@@ -16,6 +16,10 @@
 #include "lwip/inet.h"
 #include "lwip/sockets.h"
 #include "mb.h"
+#include "crc16.h"
+#include "lsys.h"
+#include "usart.h"
+#include "esc.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -42,6 +46,161 @@ int newconn;
 
 #endif
 
+u8 trx_buff[200];
+u8 txbuff_size = 0;
+u8 timeset = 0;
+
+/*******************************************************************************
+* Function Name  : ddu_rx_decode
+* Description    : decode rx ddu data.
+*                  
+* Input          : buff: receive date  len: the length of receive data                       
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void ddu_rx_decode(u8 *buff, u16 len) 
+{
+    u16 i=0,j=0,k=0;
+    
+    i = buff[2]<<8 | buff[3];//address
+    j = buff[4]<<8 | buff[5];//length
+    
+    if((len < 98))
+    {
+        
+        if((buff[0] == 1) && (buff[1] == 16) && (i < 15))
+        { 
+            /* DDU set time */
+            if( i == 4 && j == 3 )
+            {
+                timeset = 1;
+                for( k = 0; k < 6; k++ )
+                {
+                    pcMbRtccBuff[k] = buff[7 + k];
+                }
+            }
+        } 
+        else
+        {
+             /* DDU remote set time */
+            if( i >= 25 && i <= 27 && j == 1 )
+            {
+                timeset = 1;
+                Modbuff[i*2] = buff[7];
+                Modbuff[i*2 + 1] = buff[8];
+            }            
+        }                           
+        
+        //return    
+        if(buff[1] == 16)
+        {  
+            txbuff_size = 8;         
+        }
+        else
+        {
+            txbuff_size = 0;
+        }  
+    }  
+    else
+    {
+        //return error code
+        trx_buff[1] |= 0x80;
+        trx_buff[2] = 1;
+        txbuff_size = 5;
+    }
+    
+    //CRC
+    if(txbuff_size)
+    {  
+        i = MB_CRC16(trx_buff,txbuff_size - 2);
+        trx_buff[txbuff_size - 1] = i>>8;
+        trx_buff[txbuff_size - 2] = i; 
+    }      
+}
+
+
+/*******************************************************************************
+* Function Name  : modbus_local_ddu_thread
+* Description    : modbus local ddu task.
+*                  
+* Input          : arg:  a pointer to an optional data area which can be used 
+*                       to pass parameters to the task when the task first executes.
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void modbus_local_ddu_thread(void *arg)
+{
+      
+    u8 len = 0;
+    u16 uint1 = 0;
+    u8 counttms = 0;
+    
+    while(1)
+    {
+        
+        counttms++;        
+        if( counttms == 4 )
+        {
+            
+            counttms = 0;
+            
+            trx_buff[0] = 3;    
+            trx_buff[1] = 16; 
+            trx_buff[2] = 0; 
+            trx_buff[3] = 0; 
+            trx_buff[4] = 0; 
+            trx_buff[5] = 50; 
+            trx_buff[6] = 100; 
+            
+            for( u8 i = 0; i < 100; i++ )
+            {
+                trx_buff[i+7] = 0;    
+            }  
+            /* send date to ddu */
+//            for( u8 i = 20; i < 26; i++ )
+//            {
+//                trx_buff[i+7] = pcMbRtccBuff[i-20];    
+//            }          
+            
+            len = 109;
+            
+            
+            uint1 = MB_CRC16( trx_buff, len-2);	        
+            trx_buff[len-2] = uint1;
+            trx_buff[len-1] = uint1>>8;
+            
+            BSP_USART_Send(USART3,trx_buff,len);
+            
+        }
+        
+        len = BSP_USART_Receive(USART3,trx_buff,0);
+        if(!(MB_CRC16(trx_buff,len))) 
+        {
+            ddu_rx_decode(trx_buff, len);
+            BSP_USART_Send(USART3,trx_buff,txbuff_size);
+        }
+        
+        
+        
+        vTaskDelay( 500 );
+    }										 
+}
+
+/*******************************************************************************
+* Function Name  : modbus_local_ddu_init
+* Description    : Create modbus local ddu task.
+*                  
+* Input          : None
+*                  
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void modbus_local_ddu_init(void)
+{
+	sys_thread_new("Modbus", modbus_local_ddu_thread, NULL, DEFAULT_THREAD_STACKSIZE, MODBUS_THREAD_PRIO);	
+}
 
 /*******************************************************************************
 * Function Name  : modbus_rtu_thread

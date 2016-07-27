@@ -35,7 +35,7 @@ u8 USART_RX_BUF[USART_REC_LEN];
 u16 USART_RX_STA=0;       
 
 
-
+#if MODBUS_RTU_TEST
 /*******************************************************************************
 * Function Name  : USART3_Init
 * Description    : Initialization usart3.                
@@ -108,7 +108,7 @@ void USART3_Init(void)
     USART_Cmd(USART3, ENABLE);                    
 
 }
-
+#endif 
 
 /*******************************************************************************
 * Function Name  : USART3_SEND
@@ -231,7 +231,7 @@ void USART3_IRQHandler(void)
 
 //#define USART1_EN     	1
 #define USART2_EN    			1
-//#define USART3_EN         1
+#define USART3_EN         1
 //#define USART3_REMAP_EN		1		
 
 
@@ -450,6 +450,45 @@ void USART2_IRQHandler(void)
 #endif			
 }
 
+/*******************************************************************************
+* Function Name  : USART3_IRQHandler
+* Description    : This function handles USART3 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART3_IRQHandler(void)
+{
+#ifdef USART3_EN 
+	uint32_t i=0;
+	
+	if(USART_GetITStatus(USART3, USART_IT_IDLE) == SET)
+	{
+                /* Receive interrupt idle */
+                /* Barred from receiving again */
+		DMA_Cmd(USART3_RX_DMA_CHANNEL, DISABLE);
+		
+		uart3_rx_number = 512-USART3_RX_DMA_CHANNEL->CNDTR;
+		for(i=0;i<uart3_rx_number;i++)
+		{			 
+			uart3_rx_data[i] = uart3_rx_buff[i];
+		}																										 
+
+		USART3_RX_DMA_CHANNEL->CNDTR = 512;		
+		DMA_Cmd(USART3_RX_DMA_CHANNEL, ENABLE);
+		
+		/* clear flag */
+		i = USART3->SR;
+		i = USART3->DR;
+	}		
+
+	if(USART_GetITStatus(USART3, USART_IT_TC) == SET)
+	{
+		USART3->SR &= ~0x00000040;
+                USART3_TRX_GPIO->BRR |= (u32)USART3_TRX_PIN;
+	}		
+#endif			
+}
 
 /*******************************************************************************
 * Function Name  : NVIC_Configuration_Usart
@@ -526,6 +565,60 @@ void USART2_Init(void)
 #endif
 }
 
+/*******************************************************************************
+* Function Name  : USART3_Init
+* Description    : Initialization usart3.                
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void USART3_Init(void)
+{
+#ifdef USART3_EN
+    GPIO_InitTypeDef GPIO_InitStructure;
+  
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE);	      
+    
+    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);
+    
+    
+    USART_DeInit(USART3);  
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;	
+    GPIO_Init(GPIOC, &GPIO_InitStructure); 
+    
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);  
+    
+#if USART3_TRX_EN
+    RCC_APB2PeriphClockCmd(USART3_TRX_RCC, ENABLE); 
+    
+    GPIO_InitStructure.GPIO_Pin = USART3_TRX_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(USART3_TRX_GPIO , &GPIO_InitStructure);
+    
+    USART3_TRX_CONTROL = 0;  
+#endif 
+    
+    BSP_USART_Init(USART3, 19200, USART_Parity_No);
+    
+    //if(DMAState==ENABLE)       
+    BSP_USART_DMA_Init(USART3,uart3_tx_buff,uart3_rx_buff);
+    
+    
+    USART_ITConfig(USART3, USART_IT_TC, ENABLE);
+    USART_ITConfig(USART3, USART_IT_IDLE, ENABLE);
+    NVIC_Configuration_Usart(USART3);       	
+    
+    USART_Cmd(USART3 , ENABLE);  
+				
+#endif
+}
 
 /*******************************************************************************
 * Function Name  : BSP_USART_Send
@@ -586,7 +679,7 @@ void BSP_USART_Send(USART_TypeDef* USARTx,uint8_t *buff,uint32_t len)
 					uart3_tx_buff[i] = buff[i]; 	
 				}		
 				
-				//USART3_TRX_GPIO->BSRR |= (u32)USART3_TRX_PIN;	
+				USART3_TRX_GPIO->BSRR |= (u32)USART3_TRX_PIN;	
 					
 				USART3->SR &= ~0x00000040;
 				 

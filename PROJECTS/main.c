@@ -93,10 +93,18 @@ void Task_Loop(void)
 #endif /* ETH_LWIP_TEST ------------------------------------------------------*/          
         
         
+#if     MODBUS_LOCAL_DDU_TEST
+        /* modbus loacal ddu test */
+        modbus_local_ddu_init();
         
-#if   MODBUS_RTU_TEST    
+#elif   MODBUS_RTU_TEST    
         /* modbus rtu , baud:115200 , device_id:0x0A */
         modbus_rtu_init();
+        
+#elif   RX485_TEST      
+        /* rx485 loopback test */
+        rx485_test_init();         
+        
 #endif 
 
         
@@ -111,13 +119,7 @@ void Task_Loop(void)
       /* input output and can communication test */
         input_test_init();   
 #endif        
-        
-           
-#if   RX485_TEST      
-        /* rx485 loopback test */
-        rx485_test_init();
-#endif   
-         
+              
         
 #if   RTC_CLOCK_TEST
         /* use stm32 internal rtc clock */

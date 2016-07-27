@@ -74,6 +74,8 @@
 #define RX485_TEST      0
 
 #define RTC_CLOCK_TEST          1
+
+#define MODBUS_LOCAL_DDU_TEST   1
 /*************************  TEST    *******************************************/
 #if RTC_CLOCK_TEST
 #define DEBUG_PRINTF                0
@@ -86,6 +88,7 @@
 
 #ifdef GEC_CB_MAIN
 extern u8 testmode;
+extern u8 timeset;
 #endif
 
 #endif /* __INCLUDES_H */

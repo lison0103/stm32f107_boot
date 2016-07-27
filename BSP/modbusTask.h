@@ -18,7 +18,7 @@
 /* Exported functions ------------------------------------------------------- */
 void modbus_rtu_init(void);
 void modbus_socket_init(void);
-
+void modbus_local_ddu_init(void);
 
 #endif /* _MODBUSTASK_H */
 

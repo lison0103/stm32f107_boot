@@ -115,77 +115,21 @@ void rx485_task(void *arg)
 *******************************************************************************/ 
 void rtc_task(void *arg)
 {
-
-        u32 t = 0;
         
 	for( ; ; )
 	{
 
-//            if(CMD_FLAG10 & 0x40)
-//            {
-//                RTC_SetTime( &Modbuff[50] );
-//                CMD_FLAG10 &= ~0x40;
-//            }  
-//            else
-//            {  
-//                if( RTC_GetTime( &Modbuff[50] ) )
-//                {
-//                    CMD_FLAG10 |= 0x20;
-//                }
-//                else
-//                {
-//                    CMD_FLAG10 &= ~0x20;
-//                }
-//            }  
-               
-           
-            if(t!=calendar.sec)
+            if( timeset == 1 )
             {
-                t=calendar.sec;
-                
-                pcMbRtccBuff[0] = (calendar.w_year)%100;
-                pcMbRtccBuff[1] = calendar.w_month;
-                pcMbRtccBuff[2] = calendar.w_date;
-                pcMbRtccBuff[3] = calendar.hour;
-                pcMbRtccBuff[4] = calendar.min;
-                pcMbRtccBuff[5] = calendar.sec;
-                    
-#if DEBUG_PRINTF 
-                printf("%d - %02d - %02d \n", calendar.w_year, calendar.w_month, calendar.w_date);
-           
-                switch(calendar.week)
-                {
-                    case 0:
-                      printf("Sunday \n");
-                      break;
-                    case 1:
-                      printf("Monday \n");
-                      break;
-                    case 2:
-                      printf("Tuesday \n");
-                      break;
-                    case 3:
-                      printf("Wednesday \n");
-                      break;
-                    case 4:
-                      printf("Thursday \n");
-                      break;
-                    case 5:
-                      printf("Friday \n");
-                      break;
-                    case 6:
-                      printf("Saturday \n");
-                      break;  
-                    default:
-                      printf("error \n");
-                      break;
-                }
-                printf("%02d : %02d : %02d \n", calendar.hour, calendar.min, calendar.sec);
-#endif
-            }
-
+                RTC_SetTime( &Modbuff[50] );
+                timeset = 0;
+            }  
+            else
+            {  
+                RTC_GetTime( &Modbuff[50] );
+            }                
             
-            vTaskDelay( 100 );
+            vTaskDelay( 500 );
 	}              
 
 }
