@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.general.xcl" --backend -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 7.2 EWARM FS 7.40.6\common\bin\cspybat" -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.general.xcl" --backend -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 7.2\common\bin\cspybat" -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 7.2 EWARM FS 7.40.6\common\bin\cspybat" -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.general.xcl" "--debug_file=%~1" --backend -f "C:\Users\lisonchen\1project\j_GEC-CB\PROJECTS\settings\GEC-CB.GEC-CB-BL.driver.xcl" 
 
 @echo off 
 :end
