@@ -59,36 +59,36 @@ void Task_Loop(void)
 #if   ETH_LWIP_TEST 
 
         /* ETH BSP init */
-	ETH_BSP_Config();
-        
-	/* Initilaize the LwIP stack */
-	LwIP_Init();
-
-        
+	if(!ETH_BSP_Config())
+        {
+            /* Initilaize the LwIP stack */
+            LwIP_Init();
+            
+            
 #if   TCP_CLIENT_TEST 
-        /* tcp client , need to set the local ip / port and gateway */
-	tcp_client_init();
+            /* tcp client , need to set the local ip / port and gateway */
+            tcp_client_init();
 #endif /* TCP_CLIENT_TEST */
-      
-        
+            
+            
 #if   TCP_SERVER_TEST    
-        /* tcp server , need to set the local ip / port and gateway */
-        tcp_server_init();
+            /* tcp server , need to set the local ip / port and gateway */
+            tcp_server_init();
 #endif /* TCP_SERVER_TEST */
-      
-        
+            
+            
 #if   MODBUS_TCP_TEST      
-        /* modbus tcp , need to set the local ip / port and gateway */
-        modbus_socket_init();
+            /* modbus tcp , need to set the local ip / port and gateway */
+            modbus_socket_init();
 #endif /* MODBUS_TCP_TEST */
- 
-        
+            
+            
 #ifdef USE_DHCP
-        /* Start DHCPClient */
-        lwip_dhcp_init();
+            /* Start DHCPClient */
+            lwip_dhcp_init();
 #endif /* USE_DHCP */                	
-
-        
+            
+        }
         
 #endif /* ETH_LWIP_TEST ------------------------------------------------------*/          
         

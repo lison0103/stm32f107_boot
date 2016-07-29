@@ -11,7 +11,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f107_eth.h"
 #include "stm32_eth_bsp.h"
-
+#include "delay.h"
      
 
 #define  ETH_DMARxDesc_FrameLengthShift           16
@@ -29,7 +29,7 @@ __IO uint32_t  EthInitStatus = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void ETH_GPIO_Config(void);
 static void ETH_NVIC_Config(void);
-static void ETH_MACDMA_Config(void);
+static uint8_t ETH_MACDMA_Config(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -54,7 +54,7 @@ static void _delay_(int cnt)
   * @param  None
   * @retval None
   */
-void ETH_BSP_Config(void)
+uint8_t ETH_BSP_Config(void)
 {
 	/* Enable ETHERNET clock  */
 	RCC_AHBPeriphClockCmd( RCC_AHBPeriph_ETH_MAC | RCC_AHBPeriph_ETH_MAC_Tx |
@@ -77,22 +77,26 @@ void ETH_BSP_Config(void)
 #endif
 
 	/* Configure the Ethernet MAC/DMA */
-	ETH_MACDMA_Config();
+	if( ETH_MACDMA_Config())
+        {
+            return 1;
+        }
 
 	/* Config NVIC for Ethernet */
 	ETH_NVIC_Config();
         
-        
+        return 0;
 }
 /**
   * @brief  Configures the Ethernet Interface
   * @param  None
   * @retval None
   */
-static void ETH_MACDMA_Config(void)
+static uint8_t ETH_MACDMA_Config(void)
 {
 	__IO uint32_t RegValue;
 	ETH_InitTypeDef ETH_InitStructure;
+        uint8_t ETH_count = 0;
 		
 	/* Reset ETHERNET on AHB Bus */
 	ETH_DeInit();
@@ -101,7 +105,16 @@ static void ETH_MACDMA_Config(void)
 	ETH_SoftwareReset();
 	
 	/* Wait for software reset */
-	while (ETH_GetSoftwareResetStatus() == SET);
+	while (ETH_GetSoftwareResetStatus() == SET)
+        {
+            delay_ms(10);
+            ETH_count++;
+            if( ETH_count > 10 )
+            {
+                return 1;
+            }
+        }
+         
 	
 	/* ETHERNET Configuration ------------------------------------------------------*/
 	/* Call ETH_StructInit if you don't like to configure all ETH_InitStructure parameter */
@@ -163,6 +176,8 @@ static void ETH_MACDMA_Config(void)
           /* Enable the Ethernet Rx Interrupt */
           ETH_DMAITConfig(ETH_DMA_IT_NIS | ETH_DMA_IT_R, ENABLE);
         }
+        
+        return 0;
 }
 
 /**
