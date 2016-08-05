@@ -414,7 +414,7 @@ void CAN2_RX0_IRQHandler(void)
             for( u8 i = 0; i < RxMessage.DLC; i++ )
             {
                 /* receive data */
-                printf("CAN1_RX0[%d]:%d\r\n",i,RxMessage.Data[i]);
+
             }
         }
         /* Test Mode */        

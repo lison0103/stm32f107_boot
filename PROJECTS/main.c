@@ -40,13 +40,13 @@ u16 *const pt_SysBuff = (u16*)&Modbuff[1100];
 #endif
 
 /*******************************************************************************
-* Function Name  : Task_Loop
-* Description    : This function contains the task to be executed in a loop.               
+* Function Name  : Start_Task
+* Description    : This function contains the task to be started.               
 * Input          : None                
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void Task_Loop(void)
+void Start_Task(void)
 {
         
   
@@ -154,8 +154,8 @@ void Task_Loop(void)
 int main(void)
 {        
      
-        Bsp_Init();
-        Task_Loop();
+        Initial_Device();
+        Start_Task();
         
 }
 

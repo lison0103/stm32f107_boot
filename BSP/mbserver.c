@@ -88,7 +88,7 @@ eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
         {
             usRegInputBuf[i] = CAN1_RX2_Data[i - 100];
         }  
-        for( u8 i = 120; i < 160; i++ )
+        for( u8 i = 120; i < 165; i++ )
         {
             usRegInputBuf[i] = CAN1_RX_Data[i - 40];
         }            

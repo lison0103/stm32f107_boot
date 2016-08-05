@@ -40,7 +40,6 @@ u8 isFileExist(char *filename)
   if(fp != NULL)
   {      
       res = f_open(fp,filename,FA_READ);  
-      printf("\r\n open res = %d \r\n",res);
       
       if(res==FR_OK)
       {
@@ -83,7 +82,6 @@ u8 CopyFile(char *readfilename, char *newfilename)
       res = f_open(fp1,readfilename,FA_READ);
       
       res = f_open(fp2,newfilename,FA_CREATE_NEW | FA_WRITE);  
-      printf("\r\n open res = %d \r\n",res);
       
         while(res==FR_OK)
         {
@@ -133,7 +131,6 @@ u8 UpdateApp(char *filename)
     if(fp != NULL && tempbuf != NULL)
     {      
         res = f_open(fp,filename,FA_READ);    
-        printf("\r\n open res = %d \r\n",res);
         
 //        INTX_DISABLE();
         while(res==FR_OK)
@@ -157,7 +154,6 @@ u8 UpdateApp(char *filename)
 //        INTX_ENABLE();
     }
     
-    printf("\r\n update res = %d \r\n",res);
     
     f_close(fp);	   
     myfree(fp);
@@ -208,7 +204,6 @@ u8 ReadDir(u8 * path, char str[])
     res = f_opendir(&dir,(const TCHAR*)path); 
     if (res == FR_OK) 
     {	
-//      printf("\r\n"); 
       while(1)
       {
         res = f_readdir(&dir, &fileinfo);                   

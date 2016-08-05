@@ -27,7 +27,7 @@ void RCC_Configuration(void);
 
 
 /*******************************************************************************
-* Function Name  : Bsp_Init
+* Function Name  : Initial_Device
 * Description    : Initialize the CPU1,CPU2 and peripherals
 *                  
 * Input          : None
@@ -35,7 +35,7 @@ void RCC_Configuration(void);
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void Bsp_Init(void)
+void Initial_Device(void)
 {
 
         /** set system interrupt priority group 2 **/
@@ -54,10 +54,9 @@ void Bsp_Init(void)
 #ifdef GEC_CB_MAIN        
 
         /**  RTC init **/
-        while( RTC_Init() )		
+        if( RTC_Init() )		
 	{           
-            /** rtc init error , cystal problem **/
-            delay_ms(800);	
+            /** rtc init error , cystal problem **/	
 	}	
         
         /** ewdt init **/
@@ -67,7 +66,7 @@ void Bsp_Init(void)
         /** input and relay output test init **/
         Input_Output_PinInit();
         
-        /** usart init **/
+        /** usart init, usart3 for 485, usart for external comm device **/
 	USART3_Init();		
         USART2_Init();        	                	
                
@@ -80,7 +79,7 @@ void Bsp_Init(void)
         eep_init();
         if(MB85RCXX_Check())
         {
-            printf("MB85RCXX_Check fail \n");
+            /** MB85RCXX_Check fail **/
           
         }        
 
@@ -88,7 +87,7 @@ void Bsp_Init(void)
         AT24CXX_Init();        
         if(AT24CXX_Check())
         {
-            printf("AT24CXX_Check fail \n");
+            /** AT24CXX_Check fail **/
           
         } 
         else

@@ -41,7 +41,7 @@ u8 USH_User_App(void)
 { 
 	
 	u8 res=0;
-	printf("Device connect success!.\n");	 
+	/* Device connect success! */	 
         
         LED0 = 1;
 
@@ -85,11 +85,11 @@ u8 USH_User_App(void)
        
         if(isFileExist("0:123.txt"))
         {
-            printf("File not exists\n");
+            /* File not exists */
         }
         else
         {
-              printf("File exists\n");
+              /* File exists */
               
               DeleteFile("0:abc.txt");
          
@@ -106,13 +106,13 @@ u8 USH_User_App(void)
                 res=exf_getfree("0:",&total,&free);
                 if(res==0)
                 {	   
-                  printf("FATFS OK!\n");	
+                  /* FATFS OK! */
                   printf("U Disk Total Size:  %d   MB\n",total>>10); 
                   printf("U Disk  Free Size:  %d   MB\n",free>>10); 	    	
                 }
 	}
    
-	printf("Device is connecting...\n");
+	/* Device is connecting... */
         
 #endif
 	return res;
@@ -141,13 +141,13 @@ void usb_task(void *arg)
         /** fatfs apply memory **/ 
  	if(exfuns_init())			
         {
-            printf("fatfs memory apply fail \n");
+            /* fatfs memory apply fail */
         
         }
              
 	/** USB HOST init **/
   	USBH_Init(&USB_OTG_Core,USB_OTG_FS_CORE_ID,&USB_Host,&USBH_MSC_cb,&USR_cb);    
-        printf("wait usb mass storage connected...\n");
+        /* wait usb mass storage connected... */
         
         
 	for( ; ; )
@@ -196,7 +196,7 @@ void usb_process(void)
         /** fatfs apply memory **/ 
  	if(exfuns_init())			
         {
-            printf("fatfs memory apply fail \n");
+            /* fatfs memory apply fail */
         
         }
              
