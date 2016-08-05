@@ -29,6 +29,7 @@
 #include "rtc.h"
 #include "usb_task.h"
 #include "sys_task.h"
+#include "comm_display_board.h"
 #ifdef GEC_CB_MAIN
 #include "hw_test.h"
 #include "can.h"
@@ -55,6 +56,7 @@
 #define INPUT_TASK_PRIO                 ( tskIDLE_PRIORITY + 6 )
 #define SELFCHEK_TASK_PRIO              ( tskIDLE_PRIORITY + 8 )
 #define CAN_THREAD_PRIO                 ( tskIDLE_PRIORITY + 6 )
+#define COMM_DB_THREAD_PRIO             ( tskIDLE_PRIORITY + 4 )
 
 /*************************  TEST    *******************************************/
 #define ETH_LWIP_TEST    1
@@ -76,6 +78,9 @@
 #define RTC_CLOCK_TEST          1
 
 #define MODBUS_LOCAL_DDU_TEST   1
+
+#define COMM_DISPLAY_BOARD_TEST   1
+
 /*************************  TEST    *******************************************/
 #define DEBUG_PRINTF                0
 #endif /* GEC_CB_MAIN */

@@ -124,7 +124,12 @@ void Start_Task(void)
 #if   RTC_CLOCK_TEST
         /* use stm32 internal rtc clock */
         rtc_clock_init();								       
-#endif                 
+#endif              
+        
+#if     COMM_DISPLAY_BOARD_TEST
+         /* communication with display board */
+        comm_db_init();
+#endif
         
         /* led and ewdt task, the highest priority */
         led_ewdt_init();
@@ -152,10 +157,16 @@ void Start_Task(void)
 * Return         : None
 *******************************************************************************/
 int main(void)
-{        
-     
-        Initial_Device();
-        Start_Task();
+{ 
+#ifdef GEC_CB_BOOTLOADER    
+    u16 i; 
+    
+    /* Power up delay */
+    for( i = 0; i < 10000; i++ );   
+#endif
+    
+    Initial_Device();
+    Start_Task();
         
 }
 

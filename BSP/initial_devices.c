@@ -66,7 +66,7 @@ void Initial_Device(void)
         /** input and relay output test init **/
         Input_Output_PinInit();
         
-        /** usart init, usart3 for 485, usart for external comm device **/
+        /** usart init, usart3 for 485, usart2 for external comm device **/
 	USART3_Init();		
         USART2_Init();        	                	
                
