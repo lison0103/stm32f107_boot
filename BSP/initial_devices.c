@@ -61,7 +61,7 @@ void Initial_Device(void)
         
         /** ewdt init **/
         EWDT_Drv_pin_config();
-        ExtWdtCheck();         
+//        ExtWdtCheck();         
         
         /** input and relay output test init **/
         Input_Output_PinInit();
@@ -100,10 +100,10 @@ void Initial_Device(void)
         CAN_Int_Init(CAN2);      
         
         /* HardwareTest */
-        HardwareTEST();
+//        HardwareTEST();
         
         /* Parameters Loading */
-        ParametersLoading();        
+//        ParametersLoading();        
         
         
         /* Self test routines initialization ---------------------------------*/

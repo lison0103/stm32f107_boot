@@ -67,10 +67,10 @@ void get_para_from_usb(void)
             break;
         }
     }
-    while( len != 2 || paradata[0] != 0x22 );
-        
-
-    if( len == 2 && paradata[0] == 0x22 && paradata[1] == 0x01 )
+    while( len != 2 || paradata[0] != MESSAGE_TO_CONTROL );
+    
+    
+    if( len == 2 && paradata[0] == MESSAGE_TO_CONTROL && paradata[1] == USB_DETECTED )
     {
         /* 2. wait sf load usb-stick, recv para from sf CPU1 */
         do
@@ -85,42 +85,53 @@ void get_para_from_usb(void)
                 break;
             }
         }
-        while( len == 0 );
+        while( paradata[0] != MESSAGE_TO_CONTROL );
         
-    }
-        
-    if( len > 0 )
-    {
-        /* 3. Check crc16 is it ok */
-        if( MB_CRC16( paradata, len ))
+        if( len > 0 )
         {
-            /* Error message. Abort parameter loading. System remains in Init Fault. */
-
+            /* 3. Check crc16 is it ok */
+            if( MB_CRC16( paradata, len ))
+            {
+                /* Error message. Abort parameter loading. System remains in Init Fault. */
+                
+            }
+            else
+            {
+                /* 4. Store the parameters in the fram */
+                AT24CXX_Write(EEP_PARA_RECORD_ADR , len, paradata);       
+            }
+            
         }
         else
         {
-            /* 4. Store the parameters in the fram */
-            AT24CXX_Write(EEP_PARA_RECORD_ADR , len, paradata);       
-        }
+            
+        }        
+        
         
     }
-    else
+    else if( len == 2 && paradata[0] == MESSAGE_TO_CONTROL && paradata[1] == USB_NOT_DETECTED )
     {
         /* 3. CPU1 Read parameters from non volatile memory */
         AT24CXX_Read(EEP_ERROR_RECORD_ADR, EEP_PARA_RECORD_NUM, paradata);
-    
+        
         /* 4. Check crc16 is it ok */
         if( MB_CRC16( paradata, EEP_PARA_RECORD_NUM ))
         {
             /* Error message. Abort parameter loading. System remains in Init Fault. */
-
+//            while(1)
+//            {
+//                EWDT_TOOGLE();
+//            }
         }
         else
         {
             /* 5. Save parameters into variables */
             esc_para_init(paradata);    
-        }    
+        }          
     }
+        
+        
+
 
     
 
