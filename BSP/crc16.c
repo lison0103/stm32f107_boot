@@ -94,4 +94,74 @@ uint16_t MB_CRC16( uint8_t *pucFrame, uint16_t usLen )
     return ( uint16_t )( ucCRCHi << 8 | ucCRCLo );
 }
 
+
+/*******************************************************************************
+* Function Name  : MB_CRC32
+* Description    : Computes the 32-bit CRC
+*                  
+* Input          : pucFrame: The first address data to be checked
+*                  usLen:    The length of the data to be checked
+                   Polynomials: Polynomials
+* Output         : None
+* Return         : Check result
+*******************************************************************************/
+u32 MB_CRC32(u8 pucFrame[], u16 usLen, u32 Polynomials)           
+{
+    u16 i,j;
+    u32 crc = 0xffffffffu,flag;
+    
+    for( i = 0u; i < usLen; i++ )
+    {
+        crc ^= ((u32)pucFrame[i])<<24u;
+        
+        for(j = 0u;j < 8u; j++)  
+        {
+            flag = crc & 0x80000000u;
+            crc <<= 1u;
+            
+            if(flag)
+            {        
+                crc  ^=  Polynomials;
+                /*crc  ^=  0xfa567d89u;*/
+            }
+        }
+    }
+    
+    /* Note: CRC32 return value after the call need to be reversed high and low, high in the former, low after the */
+    return (crc);
+}
+
+#define CRC_RESET           ((u32)0x00000001uL)
+static void STM_CRC_Init(void)
+{
+    /* Enable CRC module clock */
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC ,ENABLE);
+    
+    /* Reset CRC generator */
+    CRC->CR = CRC_RESET;
+}
+
+/*******************************************************************************
+* Function Name  : MB_CRC32
+* Description    : Computes the 32-bit CRC
+*                  
+* Input          : pBuffer: The first address data to be checked
+*                  BufferLength:    The length of the data to be checked
+* Output         : None
+* Return         : Check result
+*******************************************************************************/
+u32 STM_CRC32(uint32_t pBuffer[], uint32_t BufferLength)
+{
+    uint32_t index = 0u;
+    
+    STM_CRC_Init();
+    
+    for(index = 0u; index < BufferLength; index++)
+    {
+        CRC->DR = pBuffer[index];
+    }
+  
+    return (CRC->DR);  
+}
+
 /******************************  END OF FILE  *********************************/

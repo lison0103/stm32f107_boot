@@ -4,7 +4,19 @@
   <project>
     <path>$WS_DIR$\GEC-CB.ewp</path>
   </project>
-  <batchBuild/>
+  <batchBuild>
+    <batchDefinition>
+      <name>GEC-CB</name>
+      <member>
+        <project>GEC-CB</project>
+        <configuration>GEC-CB-A</configuration>
+      </member>
+      <member>
+        <project>GEC-CB</project>
+        <configuration>GEC-CB-BL</configuration>
+      </member>
+    </batchDefinition>
+  </batchBuild>
 </workspace>
 
 

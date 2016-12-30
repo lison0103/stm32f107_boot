@@ -35,7 +35,7 @@ u8 USART_RX_BUF[USART_REC_LEN];
 u16 USART_RX_STA=0;       
 
 
-#if MODBUS_RTU_TEST
+#if MODBUS_RTU_ENABLE
 /*******************************************************************************
 * Function Name  : USART3_Init
 * Description    : Initialization usart3.                
@@ -88,8 +88,8 @@ void USART3_Init(void)
     
     
     NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0 ;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=8 ;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			
     NVIC_Init(&NVIC_InitStructure);	
     
@@ -185,7 +185,7 @@ void USART3_IRQHandler(void)
 #endif	
 #endif
 
-#if MODBUS_RTU_TEST
+#if MODBUS_RTU_ENABLE
 /*******************************************************************************
 * Function Name  : USART3_IRQHandler
 * Description    : This function handles USART3 global interrupt request.             
@@ -517,7 +517,7 @@ void NVIC_Configuration_Usart(USART_TypeDef* USARTx)
       break;
   }
   
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 8;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   /* Enable the USARTy Interrupt */  
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;

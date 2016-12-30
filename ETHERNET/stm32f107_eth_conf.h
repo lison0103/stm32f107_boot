@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
+#include "esc.h"     
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -89,22 +90,22 @@
 #define MAC_ADDR5   0xFA
  
 /*Static IP ADDRESS*/
-#define IP_ADDR0   10
-#define IP_ADDR1   129
-#define IP_ADDR2   200
-#define IP_ADDR3   200
+#define IP_ADDR0   IP_ADDRESS_BYTE1
+#define IP_ADDR1   IP_ADDRESS_BYTE2
+#define IP_ADDR2   IP_ADDRESS_BYTE3
+#define IP_ADDR3   IP_ADDRESS_BYTE4
    
 /*NETMASK*/
-#define NETMASK_ADDR0   255
-#define NETMASK_ADDR1   255
-#define NETMASK_ADDR2   255
-#define NETMASK_ADDR3   0
+#define NETMASK_ADDR0   SUBNET_MASK_BYTE1
+#define NETMASK_ADDR1   SUBNET_MASK_BYTE2
+#define NETMASK_ADDR2   SUBNET_MASK_BYTE3
+#define NETMASK_ADDR3   SUBNET_MASK_BYTE4
 
 /*Gateway Address*/
-#define GW_ADDR0   10
-#define GW_ADDR1   129
-#define GW_ADDR2   200
-#define GW_ADDR3   2 
+#define GW_ADDR0   GATEWAY_BYTE1
+#define GW_ADDR1   GATEWAY_BYTE2
+#define GW_ADDR2   GATEWAY_BYTE3
+#define GW_ADDR3   GATEWAY_BYTE4
 
    
 /* Exported macro ------------------------------------------------------------*/

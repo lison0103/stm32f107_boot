@@ -21,29 +21,10 @@
 void led_ewdt_task(void *arg);
 void rx485_task(void *arg);
 void rtc_task(void *arg);
-void selfcheck_task(void *arg);
 
-
-/*******************************************************************************
-* Function Name  : selfcheck_task
-* Description    : Run self test task.
-*                  
-* Input          : arg:  a pointer to an optional data area which can be used 
-*                       to pass parameters to the task when the task first executes.
-*                  
-* Output         : None
-* Return         : None
-*******************************************************************************/ 
-void selfcheck_task(void *arg)
-{
-        
-	for( ; ; )
-	{
-                /* self check */
-                STL_DoRunTimeChecks();
-                vTaskDelay( 5 );
-	}
-}
+EventGroupHandle_t xCreatedEventGroup = NULL;
+TimerHandle_t xTimers = NULL;
+u16 g_u16LedFreq = FREQ_1HZ;
 
 /*******************************************************************************
 * Function Name  : led_ewdt_task
@@ -57,18 +38,31 @@ void selfcheck_task(void *arg)
 *******************************************************************************/ 
 void led_ewdt_task(void *arg)
 {
-        LED0 = 0;
+    EventBits_t uxbits;
+
+    LED0 = 0;
+  
+    for( ; ; )
+    {
+        LED0 =!LED0;
+        if( testmode != 0 )
+        {
+            LED1 =!LED1;
+        }
         
-	for( ; ; )
-	{
-                LED0 =!LED0;
-                if( testmode != 0 )
-                {
-                  LED1 =!LED1;
-                }
-                EWDT_TOOGLE();
-		vTaskDelay( 500 );
-	}
+        uxbits = xEventGroupWaitBits(xCreatedEventGroup,
+                            TASK_BIT_ALL,
+                            pdTRUE,
+                            pdTRUE,
+                            0);
+        
+       if((uxbits & TASK_BIT_ALL) == TASK_BIT_ALL )
+       {
+          EWDT_TOOGLE();
+       }
+
+        vTaskDelay( g_u16LedFreq );
+    }
 }
 
 /*******************************************************************************
@@ -83,23 +77,21 @@ void led_ewdt_task(void *arg)
 *******************************************************************************/ 
 void rx485_task(void *arg)
 {
-
-        u8 len = 0;
-  
-	for( ; ; )
-	{
-          
-                if(USART_RX_STA&0x8000)
-                {					   
-                    len=USART_RX_STA&0x3fff;
-                    
-                    USART3_SEND(USART_RX_BUF,len);
-                    USART_RX_STA=0;
-                  
-                }
-		vTaskDelay( 10 );
-	}              
-
+    u8 len = 0;
+    
+    for( ; ; )
+    {        
+        if(USART_RX_STA&0x8000)
+        {					   
+            len=USART_RX_STA&0x3fff;
+            
+            USART3_SEND(USART_RX_BUF,len);
+            USART_RX_STA=0;
+            
+        }
+        
+        vTaskDelay( 10 );
+    }              
 }
 
 
@@ -116,24 +108,53 @@ void rx485_task(void *arg)
 void rtc_task(void *arg)
 {
         
-	for( ; ; )
-	{
-
-            if( timeset == 1 )
-            {
-                RTC_SetTime( &Modbuff[50] );
-                timeset = 0;
-            }  
-            else
-            {  
-                RTC_GetTime( &Modbuff[50] );
-            }                
-            
-            vTaskDelay( 500 );
-	}              
+    for( ; ; )
+    {
+        
+        if( timeset == 1 )
+        {
+            RTC_SetTime( ESC_RTCC );
+            timeset = 0;
+        }  
+        else
+        {  
+            RTC_GetTime( ESC_RTCC );
+        }                
+        
+        vTaskDelay( 500 );
+    }              
 
 }
 
+/*******************************************************************************
+* Function Name  : vTimerCallback
+* Description    :            
+* Input          : 
+* Output         : None
+* Return         : None
+*******************************************************************************/ 
+void vTimerCallback(xTimerHandle pxTimer)
+{
+    u32 ulTimerID;
+    
+//    configASSERT(pxTimer);
+    
+    ulTimerID = (u32)pvTimerGetTimerID(pxTimer);
+           
+    if( ulTimerID == 0 )
+    {
+        if( timeset == 1 )
+        {
+            RTC_SetTime( ESC_RTCC );
+            timeset = 0;
+        }  
+        else
+        {  
+            RTC_GetTime( ESC_RTCC );
+        } 
+    }
+
+}
 
 /*******************************************************************************
 * Function Name  : rx485_test_init
@@ -160,7 +181,23 @@ void rx485_test_init(void)
 *******************************************************************************/ 
 void rtc_clock_init(void)
 {
-	xTaskCreate(rtc_task, "RTC CLOCK", configMINIMAL_STACK_SIZE * 2, NULL, RTC_THREAD_PRIO, NULL);  
+    u8 TimerID = 0u;
+    
+    xTimers = xTimerCreate("Timer",
+                           500,
+                           pdTRUE,
+                           (void*)TimerID,
+                           vTimerCallback);
+    
+    
+    if(xTimers != NULL)
+    {
+        if( xTimerStart(xTimers, 500) != pdPASS )
+        {
+            
+        }
+    }
+//	xTaskCreate(rtc_task, "RTC CLOCK", configMINIMAL_STACK_SIZE, NULL, RTC_THREAD_PRIO, NULL);  
 }
 
 
@@ -175,22 +212,12 @@ void rtc_clock_init(void)
 *******************************************************************************/ 
 void led_ewdt_init(void)
 {
-	xTaskCreate(led_ewdt_task, "LED_EWDT", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
-}
-
-
-/*******************************************************************************
-* Function Name  : self_check_init
-* Description    : Create self test task.
-*                  
-* Input          : None
-*                  
-* Output         : None
-* Return         : None
-*******************************************************************************/ 
-void self_check_init(void)
-{
-	xTaskCreate(selfcheck_task, "SELF_CHECK", configMINIMAL_STACK_SIZE * 4, NULL, SELFCHEK_TASK_PRIO, NULL);
+      xCreatedEventGroup = xEventGroupCreate();
+      
+      if( xCreatedEventGroup != NULL )
+      {
+          xTaskCreate(led_ewdt_task, "LED_EWDT", configMINIMAL_STACK_SIZE, NULL, LED_TASK_PRIO, NULL);
+      }
 }
 
 

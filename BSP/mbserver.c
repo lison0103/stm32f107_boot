@@ -67,31 +67,21 @@ eMBRegInputCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
 {
     eMBErrorCode    eStatus = MB_ENOERR;
     int             iRegIndex;
+    u8 i,j;
 
     if( ( usAddress >= REG_INPUT_START )
         && ( usAddress + usNRegs <= REG_INPUT_START + REG_INPUT_NREGS ) )
     {
         iRegIndex = ( int )( usAddress - usRegInputStart );
-        usRegInputBuf[0] = CAN1_TX_Data[0];
-        usRegInputBuf[1] = CAN1_TX_Data[1];
-        for( u8 i = 2; i < 80; i++ )
+
+        for( j = 0u; j < 20u; j++ )
         {
-            usRegInputBuf[i] = CAN1_RX_Data[i - 2];
-        }
-        usRegInputBuf[82] = pcCurrentRecordErrorBuff[0];
-        usRegInputBuf[83] = pcCurrentRecordErrorBuff[1];
-        for( u8 i = 84; i < 90; i++ )
-        {
-            usRegInputBuf[i] = pcMbRtccBuff[i - 84];
-        }        
-        for( u8 i = 100; i < 120; i++ )
-        {
-            usRegInputBuf[i] = CAN1_RX2_Data[i - 100];
-        }  
-        for( u8 i = 120; i < 165; i++ )
-        {
-            usRegInputBuf[i] = CAN1_RX_Data[i - 40];
-        }            
+            for( i = 0u; i < 8u; i++ )
+            {
+                usRegInputBuf[8*j + i] = EscDataFromSafety[j][i];
+            }
+        }   
+              
         while( usNRegs > 0 )
         {
             *pucRegBuffer++ = ( unsigned char )( usRegInputBuf[iRegIndex] >> 8 );
@@ -142,7 +132,7 @@ eMBRegHoldingCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegi
 			}
                         {
                             
-                            u16 *pc_Output = (u16*)&EscRTBuff[30];
+                            u16 *pc_Output = (u16*)&CBEscData.ControlOutputData[0];
                             
                             for( u8 i = 0; i < 15; i++ )
                             {
@@ -228,7 +218,7 @@ eMBRegCoilsCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils,
             }
             {
               
-                u16 *pc_Output = (u16*)&EscRTBuff[30];
+                u16 *pc_Output = (u16*)&CBEscData.ControlOutputData[0];
                 u16 *pc_RegCoils = (u16*)&ucRegCoilsBuf[0];
                 
                 for( u8 i = 0; i < 15; i++ )
@@ -272,7 +262,7 @@ eMBRegDiscreteCB( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
           ucRegDiscreteBuf[0] = 0x00;
           ucRegDiscreteBuf[1] = 0x00;
           
-          u16 *pc_Input = (u16*)&EscRTBuff[4];
+          u16 *pc_Input = (u16*)&CBEscData.ControlInputData[0];
           u16 *pc_RegDiscrete = (u16*)&ucRegDiscreteBuf[0];
           
           for( u8 i = 0; i < 16; i++ )

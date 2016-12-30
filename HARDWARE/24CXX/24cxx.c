@@ -162,7 +162,7 @@ u8 AT24CXX_WriteByte(u16 WriteAddr,u8 *DataToWrite,u8 len)
     u8 err=0;
 
 #if USE_FREERTOS_OS    
-    taskENTER_CRITICAL();  
+//    taskENTER_CRITICAL();  
 #endif
     IIC_Start();  
     if(EE_TYPE>AT24C16)
@@ -203,11 +203,17 @@ u8 AT24CXX_WriteByte(u16 WriteAddr,u8 *DataToWrite,u8 len)
     }
     
     IIC_Stop(); 
-    delay_ms(5);
-
+     
 #if USE_FREERTOS_OS    
-    taskEXIT_CRITICAL();  
+//    taskEXIT_CRITICAL();  
 #endif
+    
+#if USE_FREERTOS_OS       
+    vTaskDelay( 10 );
+#else
+    delay_ms(10);
+#endif    
+    
     return (err);
 }
 
@@ -261,7 +267,11 @@ u8 AT24CXX_Read(u16 ReadAddr,u16 NumToRead,u8 *pBuffer)
         if(!err) break;
         
         ucCounter++;
-        delay_ms( 50 );            
+#if USE_FREERTOS_OS        
+        vTaskDelay( 50 );            
+#else
+        delay_ms(10);
+#endif          
         
     }
     return(err);
@@ -322,7 +332,11 @@ u8 AT24CXX_Write(u16 WriteAddr,u16 NumToWrite,u8 *pBuffer)
         if(!err) break;
         
         ucCounter++;
-        delay_ms( 50 );            
+#if USE_FREERTOS_OS        
+        vTaskDelay( 50 );            
+#else
+        delay_ms(10);
+#endif             
         
     }
     return(err);        

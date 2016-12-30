@@ -1,33 +1,28 @@
 /*******************************************************************************
-* File Name          : hw_test.h
+* File Name          : esc_state.h
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
-* Description        : Contains prototype of some test function.
+* Date               : 10/11/2016
+* Last modify date   : 10/11/2016
+* Description        : This file contains prototype of Esc state machine.
 *			          
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __HW_TEST_H
-#define __HW_TEST_H
+#ifndef __ESC_STATE_H
+#define __ESC_STATE_H 
 
 /* Includes ------------------------------------------------------------------*/
-#include "lsys.h"
-#include "bsp_iocfg.h"
-
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void Input_Check(void);
-void HardwareTEST(void);
-
-extern u8 canbuf_send[8];
+void Esc_State_Machine( void );
+void Esc_State_Check(void);
 
 
-#endif /* __HW_TEST_H */
+#endif /* __ESC_STATE_H */
 
 
 /******************************  END OF FILE  *********************************/
-	
 

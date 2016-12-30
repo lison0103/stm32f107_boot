@@ -31,15 +31,8 @@
 *******************************************************************************/
 void Get_GpioInput(u8 inBuff[])
 {     
-
     static u16 PinValue[3][5],ByteAnd[5],ByteOr[5],read_pin_cnt = 0;
-    u16 i; 
-    
-    /* first, clear the data */
-    for(i = 0; i < 2; i++)
-    {
-        inBuff[i] = 0;
-    }
+    u16 i;     
     
     read_pin_cnt++;  
     if(read_pin_cnt > 2) read_pin_cnt = 0;  

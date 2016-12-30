@@ -37,7 +37,7 @@ void RCC_Configuration(void);
 *******************************************************************************/
 void Initial_Device(void)
 {
-
+        
         /** set system interrupt priority group 2 **/
 	NVIC_Configuration();
 
@@ -53,6 +53,9 @@ void Initial_Device(void)
         
 #ifdef GEC_CB_MAIN        
 
+        /* Disable interrupt */
+        __set_PRIMASK(1);
+        
         /**  RTC init **/
         if( RTC_Init() )		
 	{           
@@ -72,7 +75,6 @@ void Initial_Device(void)
                
         /** digital led init **/
         digital_led_gpio_init();               
-//        digital_led_check();
 
 
         /** MB85RCXX init **/
@@ -97,17 +99,15 @@ void Initial_Device(void)
         
         /** CAN module init **/
 	CAN_Int_Init(CAN1);    
-        CAN_Int_Init(CAN2);      
+        CAN_Int_Init(CAN2);
         
         /* HardwareTest */
 //        HardwareTEST();
         
-        /* Parameters Loading */
-//        ParametersLoading();        
+        /* Parameter initial, for test */
+        EscParameterInit();
         
         
-        /* Self test routines initialization ---------------------------------*/
-        STL_InitRunTimeChecks();
         
 #else       
         
@@ -201,7 +201,7 @@ void NVIC_Configuration(void)
     NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
 #endif
     
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);	
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);	
     
     INTX_ENABLE();
 

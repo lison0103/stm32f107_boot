@@ -12,13 +12,18 @@
 #define __CRC16_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "sys.h"
+#include "lsys.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
+#define PARAMETER_POLYNOMIALS      0xFA567D89u
+#define MAIN_POLYNOMIALS           0xFA567D89u
+
 /* Exported functions ------------------------------------------------------- */
 uint16_t MB_CRC16( uint8_t *pucFrame, uint16_t usLen );
+u32 MB_CRC32(u8 pucFrame[], u16 usLen, u32 Polynomials);
+u32 STM_CRC32(uint32_t pBuffer[], uint32_t BufferLength);
 
 #endif
 

@@ -3,6 +3,7 @@
 * Author             : lison
 * Version            : V1.0
 * Date               : 07/15/2016
+* Last modify date   : 10/12/2016
 * Description        : This file contains esc parameter process.
 *                      
 *******************************************************************************/
@@ -25,6 +26,13 @@
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
+SFPara SFParameterData;
+CBPara CBParameterData;
+CBParaInSF CBParameterInSafety;
+
+u8 DIAGNOSTIC = 0u;
+u8 g_u8ParameterLoadingOK = 0u;
+u8 g_u8ParameterRead = 0u;
 
 /*******************************************************************************
 * Function Name  : esc_para_init
@@ -33,109 +41,50 @@
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void esc_para_init(u8 *para)
-{
-       
-    LANGUAGE = para[0];
+void EscParameterInit(void)
+{  
+    /* SF para */
+    KEY_MINIMUM_TIME = 800u; 
+    DIAGNOSTIC_BOARD_L2_QUANTITY = 0u;
+    
+    /* CB para */
+    STAR_DELTA_DELAY = 3u;
+    DIAGNOSTIC_BOARD_L1_QUANTITY = 0u;
 
+    /*Static IP ADDRESS*/
+    IP_ADDRESS_BYTE1 = 10u;
+    IP_ADDRESS_BYTE2 = 129u;
+    IP_ADDRESS_BYTE3 = 199u;
+    IP_ADDRESS_BYTE4 = 200u;
+    
+    /*NETMASK*/
+    SUBNET_MASK_BYTE1 = 255u;
+    SUBNET_MASK_BYTE2 = 255u;
+    SUBNET_MASK_BYTE3 = 255u;
+    SUBNET_MASK_BYTE4 = 0u;
+    
+    /*Gateway Address*/
+    GATEWAY_BYTE1 = 10u;
+    GATEWAY_BYTE2 = 129u;
+    GATEWAY_BYTE3 = 199u;
+    GATEWAY_BYTE4 = 2u;    
+    
+    if(( DIAGNOSTIC_BOARD_L1_QUANTITY != 0u ) && ( DIAGNOSTIC_BOARD_L2_QUANTITY == 0u ))
+    {
+        DIAGNOSTIC = DIAGNOSTIC_BOARD_1;
+    }
+    else if(( DIAGNOSTIC_BOARD_L1_QUANTITY == 0u ) && ( DIAGNOSTIC_BOARD_L2_QUANTITY != 0u ))
+    {
+        DIAGNOSTIC = DIAGNOSTIC_BOARD_2;
+    }    
+    else
+    {
+        DIAGNOSTIC = NO_DIAGNOSTIC_BOARD;
+    }     
+    
 }
 
 
-/*******************************************************************************
-* Function Name  : get_para_from_usb
-* Description    : get esc parameter from usb.                 
-* Input          : None          
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void get_para_from_usb(void)
-{
-    u8 paradata[200];
-    u8 len = 0;
-    u16 waittms = 0;
-    
-    /* 1. Waiting for message from CPU1 to start parameter loading process */
-    do
-    {
-        len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, paradata, 0);
-        delay_ms(1);
-        EWDT_TOOGLE();
-        waittms++;
-        if( waittms > 5000 )
-        {
-            waittms = 0;
-            break;
-        }
-    }
-    while( len != 2 || paradata[0] != MESSAGE_TO_CONTROL );
-    
-    
-    if( len == 2 && paradata[0] == MESSAGE_TO_CONTROL && paradata[1] == USB_DETECTED )
-    {
-        /* 2. wait sf load usb-stick, recv para from sf CPU1 */
-        do
-        {
-            len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, paradata, 0);
-            delay_ms(1);
-            EWDT_TOOGLE();
-            waittms++;
-            if( waittms > 15000 )
-            {
-                waittms = 0;
-                break;
-            }
-        }
-        while( paradata[0] != MESSAGE_TO_CONTROL );
-        
-        if( len > 0 )
-        {
-            /* 3. Check crc16 is it ok */
-            if( MB_CRC16( paradata, len ))
-            {
-                /* Error message. Abort parameter loading. System remains in Init Fault. */
-                
-            }
-            else
-            {
-                /* 4. Store the parameters in the fram */
-                AT24CXX_Write(EEP_PARA_RECORD_ADR , len, paradata);       
-            }
-            
-        }
-        else
-        {
-            
-        }        
-        
-        
-    }
-    else if( len == 2 && paradata[0] == MESSAGE_TO_CONTROL && paradata[1] == USB_NOT_DETECTED )
-    {
-        /* 3. CPU1 Read parameters from non volatile memory */
-        AT24CXX_Read(EEP_ERROR_RECORD_ADR, EEP_PARA_RECORD_NUM, paradata);
-        
-        /* 4. Check crc16 is it ok */
-        if( MB_CRC16( paradata, EEP_PARA_RECORD_NUM ))
-        {
-            /* Error message. Abort parameter loading. System remains in Init Fault. */
-//            while(1)
-//            {
-//                EWDT_TOOGLE();
-//            }
-        }
-        else
-        {
-            /* 5. Save parameters into variables */
-            esc_para_init(paradata);    
-        }          
-    }
-        
-        
-
-
-    
-
-}
 
 /*******************************************************************************
 * Function Name  : ParametersLoading
@@ -146,10 +95,76 @@ void get_para_from_usb(void)
 *******************************************************************************/
 void ParametersLoading(void)
 {
-    if( testmode == 0 )
+    u16 *pCBparalen = (u16*)&ParaDataFromSafety[0][4];
+    
+    
+    if( CbBase_EscState == ESC_INIT_STATE )
     {
-        get_para_from_usb();
+        
+        if( ParaDataFromSafety[0][0] == 0x31u )
+        {
+            if(( g_u8ParameterLoadingOK == 0u ) && ( g_u16ParameterLoadingError == 0u ))
+            {
+                /* receive cb para */
+                if(( ParaDataFromSafety[0][3] == 1u ) && ( *pCBparalen == ESC_CB_PARAMETER_DATA_LEN ))
+                {
+                    if( MB_CRC32( (u8*)&CBParameterData, ESC_CB_PARAMETER_DATA_LEN, PARAMETER_POLYNOMIALS ))
+                    {
+                        /* Error message. Abort parameter loading. System remains in Init Fault. */
+                        EN_ERROR49 |= 0x02u;   
+                        
+                        g_u16ParameterLoadingError = 1u;  
+                    }
+                    else
+                    {         
+                        g_u8ParameterLoadingOK = 1u;
+                    }
+                }
+            }
+        }
+        else if( ParaDataFromSafety[0][0] == 0x02u )
+        {
+            if( g_u8ParameterRead == 0u )
+            {
+                g_u8ParameterRead = 1u;
+            }
+            
+            if(( g_u8ParameterLoadingOK == 0u ) && ( g_u16ParameterLoadingError == 0u ))
+            {
+                /* receive sf para */
+                if(( ParaDataFromSafety[0][3] == 1u ) && ( *pCBparalen == ESC_SF_PARAMETER_DATA_LEN ))
+                {
+                    if( MB_CRC32( (u8*)&SFParameterData, ESC_SF_PARAMETER_DATA_LEN, PARAMETER_POLYNOMIALS ))
+                    {
+                        /* Error message. Abort parameter loading. System remains in Init Fault. */
+                        EN_ERROR49 |= 0x02u;   
+                        
+                        g_u16ParameterLoadingError |= 0x01u;  
+                    }
+                    else
+                    {         
+                        g_u8ParameterLoadingOK = 2u;
+                    }
+                }  
+            }
+            
+            if((( g_u8ParameterLoadingOK == 2u ) && ( g_u8ParameterRead == 4u )) || (( g_u16ParameterLoadingError == 0x01u ) && ( g_u8ParameterRead == 4u ))
+               || (( g_u16ParameterLoadingError == 0x02u ) && ( g_u8ParameterLoadingOK == 2u )))
+            {
+                g_u8ParameterLoadingFinish = 1u;
+            }
+        }
+        else
+        {}
+        
     }
+    else if(( CbBase_EscState == ESC_READY_STATE ) || ( CbBase_EscState == ESC_FAULT_STATE ))
+    {
+        /* Parameter changed from the DDU */
+        
+    }
+    else
+    {}
 }
 
 

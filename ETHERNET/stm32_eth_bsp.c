@@ -122,10 +122,10 @@ static uint8_t ETH_MACDMA_Config(void)
 
 	/* Fill ETH_InitStructure parametrs */
 	/*------------------------   MAC   -----------------------------------*/
-        RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, 3);
-        if( RegValue & (1u << 13 ));
-        RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, 2);
-        if( RegValue & (1u << 13 ));
+//        RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, 3);
+//        if( RegValue & (1u << 13 ));
+//        RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, 2);
+//        if( RegValue & (1u << 13 ));
         RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, 1);
         if( RegValue & (1u << 13 ));
 	RegValue = ETH_ReadPHYRegister(PHY_ADDRESS, PHY_BCR);
@@ -285,7 +285,7 @@ void ETH_NVIC_Config(void)
 
 	/* Enable the Ethernet global Interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = ETH_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);

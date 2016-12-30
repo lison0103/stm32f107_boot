@@ -11,8 +11,7 @@
 #include "timer.h"
 #include "bsp_iocfg.h"
 #include "lsys.h"
-#include "stm32f10x_STLlib.h"
-#include "stm32f10x_STLclassBvar.h"
+
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +41,7 @@ void TIM4_Int_Init(u16 arr,u16 psc)
 	NVIC_InitTypeDef NVIC_InitStructure;
         
         
-        /** TIM2 **/
+        /** TIM4 **/
 
 	TIM_TimeBaseStructure.TIM_Period = arr; 
 	TIM_TimeBaseStructure.TIM_Prescaler =psc; 
@@ -97,7 +96,7 @@ void TIM3_Int_Init(u16 arr,u16 psc)
 		);
 	NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;  
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;  
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;  
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
 	NVIC_Init(&NVIC_InitStructure);  
 
@@ -135,7 +134,7 @@ void TIM2_Int_Init(u16 arr,u16 psc)
 		);
 	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;  
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;  
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;  
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;  
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
 	NVIC_Init(&NVIC_InitStructure);  
 
@@ -167,126 +166,6 @@ void TIM1_Int_Init(u16 arr,u16 psc)
 	TIM_Cmd(TIM1, DISABLE);
 }
 
-/*******************************************************************************
-* Function Name  : TIM4_IRQHandler
-* Description    : This function handles TIM4 global interrupt request.                  
-* Input          : None  
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void TIM4_IRQHandler(void)  
-{
-      if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET) 
-      {
-        
-          TIM_ClearITPendingBit(TIM4, TIM_IT_Update  );  
-          
-//          PLUSE_OUT = !PLUSE_OUT;
-#if 1         
-          /* Verify TickCounter integrity */
-          if ((TickCounter ^ TickCounterInv) == 0xFFFFFFFFuL)
-          {
-            TickCounter++;
-            TickCounterInv = ~TickCounter;
-
-            if (TickCounter >= SYSTICK_20ms_TB)
-            {
-                u32 RamTestResult;
-
-              /* Reset timebase counter */
-              TickCounter = 0;
-              TickCounterInv = 0xFFFFFFFF;
-
-              /* Set Flag read in main loop */
-              TimeBaseFlag = 0xAAAAAAAA;
-              TimeBaseFlagInv = 0x55555555;
-
-//              if ((CurrentHSEPeriod ^ CurrentHSEPeriodInv) == 0xFFFFFFFFuL)
-//              {
-//                ISRCtrlFlowCnt += MEASPERIOD_ISR_CALLER;
-//                CurrentHSEPeriod = STL_MeasurePeriod();
-//                CurrentHSEPeriodInv = ~CurrentHSEPeriod;
-//                ISRCtrlFlowCntInv -= MEASPERIOD_ISR_CALLER;
-//              }
-//              else  /* Class B Error on CurrentHSEPeriod */
-//              {
-//              #ifdef STL_VERBOSE
-//                printf("\n\r Class B Error on CurrentHSEPeriod \n\r");
-//              #endif  /* STL_VERBOSE */
-//              }
-
-              ISRCtrlFlowCnt += RAM_MARCHC_ISR_CALLER;
-              RamTestResult = STL_TranspMarchC();
-              ISRCtrlFlowCntInv -= RAM_MARCHC_ISR_CALLER;
-
-        //      ISRCtrlFlowCnt += RAM_MARCHX_ISR_CALLER;
-        //      RamTestResult = STL_TranspMarchX();
-        //      ISRCtrlFlowCntInv -= RAM_MARCHX_ISR_CALLER;
-
-              switch ( RamTestResult )
-              {
-                case TEST_RUNNING:
-                  break;
-                case TEST_OK:
-                  #ifdef STL_VERBOSE
-                    printf("\n\r Full RAM verified (Run-time)\n\r");
-//                    GPIO_WriteBit(GPIOC, GPIO_Pin_7, (BitAction)(1-GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_7)));
-                  #endif  /* STL_VERBOSE */
-                  break;
-                case TEST_FAILURE:
-                case CLASS_B_DATA_FAIL:
-                default:
-                  #ifdef STL_VERBOSE
-                    printf("\n\r >>>>>>>>>>>>>>>>>>>  RAM Error (March C- Run-time check)\n\r");
-                  #endif  /* STL_VERBOSE */
-                  FailSafePOR();
-                  break;
-              } /* End of the switch */
-
-              /* Do we reached the end of RAM test? */
-              /* Verify 1st ISRCtrlFlowCnt integrity */
-              if ((ISRCtrlFlowCnt ^ ISRCtrlFlowCntInv) == 0xFFFFFFFFuL)
-              {
-                if (RamTestResult == TEST_OK)
-                {
-                  if (ISRCtrlFlowCnt != RAM_TEST_COMPLETED)
-                  {
-                  #ifdef STL_VERBOSE
-                    printf("\n\r Control Flow error (RAM test) \n\r");
-                  #endif  /* STL_VERBOSE */
-                  FailSafePOR();
-                  }
-                  else  /* Full RAM was scanned */
-                  {
-                    ISRCtrlFlowCnt = 0;
-                    ISRCtrlFlowCntInv = 0xFFFFFFFF;
-                  }
-                } /* End of RAM completed if*/
-              } /* End of control flow monitoring */
-              else
-              {
-              #ifdef STL_VERBOSE
-                printf("\n\r Control Flow error in ISR \n\r");
-              #endif  /* STL_VERBOSE */
-              FailSafePOR();
-              }
-            } /* End of the 20 ms timebase interrupt */
-          }
-          else  /* Class error on TickCounter */
-          {
-          #ifdef STL_VERBOSE
-            printf("\n\r Class B Error on TickCounter\n\r");
-          #endif  /* STL_VERBOSE */
-          FailSafePOR();
-          }          
-          
-          
-          
-
-#endif
-        
-      }
-}
 
 /*******************************************************************************
 * Function Name  : TIM3_IRQHandler

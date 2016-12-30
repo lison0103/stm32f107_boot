@@ -1,33 +1,27 @@
 /*******************************************************************************
-* File Name          : hw_test.h
+* File Name          : esc_comm.c
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
-* Description        : Contains prototype of some test function.
-*			          
+* Date               : 09/30/2016
+* Last modify date   : 10/09/2016
+* Description        : Contains prototype of the control board esc communication.
+*                      
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __HW_TEST_H
-#define __HW_TEST_H
+#ifndef __ESC_COMM_H
+#define __ESC_COMM_H
 
 /* Includes ------------------------------------------------------------------*/
 #include "lsys.h"
-#include "bsp_iocfg.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void Input_Check(void);
-void HardwareTEST(void);
+void can_comm_init(void);
 
-extern u8 canbuf_send[8];
-
-
-#endif /* __HW_TEST_H */
+#endif
 
 
 /******************************  END OF FILE  *********************************/
-	
-

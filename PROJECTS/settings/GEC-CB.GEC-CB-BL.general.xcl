@@ -1,0 +1,13 @@
+"C:\Program Files\IAR Systems\Embedded Workbench 7.2\arm\bin\armproc.dll" 
+
+"C:\Program Files\IAR Systems\Embedded Workbench 7.2\arm\bin\armjlink2.dll" 
+
+"E:\lison chan\GEC\program_svn\GEC-CB\PROJECTS\GEC-CB-BL\Exe\GEC-CB-BL.out" 
+
+--plugin "C:\Program Files\IAR Systems\Embedded Workbench 7.2\arm\bin\armbat.dll" 
+
+--device_macro "C:\Program Files\IAR Systems\Embedded Workbench 7.2\arm\config\debugger\ST\STM32F1xx.dmac" 
+
+
+
+

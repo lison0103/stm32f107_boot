@@ -2,7 +2,8 @@
 * File Name          : main.c
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
+* Date               : 09/30/2016
+* Last modify date   : 10/12/2016
 * Description        : Main program body.
 *                      
 *******************************************************************************/
@@ -13,6 +14,8 @@
 #include "includes.h"
 #ifdef GEC_CB_MAIN 
 #include "esc.h"
+#include "esc_ctrl.h"
+#include "esc_comm.h"
 #endif
 
 /* Private typedef -----------------------------------------------------------*/
@@ -24,19 +27,26 @@
 
 #ifdef GEC_CB_MAIN 
 
+/* task queue */
+QueueHandle_t xQueue;
+
 u8 testmode = 0;
 
-/* ESC */
-u8 Modbuff[5000];
-u8 EscRTBuff[200];
-u8 *const pcEscErrorBuff = &Modbuff[3000];
-u16 *const ptErrorRecordFirstItem = (u16*)&Modbuff[2950];//2
-u16 *const ptErrorRecordCounter = (u16*)&Modbuff[2952];//2
-u8 *const pcEscErrorCodeBuff = &Modbuff[504];//2
-u8 *const pcMbRtccBuff = &Modbuff[50];//6
-u16 *const pcStateBuff = (u16*)&Modbuff[460];
-u32 *const plPowerOnTms = (u32*)&Modbuff[140];//4  
-u16 *const pt_SysBuff = (u16*)&Modbuff[1100];
+/* ESC data*/
+ControlEscData CBEscData;
+
+/* safety board data */
+u8 EscDataFromSafety[DATA_FROM_SAFETY_LEN][8];
+u8 EscDataToSafety[CB_TO_SAFETY_DATA_LEN][8];
+
+/* Parameter data */
+u8 ParaDataToSafety[8];
+u8 ParaDataFromSafety[5][8];
+
+u16 ErrorCodeBuff[5];
+u8 EscErrorBuff[2400];
+u16 ErrorRecordFirstItem;
+u16 ErrorRecordCounter;
 #endif
 
 /*******************************************************************************
@@ -52,11 +62,9 @@ void Start_Task(void)
   
 #ifdef GEC_CB_MAIN 
   
-        /* self check */
-        self_check_init();
 
       
-#if   ETH_LWIP_TEST 
+#if   ETH_LWIP_ENABLE 
 
         /* ETH BSP init */
 	if(!ETH_BSP_Config())
@@ -77,10 +85,10 @@ void Start_Task(void)
 #endif /* TCP_SERVER_TEST */
             
             
-#if   MODBUS_TCP_TEST      
+#if   MODBUS_TCP_ENABLE      
             /* modbus tcp , need to set the local ip / port and gateway */
             modbus_socket_init();
-#endif /* MODBUS_TCP_TEST */
+#endif /* MODBUS_TCP_ENABLE */
             
             
 #ifdef USE_DHCP
@@ -90,14 +98,14 @@ void Start_Task(void)
             
         }
         
-#endif /* ETH_LWIP_TEST ------------------------------------------------------*/          
+#endif /* ETH_LWIP_ENABLE ------------------------------------------------------*/          
         
         
-#if     MODBUS_LOCAL_DDU_TEST
+#if     MODBUS_LOCAL_DDU_ENABLE
         /* modbus loacal ddu test */
         modbus_local_ddu_init();
         
-#elif   MODBUS_RTU_TEST    
+#elif   MODBUS_RTU_ENABLE    
         /* modbus rtu , baud:115200 , device_id:0x0A */
         modbus_rtu_init();
         
@@ -113,23 +121,25 @@ void Start_Task(void)
       /* usb mass storage host mode test */
       usb_mass_storage_init();
 #endif
-
-              
-#if   INPUT_RELAY_OUTPUT_AND_CAN_TEST       
-      /* input output and can communication test */
-        input_test_init();   
-#endif        
-              
-        
-#if   RTC_CLOCK_TEST
+  
+#if   RTC_CLOCK_ENABLE
         /* use stm32 internal rtc clock */
         rtc_clock_init();								       
 #endif              
         
-#if     COMM_DISPLAY_BOARD_TEST
+#if     COMM_DISPLAY_BOARD_ENABLE
          /* communication with display board */
         comm_db_init();
 #endif
+        
+        /* can communication task */
+        can_comm_init();
+        
+        /* escalator task */
+        esc_task_init(); 
+        
+        /* eeprom task */
+        eeprom_task_init();
         
         /* led and ewdt task, the highest priority */
         led_ewdt_init();

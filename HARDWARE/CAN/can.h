@@ -2,7 +2,8 @@
 * File Name          : can.h
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
+* Date               : 09/30/2016
+* Last modify date   : 10/09/2016
 * Description        : This file contains prototype of can functions.
 *			          
 *******************************************************************************/
@@ -15,60 +16,56 @@
 #include "lsys.h"
 
 /* Exported types ------------------------------------------------------------*/
-typedef struct  {
-  u8 sending;
-  u8* p_CanBuff;
-  s16 mlen;
-  u8 tx_buff[200];
-} CAN_TX_DATA_PROCESS_TypeDef;
+typedef struct  
+{
+  u16 msg_id;
+  u8 msg_data[8];
+  
+}CAN_MSG;
 
-typedef struct  {
-  u8 recving;
-  s16 rxcnt;
-  s16 mlen;
-  u8 data_packet;
-  u8 recv_cnt;
-  u8 recv_len;
-  u8 rx_buff[200];
-} CAN_RX_DATA_PROCESS_TypeDef;
-
-
+  
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
-#define canbuffsize 150
+#define CAN_FRAME_LEN   8
+#define CAN_SEND_LEN    3*CAN_FRAME_LEN
 
-/* SAFETY TO CONTROL  Speed: 500kbps  Message ID 100: transmitted every 20ms */
-/* CONTROL TO SAFETY  Speed: 500kbps  Message ID 200: transmitted every 20ms */
-#define CAN1TX_NORMAL_ID  0x00C8
-#define CAN1RX_NORMAL_ID  0x0064
-#define CAN1RX_URGE_ID    0x0062
-#define CAN1_TEST_ID  0xfaf1
+#define CAN1_TEST_ID      0xfaf1
+
+/* SF <---> CB */
+#define CAN1TX_CONTROL_DATA_ID  0x0200u
+#define CAN1TX_CONTROL_DATA_ID2  0x0202u
+#define CAN1RX_SAFETY_DATA1_ID  0x0100u
+#define CAN1RX_SAFETY_DATA3_ID  0x0114u
+
+/* Parameter */
+/* Parameter status Control -----> Safety */
+#define CAN1TX_PARA_STATUS_ID  0x0500u
+#define CAN1RX_PARA_STATUS_ID  0x0300u
+
+/* C0001.bin Safety -----> Control */
+#define CAN1RX_PARA_CONTROL_ID1  0x0301u
+#define CAN1RX_PARA_CONTROL_ID2  0x03FAu
+
+/* S0001.bin Safety -----> Control */
+#define CAN1RX_PARA_SAFETY_ID1  0x0400u
+#define CAN1RX_PARA_SAFETY_ID2  0x0440u
+
+/* CS001.bin Control -----> Safety */
+#define CAN1TX_PARA_CB_IN_SAFETY_ID1  0x0501u
+#define CAN1TX_PARA_CB_IN_SAFETY_ID2  0x052Du
+
+/* DS001.bin Control -----> Safety */
+#define CAN1TX_PARA_DDU_IN_SAFETY_ID1  0x0530u
+#define CAN1TX_PARA_DDU_IN_SAFETY_ID2  0x0531u
+
 
 /* Exported functions ------------------------------------------------------- */
 u8 CAN_Int_Init(CAN_TypeDef* CANx); 
 u8 Can_Send_Msg(CAN_TypeDef* CANx,u32 exid,u8* msg,u8 len);			
-u8 Can_Receive_Msg(CAN_TypeDef* CANx,u8 *buf);					
-void BSP_CAN_Send(CAN_TypeDef* CANx, CAN_TX_DATA_PROCESS_TypeDef* CanTx, uint32_t send_id, uint8_t *buff, uint32_t len);
-uint32_t BSP_CAN_Receive(CAN_TypeDef* CANx,CAN_RX_DATA_PROCESS_TypeDef* CanRx, uint8_t *buff,uint32_t mlen);
-
-/* CAN1 */
-extern u8 CAN1_TX_Data[canbuffsize];
-extern u8 CAN1_RX_Data[canbuffsize];
-extern u8 CAN1_TX2_Data[canbuffsize];
-extern u8 CAN1_RX2_Data[canbuffsize];
-/* CAN2 */
-extern u8 CAN2_TX_Data[canbuffsize];
-extern u8 CAN2_RX_Data[canbuffsize];
 
 extern u8 can1_receive;
 extern u8 can2_receive;
-
-extern CAN_TX_DATA_PROCESS_TypeDef  CAN1_TX_Normal;
-extern CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Normal;
-extern CAN_RX_DATA_PROCESS_TypeDef  CAN1_RX_Urge;
-
-extern CAN_TX_DATA_PROCESS_TypeDef  CAN2_TX_Normal;
-extern CAN_RX_DATA_PROCESS_TypeDef  CAN2_RX_Normal;
+extern u8 g_u8CAN1SendFail;
 
 #endif /* __CAN_H */
 

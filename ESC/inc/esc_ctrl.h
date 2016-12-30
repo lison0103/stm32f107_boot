@@ -1,33 +1,27 @@
 /*******************************************************************************
-* File Name          : hw_test.h
+* File Name          : esc_ctrl.c
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
-* Description        : Contains prototype of some test function.
-*			          
+* Date               : 09/30/2016
+* Description        : Contains prototype of the esc output control.
+*                      
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __HW_TEST_H
-#define __HW_TEST_H
+#ifndef __ESC_CTRL_H
+#define __ESC_CTRL_H
 
 /* Includes ------------------------------------------------------------------*/
 #include "lsys.h"
-#include "bsp_iocfg.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void Input_Check(void);
-void HardwareTEST(void);
-
-extern u8 canbuf_send[8];
+void esc_task_init(void);
 
 
-#endif /* __HW_TEST_H */
+#endif
 
 
 /******************************  END OF FILE  *********************************/
-	
-

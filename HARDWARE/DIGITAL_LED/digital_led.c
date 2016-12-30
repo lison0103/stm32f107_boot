@@ -26,7 +26,7 @@
 #define LED_SDI         PDout(15) 
 
 /* Private variables ---------------------------------------------------------*/
-const u8 bcd[11] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0xff}; //0~9£¬null
+const u8 bcd[13] = {0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90,0x8e,0x88,0xff}; //0~9, f, null
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/

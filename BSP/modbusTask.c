@@ -77,7 +77,7 @@ void ddu_rx_decode(u8 *buff, u16 len)
                 timeset = 1;
                 for( k = 0; k < 6; k++ )
                 {
-                    pcMbRtccBuff[k] = buff[7 + k];
+                    ESC_RTCC[k] = buff[7 + k];
                 }
             }
         } 
@@ -87,8 +87,8 @@ void ddu_rx_decode(u8 *buff, u16 len)
             if( i >= 25 && i <= 27 && j == 1 )
             {
                 timeset = 1;
-                Modbuff[i*2] = buff[7];
-                Modbuff[i*2 + 1] = buff[8];
+                ESC_RTCC[0] = buff[7];
+                ESC_RTCC[1] = buff[8];
             }            
         }                           
         
@@ -161,7 +161,7 @@ void modbus_local_ddu_thread(void *arg)
             /* send date to ddu */
 //            for( u8 i = 20; i < 26; i++ )
 //            {
-//                trx_buff[i+7] = pcMbRtccBuff[i-20];    
+//                trx_buff[i+7] = ESC_RTCC[i-20];    
 //            }          
             
             len = 109;
@@ -486,7 +486,7 @@ void modbus_socket_thread(void *arg)
 *******************************************************************************/ 
 void modbus_socket_init(void)
 {
-	sys_thread_new("Modbus", modbus_socket_thread, NULL, DEFAULT_THREAD_STACKSIZE * 2, MODBUS_THREAD_PRIO);	
+	sys_thread_new("Modbus", modbus_socket_thread, NULL, DEFAULT_THREAD_STACKSIZE, MODBUS_THREAD_PRIO);	
 }
 
 

@@ -2,7 +2,7 @@
 * File Name          : hw_test.c
 * Author             : lison
 * Version            : V1.0
-* Date               : 03/24/2016
+* Date               : 09/30/2016
 * Description        : Contains some test function.
 *                      
 *******************************************************************************/
@@ -35,60 +35,9 @@ u8 passflag = 1;
 
 
 
-#if 0
-
-/*******************************************************************************
-* Function Name  : Input_Check
-* Description    : Monitor the input pin status test.
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/ 
 void Input_Check(void)
 {
-    
-        u16 *ulPt_Input,*ulPt_Output,*pc_can_tx;
-        
-        ulPt_Input = (u16*)&EscRTBuff[4];
-        ulPt_Output = (u16*)&EscRTBuff[30];
-        pc_can_tx = (u16*)&CAN1_TX_Data[0];
-                
-        
-        CAN1_TX_Data[0] = 0;
-        CAN1_TX_Data[1] = 0;
-    
-        
-        if(passflag && ( IN1 && IN2 && IN3 && IN4 && IN5 && IN6 && IN7 && IN8 && 
-                        IN9 && IN10 && IN11 && IN12 && IN13 && IN14 && IN15 && IN16 ))
-        {
-            
-                *ulPt_Output = 0xffff;
-                    
-                CAN1_TX_Data[0] = 0xff;
-                CAN1_TX_Data[1] = 0xff;        
-        }
-        else   
-        {                
-                *ulPt_Output = 0;              
-                
-                for( i = 0; i < 16; i++ )
-                {
-                    if( ulPt_Input[0] & ( 1 << i ))
-                    {
-                       *pc_can_tx |= 1 << i;
-                    }
-                }           
-        }
-                    
-    
-}
-
-#else
-
-void Input_Check(void)
-{
+#if 0    
     u8 i,sflag,inputnum;    
     u16 *ulPt_Input,*ulPt_Output;
     
@@ -96,8 +45,8 @@ void Input_Check(void)
     {
         sflag = 0;
         inputnum = 0;
-        ulPt_Input = (u16*)&EscRTBuff[4];
-        ulPt_Output = (u16*)&EscRTBuff[30];
+        ulPt_Input = (u16*)&CBEscData.ControlInputData[0];
+        ulPt_Output = (u16*)&CBEscData.ControlOutputData[0];
         
         for( i = 0; i < 16; i++ )
         {
@@ -141,7 +90,7 @@ void Input_Check(void)
         
         inputnum = CAN1_RX_Data[0];
         sflag = CAN1_RX_Data[1];
-        ulPt_Output = (u16*)&EscRTBuff[30];
+        ulPt_Output = (u16*)&CBEscData.ControlOutputData[0];
         
    
         
@@ -174,131 +123,9 @@ void Input_Check(void)
         }        
     
     }
-}
-#endif
-
-
-/*******************************************************************************
-* Function Name  : CAN_Comm
-* Description    : CAN Communication test.
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void CAN_Comm(void)
-{
-    static u8 can1_comm_timeout,can2_comm_timeout = 0;
-    u8 len = 0;
-    
-    if( can1_receive == 1 )
-    {
-        can1_receive = 0;
-        can1_comm_timeout = 0;
-    }
-    else if( ++can1_comm_timeout >= 3 )
-    {
-        /*  can communication timeout process */
-    }  
-    
-    if( can2_receive == 1 )
-    {
-        can2_receive = 0;
-        can2_comm_timeout = 0;
-    }
-    else if( ++can2_comm_timeout >= 3 )
-    {
-        /*  can communication timeout process */
-    }    
-
-    CAN1_TX_Data[0] = EscRTBuff[4];
-    CAN1_TX_Data[1] = EscRTBuff[5];
-    
-    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Normal, CAN1_RX_Data, 0);
-    len = BSP_CAN_Receive(CAN1, &CAN1_RX_Urge, CAN1_RX2_Data, 0);
-    
-    BSP_CAN_Send(CAN1, &CAN1_TX_Normal, CAN1TX_NORMAL_ID, CAN1_TX_Data, 100);
-    
-    if( testmode != 0 )
-    {
-        BSP_CAN_Send(CAN2, &CAN2_TX_Normal, CAN1_TEST_ID, CAN2_TX_Data, 10);
-    }
-  
+#endif    
 }
 
-
-/*******************************************************************************
-* Function Name  : input_can_task
-* Description    : input output and can communication.
-*                  
-* Input          : None
-*                  None
-* Output         : None
-* Return         : None
-*******************************************************************************/
-void input_can_task(void *arg)
-{	 
-        static u8 can_comm_tms = 0;
-    
- 	while(1)
-	{
-            
-                Get_GpioInput(&EscRTBuff[4]);
-                Input_Check();
-                led_display();
-                output_driver(&EscRTBuff[30]);            
-            
-                if( ++can_comm_tms >= 4 )
-                {                   
-                        can_comm_tms = 0;
-                        
-                        CAN_Comm();
-                        
-                        /* for test ----------------------*/
-                        SF_ESC_STATE = CAN1_RX2_Data[0];
-                        ESC_ERROR_CODE[0] = CAN1_RX2_Data[2];                
-                        
-                        if( testmode == 0 )
-                        {
-                            if( SF_ESC_STATE & ( 1 << 2 ))
-                            {
-                                CMD_OUTPUT_PORT &= ~0x04;
-                                POWER_ON_TMS++;
-                            }
-                            else
-                            {
-                                CMD_OUTPUT_PORT |= 0x04;
-                                POWER_ON_TMS = 0;
-                            }
-                        }
-                        
-                        dis_data[0] = 0;
-                        dis_data[1] = ESC_ERROR_CODE[0]/10;
-                        dis_data[2] = ESC_ERROR_CODE[0]%10;
-                        
-                        error_record_check();
-                        write_error_record_to_eeprom();               
-                }               
-                              
-                vTaskDelay( 5 );		   
-	}
-}
-
-
-/*******************************************************************************
-* Function Name  : input_test_init
-* Description    : None
-*                  
-* Input          : None
-*                  None                 
-* Output         : None
-* Return         : None
-*******************************************************************************/ 
-void input_test_init(void)
-{
-	xTaskCreate(input_can_task, "INPUT_TEST", configMINIMAL_STACK_SIZE * 2, NULL, INPUT_TASK_PRIO, NULL);
-}
 
 
 /*******************************************************************************
@@ -312,6 +139,7 @@ void input_test_init(void)
 *******************************************************************************/
 void HardwareTEST(void)
 {
+#if 0    
     u8 testdata1[10],testdata2[10];
     u8 testerror = 0;
     u8 len1 = 0, len2 = 0;
@@ -465,6 +293,7 @@ void HardwareTEST(void)
         CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
         CAN_FilterInit(&CAN_FilterInitStructure);          
     }
+#endif    
 }
 
 /******************************  END OF FILE  *********************************/
